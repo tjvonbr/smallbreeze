@@ -67,6 +67,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to create invite." }, { status: 400 });
   }
 
+  const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/sign-up?email=${email}&inviteId=${invite.id}`;
+
   await resend.emails.send({
     from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
     to: email,
@@ -75,7 +77,7 @@ export async function POST(req: NextRequest) {
       invitedByFirstName: session.user.firstName, 
       invitedByLastName: session.user.lastName, 
       invitedByEmail: session.user.email, 
-      inviteLink: "localhost:3000",
+      inviteLink,
       teamName: team.name, 
     }),
   });

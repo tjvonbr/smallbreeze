@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { signUpSchema } from "@/lib/validations";
 import authClient from "@/lib/auth-client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -22,6 +22,10 @@ type FormData = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteId = searchParams.get("inviteId");
+  const invitedEmail = searchParams.get("email");
+  const isInvite = Boolean(inviteId);
   const form = useForm<FormData>({
     resolver: zodResolver(signUpSchema),
   });
@@ -29,14 +33,29 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [step, setStep] = React.useState<number>(1);
 
+  React.useEffect(() => {
+    if (invitedEmail) {
+      form.setValue("email", invitedEmail);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invitedEmail]);
+
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
     try {
+      const teamNameForCallback = data.teamName && data.teamName.trim().length > 0
+        ? data.teamName
+        : `${data.firstName} ${data.lastName}'s Team`;
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      const callbackURL = isInvite && inviteId
+        ? `${origin}/api/accept-invite?inviteId=${encodeURIComponent(inviteId)}`
+        : `${origin}/api/bootstrap-team?teamName=${encodeURIComponent(teamNameForCallback)}`;
+
       const { error } = await authClient.signUp.email({
         email: data.email.toLowerCase().trim(),
         password: data.password,
-        callbackURL: "/",
+        callbackURL,
         firstName: data.firstName,
         lastName: data.lastName,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -119,7 +138,7 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
                     autoCapitalize="none"
                     autoComplete="email"
                     autoCorrect="off"
-                    disabled={isLoading}
+                    disabled={isLoading || !!invitedEmail}
                     {...form.register("email")}
                   />
                   {form.formState.errors?.email && (
@@ -146,19 +165,32 @@ export default function SignUpForm({ className, ...props }: UserAuthFormProps) {
                   )}
                 </div>
               </div>
-              <button
-                type="button"
-                className={cn(buttonVariants(), "hover:cursor-pointer")}
-                disabled={isLoading}
-                onClick={async (e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const ok = await form.trigger(["firstName", "lastName", "email", "password"])
-                  if (ok) setStep(2)
-                }}
-              >
-                Continue
-              </button>
+              {isInvite ? (
+                <button
+                  type="submit"
+                  className={cn(buttonVariants(), "hover:cursor-pointer")}
+                  disabled={isLoading}
+                >
+                  {isLoading && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Create account
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={cn(buttonVariants(), "hover:cursor-pointer")}
+                  disabled={isLoading}
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const ok = await form.trigger(["firstName", "lastName", "email", "password"])
+                    if (ok) setStep(2)
+                  }}
+                >
+                  Continue
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid gap-2">
