@@ -4,10 +4,17 @@ import db from "@/lib/prisma";
 import resend from "./resend";
 import VerifyEmail from "@/components/emails/verify-email";
 
+const trustedOrigins = [
+  process.env.NEXT_PUBLIC_APP_URL,
+  "http://localhost:3000",
+  "https://localhost:3000",
+].filter(Boolean) as string[];
+
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
+  trustedOrigins,
   emailAndPassword: {
     enabled: true,
   },
