@@ -78,7 +78,7 @@ export default function HorizontalCalendar({
     syncHeaderPosition(el.scrollLeft)
     const todayLeft = todayIndex * columnWidth
     setShowJumpToToday(Math.abs(el.scrollLeft - todayLeft) > threshold)
-  }, [extendDaysOnScroll, columnWidth])
+  }, [columnWidth, todayIndex, extendDaysOnScroll])
 
   React.useEffect(() => {
     const el = scrollRef.current
@@ -103,7 +103,7 @@ export default function HorizontalCalendar({
     const ro = new ResizeObserver(() => compute())
     ro.observe(el)
     return () => ro.disconnect()
-  }, [])
+  }, [todayIndex])
 
   React.useEffect(() => {
     const el = scrollRef.current
@@ -209,7 +209,24 @@ export default function HorizontalCalendar({
               return (
                 <div key={listing.id} className="h-20 flex flex-col border-b border-border px-3 py-2 justify-between text-sm font-medium">
                   <Link href={`/properties/${listing.id}`} className="hover:underline">{listing.nickname}</Link>
-                  <div className="text-muted-foreground text-xs">{`Next check-in: ${nextCheckIn}`}</div>
+                  <div className="text-muted-foreground text-xs">
+                    <button
+                      type="button"
+                      className="hover:underline hover:cursor-pointer"
+                      onClick={() => {
+                        if (!nextFuture || !scrollRef.current) return
+                        const idx = daysBetween(startDate, startOfDayUtc(nextFuture.start))
+                        const left = Math.max(0, idx) * columnWidth
+                        scrollRef.current.scrollTo({ left, behavior: "smooth" })
+                        requestAnimationFrame(() => syncHeaderPosition(left))
+                      }}
+                      disabled={!nextFuture}
+                      aria-label="Scroll to next check-in on calendar"
+                      title="Scroll to next check-in on calendar"
+                    >
+                      {`Next check-in: ${nextCheckIn}`}
+                    </button>
+                  </div>
                 </div>
             )})}
           </div>
