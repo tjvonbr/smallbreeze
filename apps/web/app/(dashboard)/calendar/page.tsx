@@ -1,4 +1,3 @@
-
 import HorizontalCalendar from '@/components/horizontal-calendar';
 import { auth } from '@/lib/auth';
 import { getCalendarLinksByTeamId } from '@/lib/calendar-links';
@@ -52,3 +51,5 @@ export default async function CalendarPage() {
     </DashboardShell>
   )
 }
+
+
