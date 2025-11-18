@@ -34,7 +34,7 @@ export const dashboardConfig: DashboardConfig = {
   sidebarNav: [
     {
       title: "Calendar",
-      href: "/",
+      href: "/calendar",
       icon: "calendar",
     },
     {
