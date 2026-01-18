@@ -8,8 +8,11 @@ import { getResend } from './resend.js';
 
 const trustedOrigins = [
   process.env.NEXT_PUBLIC_APP_URL,
+  process.env.MOBILE_APP_URL,
   'http://localhost:3000',
   'https://localhost:3000',
+  'exp://localhost:8081',
+  'exp://192.168.1.1:8081',
 ].filter(Boolean) as string[];
 
 export const auth = betterAuth({

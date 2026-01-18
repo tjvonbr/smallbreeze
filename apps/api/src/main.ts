@@ -11,7 +11,7 @@ async function bootstrap() {
   ].filter(Boolean) as string[];
   app.enableCors({
     origin: allowedOrigins.length > 0 ? allowedOrigins : true,
-    credentials: false,
+    credentials: true,
   });
   await app.listen(process.env.PORT ?? 3001);
 }
