@@ -96,31 +96,34 @@ export default function SignUpScreen() {
   const handleSignUp = async () => {
     setError(null);
     setLoading(true);
-    
-    try {
-      const teamNameForCallback = teamName?.trim() || `${firstName} ${lastName}'s Team`;
-      const webBaseUrl = Constants.expoConfig?.extra?.webBaseUrl;
-      
-      let callbackURL: string | undefined;
-      if (webBaseUrl) {
-        callbackURL = isInvite && inviteId
-          ? `${webBaseUrl}/api/accept-invite?inviteId=${encodeURIComponent(inviteId)}`
-          : `${webBaseUrl}/api/bootstrap-team?teamName=${encodeURIComponent(teamNameForCallback)}`;
-      }
-      
-      await authClient.signUp.email({
-        email: email.toLowerCase().trim(),
-        password,
-        firstName,
-        lastName,
-        ...(callbackURL && { callbackURL }),
-      } as any);
-      
+
+    const teamNameForCallback = teamName?.trim() || `${firstName} ${lastName}'s Team`;
+    const webBaseUrl = Constants.expoConfig?.extra?.webBaseUrl;
+
+    let callbackURL: string | undefined;
+    if (webBaseUrl) {
+      callbackURL = isInvite && inviteId
+        ? `${webBaseUrl}/api/accept-invite?inviteId=${encodeURIComponent(inviteId)}`
+        : `${webBaseUrl}/api/bootstrap-team?teamName=${encodeURIComponent(teamNameForCallback)}`;
+    }
+
+    const { data, error: signUpError } = await authClient.signUp.email({
+      email: email.toLowerCase().trim(),
+      password,
+      firstName,
+      lastName,
+      ...(callbackURL && { callbackURL }),
+    } as any);
+
+    setLoading(false);
+
+    if (signUpError) {
+      setError(signUpError.message ?? 'Failed to sign up');
+      return;
+    }
+
+    if (data) {
       router.replace('/');
-    } catch (e: any) {
-      setError(e?.message ?? 'Failed to sign up');
-    } finally {
-      setLoading(false);
     }
   };
 

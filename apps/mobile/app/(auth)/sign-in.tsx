@@ -48,22 +48,25 @@ export default function SignInScreen() {
 
   const handleSignIn = async () => {
     setError(null);
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setLoading(true);
-    try {
-      await authClient.signIn.email({
-        email: email.toLowerCase().trim(),
-        password,
-      });
+    const { data, error: signInError } = await authClient.signIn.email({
+      email: email.toLowerCase().trim(),
+      password,
+    });
+    setLoading(false);
+
+    if (signInError) {
+      setError(signInError.message ?? 'Failed to sign in');
+      return;
+    }
+
+    if (data) {
       router.replace('/');
-    } catch (e: any) {
-      setError(e?.message ?? 'Failed to sign in');
-    } finally {
-      setLoading(false);
     }
   };
 
