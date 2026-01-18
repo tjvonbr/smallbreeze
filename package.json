@@ -21,5 +21,8 @@
     "apps/*",
     "packages/*"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "overrides": {
+    "react-dom": "18.2.0"
+  }
 }
