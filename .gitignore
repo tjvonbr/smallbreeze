@@ -27,6 +27,18 @@ out/
 build
 dist
 
+# Expo
+.expo/
+ios/
+android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
 
 # Debug
 npm-debug.log*
