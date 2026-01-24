@@ -29,14 +29,6 @@ export const newPropertySchema = z.object({
   iCalUrl: z.string().optional(),
 });
 
-export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
-});
-
-export const resetPasswordSchema = z.object({
-  password: z.string().min(1),
-});
-
 export const inviteMemberSchema = z.object({
   email: z.string().email(),
 });
