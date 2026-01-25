@@ -47,6 +47,7 @@ export default function SignInScreen() {
   };
 
   const handleSignIn = async () => {
+    console.log('handleSignIn');
     setError(null);
 
     if (!validateForm()) {
@@ -54,12 +55,15 @@ export default function SignInScreen() {
     }
 
     setLoading(true);
+    console.log('email', email);
+    console.log('password', password);
     const { data, error: signInError } = await authClient.signIn.email({
       email: email.toLowerCase().trim(),
       password,
     });
     setLoading(false);
 
+    console.log('signInError', signInError);
     if (signInError) {
       setError(signInError.message ?? 'Failed to sign in');
       return;

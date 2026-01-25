@@ -110,14 +110,16 @@ export default function SignUpScreen() {
     const { data, error: signUpError } = await authClient.signUp.email({
       email: email.toLowerCase().trim(),
       password,
-      firstName,
-      lastName,
+      name: `${firstName.trim()} ${lastName.trim()}`,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
       ...(callbackURL && { callbackURL }),
     } as any);
 
     setLoading(false);
 
     if (signUpError) {
+      console.log('signUpError', signUpError);
       setError(signUpError.message ?? 'Failed to sign up');
       return;
     }

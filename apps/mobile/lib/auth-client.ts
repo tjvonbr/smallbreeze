@@ -7,6 +7,11 @@ const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? "http://localhost:3001";
 
 export const authClient = createAuthClient({
     baseURL: apiUrl,
+    fetchOptions: {
+        headers: {
+            Origin: apiUrl,
+        },
+    },
     plugins: [
         expoClient({
             scheme: "smallbreeze-mobile",

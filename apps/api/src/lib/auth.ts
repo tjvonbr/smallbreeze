@@ -1,7 +1,7 @@
 
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { betterAuth } from "better-auth";
-import prisma from './prisma.js';
+import { prisma } from './prisma.js';
 import VerifyEmail from './emails/verify-email.js';
 import { getResend } from './resend.js';
 
@@ -9,8 +9,10 @@ import { getResend } from './resend.js';
 const trustedOrigins = [
   process.env.NEXT_PUBLIC_APP_URL,
   process.env.MOBILE_APP_URL,
+  process.env.API_URL,
   'http://localhost:3000',
   'https://localhost:3000',
+  'http://localhost:3001',
   'exp://localhost:8081',
   'exp://192.168.1.1:8081',
 ].filter(Boolean) as string[];
