@@ -1,12 +1,10 @@
-import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
   RefreshControl,
-  SectionList,
   StyleSheet,
   Text,
   View,
@@ -14,40 +12,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icons } from '@/components/icons';
-import { authClient } from '@/lib/auth-client';
+import { useListings, Listing } from '@/context/listings-context';
 import { Colors, Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-interface CalendarLink {
-  id: string;
-  url: string;
-  listingId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Listing {
-  id: string;
-  nickname: string;
-  streetAddress: string;
-  streetAddress2: string | null;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  teamId: string;
-  calendarLinks: CalendarLink[];
-  nextCheckIn: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Section {
-  title: string;
-  data: Listing[];
-}
-
-const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
 
 function isToday(date: Date): boolean {
   const today = new Date();
@@ -88,42 +55,22 @@ function formatCheckInDate(dateString: string | null): string {
 
 export default function ListingsScreen() {
   const router = useRouter();
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { listings, loading, error, fetchListings } = useListings();
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
 
-  const fetchListings = useCallback(async () => {
-    try {
-      setError(null);
-      const response = await authClient.$fetch<{ listings: Listing[] }>(
-        `${apiUrl}/api/listings`
-      );
-
-      if (!response.data) {
-        throw new Error('Failed to fetch listings');
-      }
-
-      setListings(response.data.listings);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load listings');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchListings();
-  }, [fetchListings]);
+    if (listings.length === 0) {
+      fetchListings();
+    }
+  }, [fetchListings, listings.length]);
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    fetchListings();
+    await fetchListings();
+    setRefreshing(false);
   }, [fetchListings]);
-
 
   const formatAddress = (listing: Listing) => {
     const parts = [listing.streetAddress];
@@ -134,15 +81,16 @@ export default function ListingsScreen() {
     return parts.join(', ');
   };
 
-  const renderSectionHeader = ({ section }: { section: Section }) => (
-    <View style={styles.sectionHeader}>
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
-    </View>
-  );
-
   const renderItem = ({ item }: { item: Listing }) => (
-    <Pressable style={styles.listingRow} onPress={() => router.push({ pathname: '/listing/[id]', params: { id: item.id, listing: JSON.stringify(item) } })}>
-      {/* Icon placeholder - left empty for now */}
+    <Pressable
+      style={styles.listingRow}
+      onPress={() =>
+        router.push({
+          pathname: '/listing/[id]',
+          params: { id: item.id },
+        })
+      }
+    >
       <View style={styles.iconPlaceholder} />
 
       <View style={styles.listingContent}>
@@ -153,7 +101,9 @@ export default function ListingsScreen() {
 
         <View style={styles.listingMainRow}>
           <View style={styles.listingTextContent}>
-            <Text style={[styles.listingTitle, { color: colors.text }]}>{formatAddress(item)}</Text>
+            <Text style={[styles.listingTitle, { color: colors.text }]}>
+              {formatAddress(item)}
+            </Text>
             <Text style={styles.listingDescription} numberOfLines={1}>
               Next check-in: {formatCheckInDate(item.nextCheckIn)}
             </Text>
@@ -174,7 +124,7 @@ export default function ListingsScreen() {
     </View>
   );
 
-  if (loading) {
+  if (loading && listings.length === 0) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
@@ -189,7 +139,7 @@ export default function ListingsScreen() {
     );
   }
 
-  if (error) {
+  if (error && listings.length === 0) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
@@ -201,7 +151,8 @@ export default function ListingsScreen() {
           <Text style={[styles.errorText, { color: colors.text }]}>{error}</Text>
           <Pressable
             style={[styles.retryButton, { backgroundColor: colors.tint }]}
-            onPress={fetchListings}>
+            onPress={fetchListings}
+          >
             <Text style={styles.retryButtonText}>Try Again</Text>
           </Pressable>
         </View>
@@ -222,10 +173,14 @@ export default function ListingsScreen() {
         <FlatList
           data={listings}
           keyExtractor={(item: Listing) => item.id}
-          renderItem={renderItem}          
+          renderItem={renderItem}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.tint}
+            />
           }
         />
       )}
@@ -274,14 +229,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     paddingBottom: 24,
-  },
-  sectionHeader: {
-    paddingTop: 24,
-    paddingBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
   },
   listingRow: {
     flexDirection: 'row',
