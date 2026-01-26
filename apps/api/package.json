@@ -32,6 +32,7 @@
     "@thallesp/nestjs-better-auth": "^2.2.0",
     "better-auth": "^1.4.9",
     "dotenv": "^17.2.3",
+    "node-ical": "^0.20.1",
     "pg": "^8.16.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -40,13 +41,13 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.19.3",
