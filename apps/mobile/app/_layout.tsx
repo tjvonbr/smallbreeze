@@ -21,6 +21,7 @@ export default function RootLayout() {
         {isAuthenticated ? (
           <>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="listing/[id]" />
             <Stack.Screen name="year" />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           </>

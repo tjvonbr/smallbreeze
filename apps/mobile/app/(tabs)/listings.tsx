@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -86,6 +87,7 @@ function formatCheckInDate(dateString: string | null): string {
 }
 
 export default function ListingsScreen() {
+  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -139,7 +141,7 @@ export default function ListingsScreen() {
   );
 
   const renderItem = ({ item }: { item: Listing }) => (
-    <Pressable style={styles.listingRow}>
+    <Pressable style={styles.listingRow} onPress={() => router.push({ pathname: '/listing/[id]', params: { id: item.id, listing: JSON.stringify(item) } })}>
       {/* Icon placeholder - left empty for now */}
       <View style={styles.iconPlaceholder} />
 
