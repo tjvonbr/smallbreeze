@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { ListingsProvider } from '@/context/listings-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { authClient } from '@/lib/auth-client';
 
@@ -15,21 +16,28 @@ export default function RootLayout() {
   const { data: session } = authClient.useSession();
   const isAuthenticated = !!session;
 
+  if (!isAuthenticated) {
+    return (
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        {isAuthenticated ? (
-          <>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="listing/[id]" />
-            <Stack.Screen name="year" />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          </>
-        ) : (
-          <Stack.Screen name="(auth)" />
-        )}
-      </Stack>
-      <StatusBar style="auto" />
+      <ListingsProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="listing/[id]" />
+          <Stack.Screen name="year" />
+          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+        </Stack>
+        <StatusBar style="auto" />
+      </ListingsProvider>
     </ThemeProvider>
   );
 }

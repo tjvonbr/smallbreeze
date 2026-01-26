@@ -2,6 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { prisma } from '../lib/prisma.js';
 import { parseCalendarUrl, getNextCheckIn } from '../lib/ics-parser.js';
 
+interface UpdateListingData {
+  nickname?: string;
+  streetAddress?: string;
+  streetAddress2?: string | null;
+  city?: string;
+  state?: string;
+  zip?: string;
+  country?: string;
+}
+
 @Injectable()
 export class ListingsService {
   async findAllForUser(userId: string) {
@@ -45,5 +55,53 @@ export class ListingsService {
     );
 
     return listingsWithNextCheckIn;
+  }
+
+  async update(listingId: string, userId: string, data: UpdateListingData) {
+    // First verify the user has access to this listing via team membership
+    const teamMemberships = await prisma.teamMember.findMany({
+      where: { userId },
+      select: { teamId: true },
+    });
+
+    const teamIds = teamMemberships.map((tm: { teamId: string }) => tm.teamId);
+
+    // Check if the listing exists and belongs to a team the user is a member of
+    const existingListing = await prisma.listing.findFirst({
+      where: {
+        id: listingId,
+        teamId: { in: teamIds },
+      },
+    });
+
+    if (!existingListing) {
+      return null;
+    }
+
+    // Update the listing
+    const updatedListing = await prisma.listing.update({
+      where: { id: listingId },
+      data,
+      include: {
+        calendarLinks: true,
+      },
+    });
+
+    // Calculate next check-in
+    let nextCheckIn: Date | null = null;
+
+    for (const calendarLink of updatedListing.calendarLinks) {
+      const events = await parseCalendarUrl(calendarLink.url);
+      const checkIn = getNextCheckIn(events);
+
+      if (checkIn && (!nextCheckIn || checkIn < nextCheckIn)) {
+        nextCheckIn = checkIn;
+      }
+    }
+
+    return {
+      ...updatedListing,
+      nextCheckIn: nextCheckIn?.toISOString() ?? null,
+    };
   }
 }
