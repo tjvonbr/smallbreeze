@@ -1,10 +1,11 @@
 import Constants from 'expo-constants';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
   RefreshControl,
+  SectionList,
   StyleSheet,
   Text,
   View,
@@ -35,11 +36,54 @@ interface Listing {
   country: string;
   teamId: string;
   calendarLinks: CalendarLink[];
+  nextCheckIn: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
+interface Section {
+  title: string;
+  data: Listing[];
+}
+
 const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
+
+function isToday(date: Date): boolean {
+  const today = new Date();
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+}
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  if (isToday(date)) {
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  }
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function formatCheckInDate(dateString: string | null): string {
+  if (!dateString) {
+    return 'No upcoming check-ins';
+  }
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+}
 
 export default function ListingsScreen() {
   const [listings, setListings] = useState<Listing[]>([]);
@@ -78,28 +122,44 @@ export default function ListingsScreen() {
     fetchListings();
   }, [fetchListings]);
 
+
   const formatAddress = (listing: Listing) => {
     const parts = [listing.streetAddress];
     if (listing.streetAddress2) {
       parts.push(listing.streetAddress2);
     }
     parts.push(`${listing.city}, ${listing.state} ${listing.zip}`);
-    return parts.join('\n');
+    return parts.join(', ');
   };
 
-  const renderItem = ({ item }: { item: Listing }) => (
-    <View style={[styles.listingCard, { backgroundColor: colors.background }]}>
-      <View style={styles.listingHeader}>
-        <Icons.house size={20} color={colors.tint} />
-        <Text style={[styles.listingNickname, { color: colors.text }]}>{item.nickname}</Text>
-      </View>
-      <Text style={[styles.listingAddress, { color: colors.icon }]}>{formatAddress(item)}</Text>
-      <View style={styles.listingMeta}>
-        <Text style={[styles.listingMetaText, { color: colors.icon }]}>
-          {item.calendarLinks.length} calendar{item.calendarLinks.length !== 1 ? 's' : ''}
-        </Text>
-      </View>
+  const renderSectionHeader = ({ section }: { section: Section }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>{section.title}</Text>
     </View>
+  );
+
+  const renderItem = ({ item }: { item: Listing }) => (
+    <Pressable style={styles.listingRow}>
+      {/* Icon placeholder - left empty for now */}
+      <View style={styles.iconPlaceholder} />
+
+      <View style={styles.listingContent}>
+        <View style={styles.listingTopRow}>
+          <Text style={styles.categoryLabel}>{item.nickname}</Text>
+          <Text style={styles.dateText}>{formatDate(item.createdAt)}</Text>
+        </View>
+
+        <View style={styles.listingMainRow}>
+          <View style={styles.listingTextContent}>
+            <Text style={[styles.listingTitle, { color: colors.text }]}>{formatAddress(item)}</Text>
+            <Text style={styles.listingDescription} numberOfLines={1}>
+              Next check-in: {formatCheckInDate(item.nextCheckIn)}
+            </Text>
+          </View>
+          <View style={styles.indicator} />
+        </View>
+      </View>
+    </Pressable>
   );
 
   const renderEmpty = () => (
@@ -154,16 +214,19 @@ export default function ListingsScreen() {
           Listings
         </Text>
       </View>
-      <FlatList
-        data={listings}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        ListEmptyComponent={renderEmpty}
-        contentContainerStyle={listings.length === 0 ? styles.emptyList : styles.listContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
-        }
-      />
+      {listings.length === 0 ? (
+        renderEmpty()
+      ) : (
+        <FlatList
+          data={listings}
+          keyExtractor={(item: Listing) => item.id}
+          renderItem={renderItem}          
+          contentContainerStyle={styles.listContent}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -173,10 +236,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E5E5E5',
   },
   headerTitle: {
     fontSize: 32,
@@ -209,11 +270,70 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   listContent: {
-    padding: 16,
-    gap: 12,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
-  emptyList: {
+  sectionHeader: {
+    paddingTop: 24,
+    paddingBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  listingRow: {
+    flexDirection: 'row',
+    paddingVertical: 16,
+  },
+  iconPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F0F0F0',
+    marginRight: 12,
+  },
+  listingContent: {
     flex: 1,
+  },
+  listingTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  categoryLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#666',
+  },
+  dateText: {
+    fontSize: 13,
+    color: '#999',
+  },
+  listingMainRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  listingTextContent: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  listingTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  listingDescription: {
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20,
+  },
+  indicator: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#E85D4C',
+    marginTop: 4,
   },
   emptyContainer: {
     flex: 1,
@@ -231,34 +351,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 22,
-  },
-  listingCard: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    marginBottom: 12,
-  },
-  listingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  listingNickname: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  listingAddress: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  listingMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  listingMetaText: {
-    fontSize: 13,
   },
 });
