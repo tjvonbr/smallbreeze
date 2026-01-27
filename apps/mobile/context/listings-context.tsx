@@ -22,6 +22,7 @@ export interface Listing {
   country: string;
   wifiNetwork: string | null;
   wifiPassword: string | null;
+  accessNotes: string | null;
   teamId: string;
   calendarLinks: CalendarLink[];
   nextCheckIn: string | null;

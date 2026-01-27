@@ -14,6 +14,7 @@ interface UpdateListingData {
   country?: string;
   wifiNetwork?: string | null;
   wifiPassword?: string | null;
+  accessNotes?: string | null;
 }
 
 @Injectable()

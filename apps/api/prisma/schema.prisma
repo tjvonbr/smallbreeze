@@ -115,6 +115,7 @@ model Listing {
   country        String
   wifiNetwork    String?
   wifiPassword   String?
+  accessNotes    String?
   teamId         String
   team           Team           @relation(fields: [teamId], references: [id])
   calendarLinks  CalendarLink[]
