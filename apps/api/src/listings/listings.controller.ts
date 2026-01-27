@@ -18,6 +18,8 @@ interface UpdateListingDto {
   state?: string;
   zip?: string;
   country?: string;
+  wifiNetwork?: string | null;
+  wifiPassword?: string | null;
 }
 
 @Controller('api/listings')

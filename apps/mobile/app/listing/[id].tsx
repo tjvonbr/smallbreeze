@@ -32,6 +32,11 @@ interface AddressForm {
   country: string;
 }
 
+interface WifiForm {
+  wifiNetwork: string;
+  wifiPassword: string;
+}
+
 const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
 
 type TabType = 'calendar' | 'info';
@@ -481,9 +486,10 @@ interface InfoTabProps {
   colorScheme: 'light' | 'dark';
   onEditNickname: () => void;
   onEditAddress: () => void;
+  onEditWiFi: () => void;
 }
 
-function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress }: InfoTabProps) {
+function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi }: InfoTabProps) {
   const formatAddress = (listing: Listing) => {
     const lines = [listing.streetAddress];
     if (listing.streetAddress2) {
@@ -512,6 +518,24 @@ function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress }
               {line}
             </Text>
           ))}
+        </View>
+      </Pressable>
+
+      <Pressable style={styles.section} onPress={onEditWiFi}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>WiFi</Text>
+        <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+          {listing.wifiNetwork ? (
+            <View style={styles.wifiRow}>
+              <Icons.wifi size={18} color={colors.icon} />
+              <Text style={[styles.wifiText, { color: colors.text }]}>
+                {listing.wifiNetwork}
+              </Text>
+            </View>
+          ) : (
+            <Text style={[styles.wifiPlaceholder, { color: colors.icon }]}>
+              No WiFi info added
+            </Text>
+          )}
         </View>
       </Pressable>
 
@@ -627,21 +651,37 @@ interface FormFieldProps {
   colors: typeof Colors.light;
   colorScheme: 'light' | 'dark';
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  secureTextEntry?: boolean;
 }
 
-function FormField({ label, value, onChangeText, placeholder, colors, colorScheme, autoCapitalize = 'sentences' }: FormFieldProps) {
+function FormField({ label, value, onChangeText, placeholder, colors, colorScheme, autoCapitalize = 'sentences', secureTextEntry = false }: FormFieldProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isSecure = secureTextEntry && !showPassword;
+
   return (
     <View style={styles.formField}>
       <View style={[styles.inputContainer, { borderColor: colorScheme === 'dark' ? '#444' : '#DDD' }]}>
         <Text style={[styles.inputLabel, { color: colors.icon }]}>{label}</Text>
-        <TextInput
-          style={[styles.input, { color: colors.text }]}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor={colors.icon}
-          autoCapitalize={autoCapitalize}
-        />
+        <View style={styles.inputRow}>
+          <TextInput
+            style={[styles.input, styles.inputFlex, { color: colors.text }]}
+            value={value}
+            onChangeText={onChangeText}
+            placeholder={placeholder}
+            placeholderTextColor={colors.icon}
+            autoCapitalize={autoCapitalize}
+            secureTextEntry={isSecure}
+          />
+          {secureTextEntry && (
+            <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+              {showPassword ? (
+                <Icons.eyeOff size={20} color={colors.icon} />
+              ) : (
+                <Icons.eye size={20} color={colors.icon} />
+              )}
+            </Pressable>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -663,6 +703,7 @@ export default function ListingScreen() {
   // Modal states
   const [nicknameModalVisible, setNicknameModalVisible] = useState(false);
   const [addressModalVisible, setAddressModalVisible] = useState(false);
+  const [wifiModalVisible, setWifiModalVisible] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Form states
@@ -674,6 +715,10 @@ export default function ListingScreen() {
     state: '',
     zip: '',
     country: '',
+  });
+  const [wifiForm, setWifiForm] = useState<WifiForm>({
+    wifiNetwork: '',
+    wifiPassword: '',
   });
 
   const openNicknameModal = () => {
@@ -694,6 +739,16 @@ export default function ListingScreen() {
         country: listing.country,
       });
       setAddressModalVisible(true);
+    }
+  };
+
+  const openWiFiModal = () => {
+    if (listing) {
+      setWifiForm({
+        wifiNetwork: listing.wifiNetwork || '',
+        wifiPassword: listing.wifiPassword || '',
+      });
+      setWifiModalVisible(true);
     }
   };
 
@@ -752,6 +807,33 @@ export default function ListingScreen() {
     }
   };
 
+  const saveWifi = async () => {
+    if (!listing) return;
+
+    setSaving(true);
+    try {
+      const response = await authClient.$fetch<{ listing: Listing }>(
+        `${apiUrl}/api/listings/${listing.id}`,
+        {
+          method: 'PATCH',
+          body: {
+            wifiNetwork: wifiForm.wifiNetwork || null,
+            wifiPassword: wifiForm.wifiPassword || null,
+          },
+        }
+      );
+
+      if (response.data?.listing) {
+        updateListing(response.data.listing);
+      }
+      setWifiModalVisible(false);
+    } catch (err) {
+      console.error('Failed to update wifi:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (!listing) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -794,6 +876,7 @@ export default function ListingScreen() {
           colorScheme={colorScheme}
           onEditNickname={openNicknameModal}
           onEditAddress={openAddressModal}
+          onEditWiFi={openWiFiModal}
         />
       )}
 
@@ -893,6 +976,40 @@ export default function ListingScreen() {
           colors={colors}
           colorScheme={colorScheme}
         />
+      </EditModal>
+
+      {/* WiFi Edit Modal */}
+      <EditModal
+        visible={wifiModalVisible}
+        title="WiFi"
+        onClose={() => setWifiModalVisible(false)}
+        onSave={saveWifi}
+        saving={saving}
+        colors={colors}
+        colorScheme={colorScheme}
+      >
+        <FormField
+          label="Network Name"
+          value={wifiForm.wifiNetwork}
+          onChangeText={(text) => setWifiForm((prev) => ({ ...prev, wifiNetwork: text }))}
+          placeholder="Enter WiFi network name"
+          colors={colors}
+          colorScheme={colorScheme}
+          autoCapitalize="none"
+        />
+        <FormField
+          label="Password"
+          value={wifiForm.wifiPassword}
+          onChangeText={(text) => setWifiForm((prev) => ({ ...prev, wifiPassword: text }))}
+          placeholder="Enter WiFi password"
+          colors={colors}
+          colorScheme={colorScheme}
+          autoCapitalize="none"
+          secureTextEntry
+        />
+        <Text style={[styles.fieldHint, { color: colors.icon }]}>
+          Share WiFi details with your guests. Leave blank if not applicable.
+        </Text>
       </EditModal>
     </SafeAreaView>
   );
@@ -1080,6 +1197,24 @@ const styles = StyleSheet.create({
   checkInText: {
     fontSize: 16,
   },
+  wifiRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  wifiText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  wifiPassword: {
+    fontSize: 14,
+    marginTop: 4,
+    marginLeft: 26,
+  },
+  wifiPlaceholder: {
+    fontSize: 16,
+    fontStyle: 'italic',
+  },
   calendarLinkItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1178,6 +1313,17 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 17,
     padding: 0,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputFlex: {
+    flex: 1,
+  },
+  eyeButton: {
+    padding: 4,
+    marginLeft: 8,
   },
   fieldHint: {
     fontSize: 14,

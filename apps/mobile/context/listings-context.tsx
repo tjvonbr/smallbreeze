@@ -20,6 +20,8 @@ export interface Listing {
   state: string;
   zip: string;
   country: string;
+  wifiNetwork: string | null;
+  wifiPassword: string | null;
   teamId: string;
   calendarLinks: CalendarLink[];
   nextCheckIn: string | null;

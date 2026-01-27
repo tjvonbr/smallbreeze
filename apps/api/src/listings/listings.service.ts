@@ -12,6 +12,8 @@ interface UpdateListingData {
   state?: string;
   zip?: string;
   country?: string;
+  wifiNetwork?: string | null;
+  wifiPassword?: string | null;
 }
 
 @Injectable()
