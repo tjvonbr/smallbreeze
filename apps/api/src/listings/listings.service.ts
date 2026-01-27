@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { prisma } from '../lib/prisma.js';
-import { parseCalendarUrl, getNextCheckIn } from '../lib/ics-parser.js';
+import { parseCalendarUrl, getNextCheckIn, CalendarEvent } from '../lib/ics-parser.js';
+
+export type { CalendarEvent };
 
 interface UpdateListingData {
   nickname?: string;
@@ -103,5 +105,50 @@ export class ListingsService {
       ...updatedListing,
       nextCheckIn: nextCheckIn?.toISOString() ?? null,
     };
+  }
+
+  async getReservations(listingId: string, userId: string) {
+    // Verify user has access to this listing
+    const teamMemberships = await prisma.teamMember.findMany({
+      where: { userId },
+      select: { teamId: true },
+    });
+
+    const teamIds = teamMemberships.map((tm: { teamId: string }) => tm.teamId);
+
+    const listing = await prisma.listing.findFirst({
+      where: {
+        id: listingId,
+        teamId: { in: teamIds },
+      },
+      include: {
+        calendarLinks: true,
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    // Fetch all events from all calendar links
+    const allEvents: CalendarEvent[] = [];
+
+    for (const calendarLink of listing.calendarLinks) {
+      const events = await parseCalendarUrl(calendarLink.url);
+      allEvents.push(...events);
+    }
+
+    // Sort by start date and return serializable format
+    return allEvents
+      .sort((a, b) => a.start.getTime() - b.start.getTime())
+      .map((event) => ({
+        id: event.id,
+        summary: event.summary,
+        description: event.description,
+        start: event.start.toISOString(),
+        end: event.end.toISOString(),
+        location: event.location,
+        allDay: event.allDay,
+      }));
   }
 }
