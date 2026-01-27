@@ -1,8 +1,10 @@
 import Constants from 'expo-constants';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
+  FlatList,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -32,6 +34,8 @@ interface AddressForm {
 
 const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
 
+type TabType = 'calendar' | 'info';
+
 function formatCheckInDate(dateString: string | null): string {
   if (!dateString) {
     return 'No upcoming check-ins';
@@ -45,6 +49,512 @@ function formatCheckInDate(dateString: string | null): string {
   });
 }
 
+// Tab Bar Component
+interface TabBarProps {
+  activeTab: TabType;
+  onTabChange: (tab: TabType) => void;
+  colors: typeof Colors.light;
+  colorScheme: 'light' | 'dark';
+}
+
+function TabBar({ activeTab, onTabChange, colors, colorScheme }: TabBarProps) {
+  return (
+    <View style={[styles.tabBar, { borderTopColor: colorScheme === 'dark' ? '#333' : '#E5E5E5', backgroundColor: colors.background }]}>
+      <Pressable
+        style={styles.tab}
+        onPress={() => onTabChange('calendar')}
+      >
+        <Icons.calendar size={24} color={activeTab === 'calendar' ? colors.tint : colors.icon} />
+        <Text
+          style={[
+            styles.tabText,
+            { color: activeTab === 'calendar' ? colors.tint : colors.icon },
+          ]}
+        >
+          Calendar
+        </Text>
+      </Pressable>
+      <Pressable
+        style={styles.tab}
+        onPress={() => onTabChange('info')}
+      >
+        <Icons.house size={24} color={activeTab === 'info' ? colors.tint : colors.icon} />
+        <Text
+          style={[
+            styles.tabText,
+            { color: activeTab === 'info' ? colors.tint : colors.icon },
+          ]}
+        >
+          Info
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
+// Calendar types and helpers
+interface Reservation {
+  id: string;
+  summary: string;
+  description?: string;
+  start: string;
+  end: string;
+  location?: string;
+  allDay: boolean;
+}
+
+interface MonthData {
+  year: number;
+  month: number;
+  key: string;
+}
+
+const DAYS_OF_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+function getMonthName(month: number): string {
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  return months[month];
+}
+
+function getDaysInMonth(year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getFirstDayOfMonth(year: number, month: number): number {
+  return new Date(year, month, 1).getDay();
+}
+
+function isSameDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
+
+function isDateInRange(date: Date, start: Date, end: Date): boolean {
+  // Normalize all dates to YYYY-MM-DD strings for comparison to avoid timezone issues
+  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const startStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+  const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+  return dateStr >= startStr && dateStr < endStr;
+}
+
+// Calendar Tab Content
+interface CalendarTabProps {
+  listing: Listing;
+  colors: typeof Colors.light;
+  colorScheme: 'light' | 'dark';
+}
+
+// Simple iCal parser for VEVENT blocks
+function parseICalText(icalText: string): Reservation[] {
+  const events: Reservation[] = [];
+  const lines = icalText.split(/\r?\n/);
+
+  let currentEvent: Partial<Reservation> | null = null;
+  let currentKey = '';
+
+  for (const line of lines) {
+    // Handle line continuations (lines starting with space or tab)
+    if (line.startsWith(' ') || line.startsWith('\t')) {
+      continue;
+    }
+
+    if (line === 'BEGIN:VEVENT') {
+      currentEvent = {};
+    } else if (line === 'END:VEVENT' && currentEvent) {
+      if (currentEvent.start && currentEvent.end) {
+        events.push({
+          id: currentEvent.id || Math.random().toString(),
+          summary: currentEvent.summary || 'Reserved',
+          start: currentEvent.start,
+          end: currentEvent.end,
+          description: currentEvent.description,
+          location: currentEvent.location,
+          allDay: true,
+        });
+      }
+      currentEvent = null;
+    } else if (currentEvent) {
+      const colonIndex = line.indexOf(':');
+      if (colonIndex > 0) {
+        const key = line.substring(0, colonIndex).split(';')[0]; // Handle params like DTSTART;VALUE=DATE
+        const value = line.substring(colonIndex + 1);
+
+        if (key === 'UID') {
+          currentEvent.id = value;
+        } else if (key === 'SUMMARY') {
+          currentEvent.summary = value;
+        } else if (key === 'DESCRIPTION') {
+          currentEvent.description = value;
+        } else if (key === 'LOCATION') {
+          currentEvent.location = value;
+        } else if (key === 'DTSTART') {
+          currentEvent.start = parseICalDate(value);
+        } else if (key === 'DTEND') {
+          currentEvent.end = parseICalDate(value);
+        }
+      }
+    }
+  }
+
+  return events;
+}
+
+function parseICalDate(value: string): string {
+  // Handle formats: 20260125 or 20260125T120000 or 20260125T120000Z
+  const cleaned = value.replace(/[^0-9TZ]/g, '');
+
+  if (cleaned.length >= 8) {
+    const year = cleaned.substring(0, 4);
+    const month = cleaned.substring(4, 6);
+    const day = cleaned.substring(6, 8);
+
+    if (cleaned.length >= 15) {
+      // Has time component
+      const hour = cleaned.substring(9, 11);
+      const minute = cleaned.substring(11, 13);
+      const second = cleaned.substring(13, 15);
+      const isUTC = cleaned.endsWith('Z');
+      return `${year}-${month}-${day}T${hour}:${minute}:${second}${isUTC ? 'Z' : ''}`;
+    }
+
+    // Date only
+    return `${year}-${month}-${day}T00:00:00`;
+  }
+
+  return value;
+}
+
+function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const flatListRef = useRef<FlatList>(null);
+
+  // Generate months (12 months back, current, 24 months forward)
+  const months = useMemo(() => {
+    const result: MonthData[] = [];
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    for (let i = -12; i <= 24; i++) {
+      let month = currentMonth + i;
+      let year = currentYear;
+      while (month < 0) {
+        month += 12;
+        year -= 1;
+      }
+      while (month > 11) {
+        month -= 12;
+        year += 1;
+      }
+      result.push({ year, month, key: `${year}-${month}` });
+    }
+    return result;
+  }, []);
+
+  const initialScrollIndex = 12; // Current month
+
+  useEffect(() => {
+    fetchReservations();
+  }, [listing.calendarLinks]);
+
+  const fetchReservations = async () => {
+    try {
+      const allEvents: Reservation[] = [];
+
+      for (const calendarLink of listing.calendarLinks) {
+        try {
+          const response = await fetch(calendarLink.url);
+          const icalText = await response.text();
+          const events = parseICalText(icalText);
+          allEvents.push(...events);
+        } catch (err) {
+          console.error('Failed to fetch calendar:', calendarLink.url, err);
+        }
+      }
+
+      // Sort by start date
+      allEvents.sort((a, b) => a.start.localeCompare(b.start));
+      setReservations(allEvents);
+    } catch (err) {
+      console.error('Failed to fetch reservations:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check what's happening on a given date
+  const getDateStatus = useCallback((date: Date) => {
+    let hasCheckIn = false;  // A reservation starts on this day (right half)
+    let hasCheckOut = false; // A reservation ends on this day (left half)
+    let hasMiddle = false;   // A reservation spans through this day
+
+    for (const res of reservations) {
+      const start = new Date(res.start);
+      const end = new Date(res.end);
+
+      // Check if this is a check-in day (reservation starts)
+      if (isSameDay(date, start)) {
+        hasCheckIn = true;
+      }
+
+      // Check if this is a check-out day (reservation ends)
+      // Note: iCal end dates are exclusive, so the last night is end - 1 day
+      // But checkout day is the actual end date
+      if (isSameDay(date, end)) {
+        hasCheckOut = true;
+      }
+
+      // Check if this is a middle day (between start and end, exclusive)
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const startStr = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+      const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+
+      if (dateStr > startStr && dateStr < endStr) {
+        hasMiddle = true;
+      }
+    }
+
+    return { hasCheckIn, hasCheckOut, hasMiddle };
+  }, [reservations]);
+
+  const renderMonth = useCallback(({ item }: { item: MonthData }) => {
+    const { year, month } = item;
+    const daysInMonth = getDaysInMonth(year, month);
+    const firstDay = getFirstDayOfMonth(year, month);
+    const today = new Date();
+
+    // Build weeks array
+    const weeks: (number | null)[][] = [];
+    let currentWeek: (number | null)[] = [];
+
+    // Add empty cells for days before the first day of month
+    for (let i = 0; i < firstDay; i++) {
+      currentWeek.push(null);
+    }
+
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      currentWeek.push(day);
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    }
+
+    // Fill remaining days in last week
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) {
+        currentWeek.push(null);
+      }
+      weeks.push(currentWeek);
+    }
+
+    return (
+      <View style={styles.monthContainer}>
+        <Text style={[styles.monthTitle, { color: colors.text }]}>
+          {getMonthName(month)} {year}
+        </Text>
+
+        {/* Week days header */}
+        <View style={styles.weekDaysHeader}>
+          {DAYS_OF_WEEK.map((day, index) => (
+            <View key={index} style={styles.dayHeaderCell}>
+              <Text style={[styles.dayHeaderText, { color: colors.icon }]}>{day}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Calendar weeks */}
+        {weeks.map((week, weekIndex) => (
+          <View key={weekIndex} style={styles.weekRow}>
+            {week.map((day, dayIndex) => {
+              const cellBorderColor = colorScheme === 'dark' ? '#333' : '#E5E5E5';
+
+              if (day === null) {
+                return <View key={dayIndex} style={[styles.dayCell, { borderColor: cellBorderColor }]} />;
+              }
+
+              const date = new Date(year, month, day);
+              const isToday = isSameDay(date, today);
+              const { hasCheckIn, hasCheckOut, hasMiddle } = getDateStatus(date);
+              const hasAnyReservation = hasCheckIn || hasCheckOut || hasMiddle;
+              const pillColor = colorScheme === 'dark' ? '#444' : '#222';
+
+              // Determine what type of bar to render
+              const isMiddleOnly = hasMiddle && !hasCheckIn && !hasCheckOut;
+              const isTurnover = hasCheckIn && hasCheckOut;
+
+              return (
+                <View key={dayIndex} style={[styles.dayCell, { borderColor: cellBorderColor }]}>
+                  {/* Day number at top */}
+                  <Text
+                    style={[
+                      styles.dayText,
+                      { color: colors.text },
+                      isToday && styles.todayText,
+                      isToday && { color: colors.tint },
+                    ]}
+                  >
+                    {day}
+                  </Text>
+                  {/* Middle-only: single full-width bar */}
+                  {isMiddleOnly && (
+                    <View style={styles.barLayerFull}>
+                      <View style={[styles.barFillFull, { backgroundColor: pillColor }]} />
+                    </View>
+                  )}
+                  {/* Checkout bar (not middle-only) */}
+                  {hasCheckOut && !isMiddleOnly && (
+                    <View style={styles.barLayerLeft}>
+                      <View
+                        style={[
+                          styles.barFillLeft,
+                          styles.barEndRight,
+                          { backgroundColor: pillColor }
+                        ]}
+                      />
+                      <View style={styles.barSpacerSmall} />
+                    </View>
+                  )}
+                  {/* Checkin bar (not middle-only) */}
+                  {hasCheckIn && !isMiddleOnly && (
+                    <View style={styles.barLayerRight}>
+                      <View style={styles.barSpacerSmall} />
+                      <View
+                        style={[
+                          styles.barFillRight,
+                          styles.barEndLeft,
+                          { backgroundColor: pillColor }
+                        ]}
+                      />
+                    </View>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        ))}
+      </View>
+    );
+  }, [colors, colorScheme, getDateStatus]);
+
+  if (loading) {
+    return (
+      <View style={styles.calendarContainer}>
+        <ActivityIndicator size="large" color={colors.tint} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.calendarWrapper}>
+      <FlatList
+        ref={flatListRef}
+        data={months}
+        renderItem={renderMonth}
+        keyExtractor={(item) => item.key}
+        initialScrollIndex={initialScrollIndex}
+        getItemLayout={(data, index) => ({
+          length: 500,
+          offset: 500 * index,
+          index,
+        })}
+        extraData={reservations}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.calendarListContent}
+      />
+    </View>
+  );
+}
+
+// Info Tab Content
+interface InfoTabProps {
+  listing: Listing;
+  colors: typeof Colors.light;
+  colorScheme: 'light' | 'dark';
+  onEditNickname: () => void;
+  onEditAddress: () => void;
+}
+
+function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress }: InfoTabProps) {
+  const formatAddress = (listing: Listing) => {
+    const lines = [listing.streetAddress];
+    if (listing.streetAddress2) {
+      lines.push(listing.streetAddress2);
+    }
+    lines.push(`${listing.city}, ${listing.state} ${listing.zip}`);
+    return lines;
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.tabContent}>
+      <Pressable style={styles.section} onPress={onEditNickname}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Nickname</Text>
+        <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+          <Text style={[styles.nicknameText, { color: colors.text }]}>
+            {listing.nickname}
+          </Text>
+        </View>
+      </Pressable>
+
+      <Pressable style={styles.section} onPress={onEditAddress}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Address</Text>
+        <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+          {formatAddress(listing).map((line, index) => (
+            <Text key={index} style={[styles.addressLine, { color: colors.text }]}>
+              {line}
+            </Text>
+          ))}
+        </View>
+      </Pressable>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Next Check-in</Text>
+        <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+          <Text style={[styles.checkInText, { color: colors.text }]}>
+            {formatCheckInDate(listing.nextCheckIn)}
+          </Text>
+        </View>
+      </View>
+
+      {listing.calendarLinks.length > 0 && (
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Calendar Links ({listing.calendarLinks.length})
+          </Text>
+          <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+            {listing.calendarLinks.map((link, index) => (
+              <View
+                key={link.id}
+                style={[
+                  styles.calendarLinkItem,
+                  index < listing.calendarLinks.length - 1 && styles.calendarLinkBorder,
+                ]}
+              >
+                <Icons.calendar size={16} color={colors.icon} />
+                <Text
+                  style={[styles.calendarLinkUrl, { color: colors.text }]}
+                  numberOfLines={1}
+                >
+                  {link.url}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+    </ScrollView>
+  );
+}
+
+// Edit Modal Component
 interface EditModalProps {
   visible: boolean;
   title: string;
@@ -108,6 +618,7 @@ function EditModal({ visible, title, onClose, onSave, saving, children, colors, 
   );
 }
 
+// Form Field Component
 interface FormFieldProps {
   label: string;
   value: string;
@@ -136,6 +647,7 @@ function FormField({ label, value, onChangeText, placeholder, colors, colorSchem
   );
 }
 
+// Main Screen Component
 export default function ListingScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -144,6 +656,9 @@ export default function ListingScreen() {
   const colors = Colors[colorScheme];
 
   const listing = getListing(id);
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<TabType>('calendar');
 
   // Modal states
   const [nicknameModalVisible, setNicknameModalVisible] = useState(false);
@@ -160,15 +675,6 @@ export default function ListingScreen() {
     zip: '',
     country: '',
   });
-
-  const formatAddress = (listing: Listing) => {
-    const lines = [listing.streetAddress];
-    if (listing.streetAddress2) {
-      lines.push(listing.streetAddress2);
-    }
-    lines.push(`${listing.city}, ${listing.state} ${listing.zip}`);
-    return lines;
-  };
 
   const openNicknameModal = () => {
     if (listing) {
@@ -279,61 +785,24 @@ export default function ListingScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <Pressable style={styles.section} onPress={openNicknameModal}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Nickname</Text>
-          <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
-            <Text style={[styles.nicknameText, { color: colors.text }]}>
-              {listing.nickname}
-            </Text>
-          </View>
-        </Pressable>
+      {activeTab === 'calendar' ? (
+        <CalendarTab listing={listing} colors={colors} colorScheme={colorScheme} />
+      ) : (
+        <InfoTab
+          listing={listing}
+          colors={colors}
+          colorScheme={colorScheme}
+          onEditNickname={openNicknameModal}
+          onEditAddress={openAddressModal}
+        />
+      )}
 
-        <Pressable style={styles.section} onPress={openAddressModal}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Address</Text>
-          <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
-            {formatAddress(listing).map((line, index) => (
-              <Text key={index} style={[styles.addressLine, { color: colors.text }]}>
-                {line}
-              </Text>
-            ))}
-          </View>
-        </Pressable>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Next Check-in</Text>
-          <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
-            <Text style={[styles.checkInText, { color: colors.text }]}>
-              {formatCheckInDate(listing.nextCheckIn)}
-            </Text>
-          </View>
-        </View>
-
-        {listing.calendarLinks.length > 0 && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Calendar Links ({listing.calendarLinks.length})
-            </Text>
-            <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
-              {listing.calendarLinks.map((link, index) => (
-                <View
-                  key={link.id}
-                  style={[
-                    styles.calendarLinkItem,
-                    index < listing.calendarLinks.length - 1 && styles.calendarLinkBorder,
-                  ]}>
-                  <Icons.calendar size={16} color={colors.icon} />
-                  <Text
-                    style={[styles.calendarLinkUrl, { color: colors.text }]}
-                    numberOfLines={1}>
-                    {link.url}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-      </ScrollView>
+      <TabBar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        colors={colors}
+        colorScheme={colorScheme}
+      />
 
       {/* Nickname Edit Modal */}
       <EditModal
@@ -461,8 +930,130 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
   },
-  content: {
+  // Tab Bar styles
+  tabBar: {
+    flexDirection: 'row',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingBottom: 20,
+    paddingTop: 8,
+  },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  tabText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  // Tab Content styles
+  tabContent: {
     padding: 20,
+  },
+  calendarContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  calendarWrapper: {
+    flex: 1,
+  },
+  calendarListContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  monthContainer: {
+    paddingVertical: 16,
+  },
+  monthTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  weekDaysHeader: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  dayHeaderCell: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  dayHeaderText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  weekRow: {
+    flexDirection: 'row',
+  },
+  dayCell: {
+    flex: 1,
+    height: 70,
+    alignItems: 'center',
+    paddingTop: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  dayText: {
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  todayText: {
+    fontWeight: '700',
+  },
+  barLayerFull: {
+    position: 'absolute',
+    bottom: 8,
+    left: -1,
+    right: -1,
+    height: 32,
+  },
+  barFillFull: {
+    flex: 1,
+    borderTopWidth: 2,
+    borderTopColor: '#fff',
+  },
+  barLayerLeft: {
+    position: 'absolute',
+    bottom: 8,
+    left: -1,
+    right: 0,
+    height: 32,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
+  barLayerRight: {
+    position: 'absolute',
+    bottom: 8,
+    left: 0,
+    right: -1,
+    height: 32,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
+  barFillLeft: {
+    flex: 6,
+    borderTopWidth: 2,
+    borderTopColor: '#fff',
+  },
+  barFillRight: {
+    flex: 6,
+    borderTopWidth: 2,
+    borderTopColor: '#fff',
+  },
+  barSpacerSmall: {
+    flex: 4,
+  },
+  barEndLeft: {
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+    borderLeftWidth: 2,
+    borderLeftColor: '#fff',
+  },
+  barEndRight: {
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+    borderRightWidth: 2,
+    borderRightColor: '#fff',
   },
   section: {
     marginBottom: 24,

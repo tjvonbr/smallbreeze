@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Session } from '@thallesp/nestjs-better-auth';
-import { ListingsService } from './listings.service.js';
+import { ListingsService, CalendarEvent } from './listings.service.js';
 
 interface UpdateListingDto {
   nickname?: string;
@@ -56,5 +56,26 @@ export class ListingsController {
     }
 
     return { listing };
+  }
+
+  @Get(':id/reservations')
+  async getReservations(
+    @Param('id') id: string,
+    @Session() session: { user?: { id: string } } | null,
+  ) {
+    if (!session?.user?.id) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    const reservations = await this.listingsService.getReservations(
+      id,
+      session.user.id,
+    );
+
+    if (!reservations) {
+      throw new NotFoundException('Listing not found');
+    }
+
+    return { reservations };
   }
 }
