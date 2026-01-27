@@ -166,6 +166,7 @@ export const ListingScalarFieldEnum = {
   country: 'country',
   wifiNetwork: 'wifiNetwork',
   wifiPassword: 'wifiPassword',
+  accessNotes: 'accessNotes',
   teamId: 'teamId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

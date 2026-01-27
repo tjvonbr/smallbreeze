@@ -487,9 +487,10 @@ interface InfoTabProps {
   onEditNickname: () => void;
   onEditAddress: () => void;
   onEditWiFi: () => void;
+  onEditAccessNotes: () => void;
 }
 
-function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi }: InfoTabProps) {
+function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes }: InfoTabProps) {
   const formatAddress = (listing: Listing) => {
     const lines = [listing.streetAddress];
     if (listing.streetAddress2) {
@@ -534,6 +535,21 @@ function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress, 
           ) : (
             <Text style={[styles.wifiPlaceholder, { color: colors.icon }]}>
               No WiFi info added
+            </Text>
+          )}
+        </View>
+      </Pressable>
+
+      <Pressable style={styles.section} onPress={onEditAccessNotes}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Access Notes</Text>
+        <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+          {listing.accessNotes ? (
+            <Text style={[styles.accessNotesText, { color: colors.text }]} numberOfLines={3}>
+              {listing.accessNotes}
+            </Text>
+          ) : (
+            <Text style={[styles.accessNotesPlaceholder, { color: colors.icon }]}>
+              No access notes added
             </Text>
           )}
         </View>
@@ -704,6 +720,7 @@ export default function ListingScreen() {
   const [nicknameModalVisible, setNicknameModalVisible] = useState(false);
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [wifiModalVisible, setWifiModalVisible] = useState(false);
+  const [accessNotesModalVisible, setAccessNotesModalVisible] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Form states
@@ -720,6 +737,7 @@ export default function ListingScreen() {
     wifiNetwork: '',
     wifiPassword: '',
   });
+  const [accessNotesForm, setAccessNotesForm] = useState('');
 
   const openNicknameModal = () => {
     if (listing) {
@@ -749,6 +767,13 @@ export default function ListingScreen() {
         wifiPassword: listing.wifiPassword || '',
       });
       setWifiModalVisible(true);
+    }
+  };
+
+  const openAccessNotesModal = () => {
+    if (listing) {
+      setAccessNotesForm(listing.accessNotes || '');
+      setAccessNotesModalVisible(true);
     }
   };
 
@@ -834,6 +859,32 @@ export default function ListingScreen() {
     }
   };
 
+  const saveAccessNotes = async () => {
+    if (!listing) return;
+
+    setSaving(true);
+    try {
+      const response = await authClient.$fetch<{ listing: Listing }>(
+        `${apiUrl}/api/listings/${listing.id}`,
+        {
+          method: 'PATCH',
+          body: {
+            accessNotes: accessNotesForm || null,
+          },
+        }
+      );
+
+      if (response.data?.listing) {
+        updateListing(response.data.listing);
+      }
+      setAccessNotesModalVisible(false);
+    } catch (err) {
+      console.error('Failed to update access notes:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (!listing) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -877,6 +928,7 @@ export default function ListingScreen() {
           onEditNickname={openNicknameModal}
           onEditAddress={openAddressModal}
           onEditWiFi={openWiFiModal}
+          onEditAccessNotes={openAccessNotesModal}
         />
       )}
 
@@ -1009,6 +1061,40 @@ export default function ListingScreen() {
         />
         <Text style={[styles.fieldHint, { color: colors.icon }]}>
           Share WiFi details with your guests. Leave blank if not applicable.
+        </Text>
+      </EditModal>
+
+      {/* Access Notes Edit Modal */}
+      <EditModal
+        visible={accessNotesModalVisible}
+        title="Access Notes"
+        onClose={() => setAccessNotesModalVisible(false)}
+        onSave={saveAccessNotes}
+        saving={saving}
+        colors={colors}
+        colorScheme={colorScheme}
+      >
+        <View style={styles.textAreaContainer}>
+          <Text style={[styles.inputLabel, { color: colors.icon }]}>Notes</Text>
+          <TextInput
+            style={[
+              styles.textArea,
+              {
+                color: colors.text,
+                borderColor: colorScheme === 'dark' ? '#444' : '#DDD',
+              },
+            ]}
+            value={accessNotesForm}
+            onChangeText={setAccessNotesForm}
+            placeholder="Enter access instructions, supply locations, etc."
+            placeholderTextColor={colors.icon}
+            multiline
+            numberOfLines={8}
+            textAlignVertical="top"
+          />
+        </View>
+        <Text style={[styles.fieldHint, { color: colors.icon }]}>
+          Document how to access the property, where supplies are located, and any other important information.
         </Text>
       </EditModal>
     </SafeAreaView>
@@ -1214,6 +1300,24 @@ const styles = StyleSheet.create({
   wifiPlaceholder: {
     fontSize: 16,
     fontStyle: 'italic',
+  },
+  accessNotesText: {
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  accessNotesPlaceholder: {
+    fontSize: 16,
+    fontStyle: 'italic',
+  },
+  textAreaContainer: {
+    marginBottom: 16,
+  },
+  textArea: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 17,
+    minHeight: 200,
   },
   calendarLinkItem: {
     flexDirection: 'row',
