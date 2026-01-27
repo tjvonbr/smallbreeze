@@ -6,11 +6,12 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum TeamRole {
@@ -112,6 +113,8 @@ model Listing {
   state          String
   zip            String
   country        String
+  wifiNetwork    String?
+  wifiPassword   String?
   teamId         String
   team           Team           @relation(fields: [teamId], references: [id])
   calendarLinks  CalendarLink[]
