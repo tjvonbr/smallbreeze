@@ -2,6 +2,7 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { authClient } from '@/lib/auth-client';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import {
   Bell,
@@ -13,18 +14,25 @@ import {
   Plus,
   Settings,
   Tv2,
+  UserPlus,
   Users,
 } from 'lucide-react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   Image,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
 
 type MenuItemProps = {
   icon: React.ReactNode;
@@ -53,9 +61,56 @@ export default function ProfileScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   const { data: session } = authClient.useSession();
 
+  const [inviteModalVisible, setInviteModalVisible] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteLoading, setInviteLoading] = useState(false);
+
   const handleLogout = async () => {
     await authClient.signOut();
     router.replace('/(auth)/sign-in');
+  };
+
+  const handleInvite = async () => {
+    if (!inviteEmail.trim()) {
+      Alert.alert('Error', 'Please enter an email address');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail.trim())) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    setInviteLoading(true);
+    try {
+      const response = await authClient.$fetch<{ invite: { id: string }; team: { name: string } }>(
+        `${apiUrl}/api/invites`,
+        {
+          method: 'POST',
+          body: { email: inviteEmail.toLowerCase().trim() },
+        }
+      );
+
+      if (response.error) {
+        Alert.alert('Error', response.error.message || 'Failed to send invite');
+        return;
+      }
+
+      Alert.alert(
+        'Invite Sent',
+        `An invitation has been sent to ${inviteEmail}`,
+        [{ text: 'OK', onPress: () => {
+          setInviteModalVisible(false);
+          setInviteEmail('');
+        }}]
+      );
+    } catch (err) {
+      console.error('Failed to send invite:', err);
+      Alert.alert('Error', 'Failed to send invite. Please try again.');
+    } finally {
+      setInviteLoading(false);
+    }
   };
 
   const userInitial = session?.user?.name?.charAt(0)?.toUpperCase() ?? 'U';
@@ -150,6 +205,11 @@ export default function ProfileScreen() {
             label="Legal"
             onPress={() => {}}
           />
+          <MenuItem
+            icon={<UserPlus size={24} color={colors.text} />}
+            label="Invite team member"
+            onPress={() => setInviteModalVisible(true)}
+          />
 
           <View style={styles.divider} />
 
@@ -172,6 +232,62 @@ export default function ProfileScreen() {
           <Text style={styles.floatingButtonText}>Switch to traveling</Text>
         </Pressable>
       </View>
+
+      {/* Invite Modal */}
+      <Modal
+        visible={inviteModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setInviteModalVisible(false)}
+      >
+        <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+          <View style={[styles.modalHeader, { borderBottomColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}>
+            <Pressable onPress={() => setInviteModalVisible(false)} style={styles.modalCancelButton}>
+              <Text style={[styles.modalCancelText, { color: colors.text }]}>Cancel</Text>
+            </Pressable>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Invite Team Member</Text>
+            <View style={styles.modalCancelButton} />
+          </View>
+
+          <View style={styles.modalContent}>
+            <Text style={[styles.modalDescription, { color: colors.icon }]}>
+              Enter the email address of the person you want to invite to your team.
+            </Text>
+
+            <View style={styles.inputContainer}>
+              <Text style={[styles.inputLabel, { color: colors.icon }]}>Email</Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    color: colors.text,
+                    borderColor: colorScheme === 'dark' ? '#444' : '#DDD',
+                  },
+                ]}
+                value={inviteEmail}
+                onChangeText={setInviteEmail}
+                placeholder="colleague@example.com"
+                placeholderTextColor={colors.icon}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+            </View>
+
+            <Pressable
+              style={[styles.inviteButton, { opacity: inviteLoading ? 0.7 : 1 }]}
+              onPress={handleInvite}
+              disabled={inviteLoading}
+            >
+              {inviteLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.inviteButtonText}>Send Invite</Text>
+              )}
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -347,6 +463,62 @@ const styles = StyleSheet.create({
   floatingButtonText: {
     color: '#fff',
     fontSize: 15,
+    fontWeight: '600',
+  },
+  modalContainer: {
+    flex: 1,
+    paddingTop: 12,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  modalTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  modalCancelButton: {
+    width: 60,
+  },
+  modalCancelText: {
+    fontSize: 17,
+  },
+  modalContent: {
+    padding: 20,
+  },
+  modalDescription: {
+    fontSize: 15,
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 17,
+  },
+  inviteButton: {
+    backgroundColor: '#000000',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inviteButtonText: {
+    color: '#FFFFFF',
+    fontSize: 17,
     fontWeight: '600',
   },
 });
