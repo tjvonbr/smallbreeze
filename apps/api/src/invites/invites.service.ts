@@ -14,6 +14,13 @@ export class InvitesService {
     return invite;
   }
 
+  async getInvitesForTeam(teamId: string) {
+    return prisma.invite.findMany({
+      where: { teamId, acceptedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async getTeamIdForUser(userId: string): Promise<string | null> {
     const membership = await prisma.teamMember.findFirst({
       where: { userId },
@@ -27,6 +34,18 @@ export class InvitesService {
   async getTeam(teamId: string) {
     return prisma.team.findUnique({
       where: { id: teamId },
+    });
+  }
+
+  async getInvite(inviteId: string) {
+    return prisma.invite.findUnique({
+      where: { id: inviteId },
+    });
+  }
+
+  async deleteInvite(inviteId: string) {
+    return prisma.invite.delete({
+      where: { id: inviteId },
     });
   }
 }
