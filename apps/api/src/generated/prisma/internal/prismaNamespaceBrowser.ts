@@ -164,6 +164,8 @@ export const ListingScalarFieldEnum = {
   state: 'state',
   zip: 'zip',
   country: 'country',
+  latitude: 'latitude',
+  longitude: 'longitude',
   wifiNetwork: 'wifiNetwork',
   wifiPassword: 'wifiPassword',
   accessNotes: 'accessNotes',

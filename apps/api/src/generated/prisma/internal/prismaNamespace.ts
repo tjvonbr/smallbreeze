@@ -1285,6 +1285,8 @@ export const ListingScalarFieldEnum = {
   state: 'state',
   zip: 'zip',
   country: 'country',
+  latitude: 'latitude',
+  longitude: 'longitude',
   wifiNetwork: 'wifiNetwork',
   wifiPassword: 'wifiPassword',
   accessNotes: 'accessNotes',
@@ -1407,6 +1409,20 @@ export type EnumTeamRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'TeamRole[]'
  */
 export type ListEnumTeamRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TeamRole[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 

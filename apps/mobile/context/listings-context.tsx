@@ -20,6 +20,8 @@ export interface Listing {
   state: string;
   zip: string;
   country: string;
+  latitude: number | null;
+  longitude: number | null;
   wifiNetwork: string | null;
   wifiPassword: string | null;
   accessNotes: string | null;

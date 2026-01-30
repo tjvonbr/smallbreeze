@@ -1,10 +1,12 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   NotFoundException,
   Param,
   Patch,
+  Post,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Session } from '@thallesp/nestjs-better-auth';
@@ -80,5 +82,30 @@ export class ListingsController {
     }
 
     return { reservations };
+  }
+
+  @Post(':id/geocode')
+  async geocode(
+    @Param('id') id: string,
+    @Session() session: { user?: { id: string } } | null,
+  ) {
+    if (!session?.user?.id) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    const result = await this.listingsService.geocodeListing(
+      id,
+      session.user.id,
+    );
+
+    if (!result) {
+      throw new NotFoundException('Listing not found');
+    }
+
+    if (!result.geocoded) {
+      throw new BadRequestException(result.error || 'Geocoding failed');
+    }
+
+    return { listing: result.listing };
   }
 }
