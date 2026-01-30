@@ -113,6 +113,8 @@ model Listing {
   state          String
   zip            String
   country        String
+  latitude       Float?
+  longitude      Float?
   wifiNetwork    String?
   wifiPassword   String?
   accessNotes    String?

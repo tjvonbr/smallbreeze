@@ -20,8 +20,20 @@ export type ListingModel = runtime.Types.Result.DefaultSelection<Prisma.$Listing
 
 export type AggregateListing = {
   _count: ListingCountAggregateOutputType | null
+  _avg: ListingAvgAggregateOutputType | null
+  _sum: ListingSumAggregateOutputType | null
   _min: ListingMinAggregateOutputType | null
   _max: ListingMaxAggregateOutputType | null
+}
+
+export type ListingAvgAggregateOutputType = {
+  latitude: number | null
+  longitude: number | null
+}
+
+export type ListingSumAggregateOutputType = {
+  latitude: number | null
+  longitude: number | null
 }
 
 export type ListingMinAggregateOutputType = {
@@ -33,6 +45,8 @@ export type ListingMinAggregateOutputType = {
   state: string | null
   zip: string | null
   country: string | null
+  latitude: number | null
+  longitude: number | null
   wifiNetwork: string | null
   wifiPassword: string | null
   accessNotes: string | null
@@ -50,6 +64,8 @@ export type ListingMaxAggregateOutputType = {
   state: string | null
   zip: string | null
   country: string | null
+  latitude: number | null
+  longitude: number | null
   wifiNetwork: string | null
   wifiPassword: string | null
   accessNotes: string | null
@@ -67,6 +83,8 @@ export type ListingCountAggregateOutputType = {
   state: number
   zip: number
   country: number
+  latitude: number
+  longitude: number
   wifiNetwork: number
   wifiPassword: number
   accessNotes: number
@@ -77,6 +95,16 @@ export type ListingCountAggregateOutputType = {
 }
 
 
+export type ListingAvgAggregateInputType = {
+  latitude?: true
+  longitude?: true
+}
+
+export type ListingSumAggregateInputType = {
+  latitude?: true
+  longitude?: true
+}
+
 export type ListingMinAggregateInputType = {
   id?: true
   nickname?: true
@@ -86,6 +114,8 @@ export type ListingMinAggregateInputType = {
   state?: true
   zip?: true
   country?: true
+  latitude?: true
+  longitude?: true
   wifiNetwork?: true
   wifiPassword?: true
   accessNotes?: true
@@ -103,6 +133,8 @@ export type ListingMaxAggregateInputType = {
   state?: true
   zip?: true
   country?: true
+  latitude?: true
+  longitude?: true
   wifiNetwork?: true
   wifiPassword?: true
   accessNotes?: true
@@ -120,6 +152,8 @@ export type ListingCountAggregateInputType = {
   state?: true
   zip?: true
   country?: true
+  latitude?: true
+  longitude?: true
   wifiNetwork?: true
   wifiPassword?: true
   accessNotes?: true
@@ -167,6 +201,18 @@ export type ListingAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ListingAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ListingSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ListingMinAggregateInputType
@@ -197,6 +243,8 @@ export type ListingGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: ListingCountAggregateInputType | true
+  _avg?: ListingAvgAggregateInputType
+  _sum?: ListingSumAggregateInputType
   _min?: ListingMinAggregateInputType
   _max?: ListingMaxAggregateInputType
 }
@@ -210,6 +258,8 @@ export type ListingGroupByOutputType = {
   state: string
   zip: string
   country: string
+  latitude: number | null
+  longitude: number | null
   wifiNetwork: string | null
   wifiPassword: string | null
   accessNotes: string | null
@@ -217,6 +267,8 @@ export type ListingGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   _count: ListingCountAggregateOutputType | null
+  _avg: ListingAvgAggregateOutputType | null
+  _sum: ListingSumAggregateOutputType | null
   _min: ListingMinAggregateOutputType | null
   _max: ListingMaxAggregateOutputType | null
 }
@@ -248,6 +300,8 @@ export type ListingWhereInput = {
   state?: Prisma.StringFilter<"Listing"> | string
   zip?: Prisma.StringFilter<"Listing"> | string
   country?: Prisma.StringFilter<"Listing"> | string
+  latitude?: Prisma.FloatNullableFilter<"Listing"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Listing"> | number | null
   wifiNetwork?: Prisma.StringNullableFilter<"Listing"> | string | null
   wifiPassword?: Prisma.StringNullableFilter<"Listing"> | string | null
   accessNotes?: Prisma.StringNullableFilter<"Listing"> | string | null
@@ -267,6 +321,8 @@ export type ListingOrderByWithRelationInput = {
   state?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   wifiNetwork?: Prisma.SortOrderInput | Prisma.SortOrder
   wifiPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   accessNotes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -289,6 +345,8 @@ export type ListingWhereUniqueInput = Prisma.AtLeast<{
   state?: Prisma.StringFilter<"Listing"> | string
   zip?: Prisma.StringFilter<"Listing"> | string
   country?: Prisma.StringFilter<"Listing"> | string
+  latitude?: Prisma.FloatNullableFilter<"Listing"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Listing"> | number | null
   wifiNetwork?: Prisma.StringNullableFilter<"Listing"> | string | null
   wifiPassword?: Prisma.StringNullableFilter<"Listing"> | string | null
   accessNotes?: Prisma.StringNullableFilter<"Listing"> | string | null
@@ -308,6 +366,8 @@ export type ListingOrderByWithAggregationInput = {
   state?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  latitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  longitude?: Prisma.SortOrderInput | Prisma.SortOrder
   wifiNetwork?: Prisma.SortOrderInput | Prisma.SortOrder
   wifiPassword?: Prisma.SortOrderInput | Prisma.SortOrder
   accessNotes?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -315,8 +375,10 @@ export type ListingOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ListingCountOrderByAggregateInput
+  _avg?: Prisma.ListingAvgOrderByAggregateInput
   _max?: Prisma.ListingMaxOrderByAggregateInput
   _min?: Prisma.ListingMinOrderByAggregateInput
+  _sum?: Prisma.ListingSumOrderByAggregateInput
 }
 
 export type ListingScalarWhereWithAggregatesInput = {
@@ -331,6 +393,8 @@ export type ListingScalarWhereWithAggregatesInput = {
   state?: Prisma.StringWithAggregatesFilter<"Listing"> | string
   zip?: Prisma.StringWithAggregatesFilter<"Listing"> | string
   country?: Prisma.StringWithAggregatesFilter<"Listing"> | string
+  latitude?: Prisma.FloatNullableWithAggregatesFilter<"Listing"> | number | null
+  longitude?: Prisma.FloatNullableWithAggregatesFilter<"Listing"> | number | null
   wifiNetwork?: Prisma.StringNullableWithAggregatesFilter<"Listing"> | string | null
   wifiPassword?: Prisma.StringNullableWithAggregatesFilter<"Listing"> | string | null
   accessNotes?: Prisma.StringNullableWithAggregatesFilter<"Listing"> | string | null
@@ -348,6 +412,8 @@ export type ListingCreateInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -366,6 +432,8 @@ export type ListingUncheckedCreateInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -384,6 +452,8 @@ export type ListingUpdateInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -402,6 +472,8 @@ export type ListingUncheckedUpdateInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -420,6 +492,8 @@ export type ListingCreateManyInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -437,6 +511,8 @@ export type ListingUpdateManyMutationInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -453,6 +529,8 @@ export type ListingUncheckedUpdateManyInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -480,12 +558,19 @@ export type ListingCountOrderByAggregateInput = {
   state?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   wifiNetwork?: Prisma.SortOrder
   wifiPassword?: Prisma.SortOrder
   accessNotes?: Prisma.SortOrder
   teamId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ListingAvgOrderByAggregateInput = {
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type ListingMaxOrderByAggregateInput = {
@@ -497,6 +582,8 @@ export type ListingMaxOrderByAggregateInput = {
   state?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   wifiNetwork?: Prisma.SortOrder
   wifiPassword?: Prisma.SortOrder
   accessNotes?: Prisma.SortOrder
@@ -514,12 +601,19 @@ export type ListingMinOrderByAggregateInput = {
   state?: Prisma.SortOrder
   zip?: Prisma.SortOrder
   country?: Prisma.SortOrder
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
   wifiNetwork?: Prisma.SortOrder
   wifiPassword?: Prisma.SortOrder
   accessNotes?: Prisma.SortOrder
   teamId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type ListingSumOrderByAggregateInput = {
+  latitude?: Prisma.SortOrder
+  longitude?: Prisma.SortOrder
 }
 
 export type ListingScalarRelationFilter = {
@@ -569,6 +663,14 @@ export type ListingUncheckedUpdateManyWithoutTeamNestedInput = {
   deleteMany?: Prisma.ListingScalarWhereInput | Prisma.ListingScalarWhereInput[]
 }
 
+export type NullableFloatFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type ListingCreateNestedOneWithoutCalendarLinksInput = {
   create?: Prisma.XOR<Prisma.ListingCreateWithoutCalendarLinksInput, Prisma.ListingUncheckedCreateWithoutCalendarLinksInput>
   connectOrCreate?: Prisma.ListingCreateOrConnectWithoutCalendarLinksInput
@@ -592,6 +694,8 @@ export type ListingCreateWithoutTeamInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -609,6 +713,8 @@ export type ListingUncheckedCreateWithoutTeamInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -655,6 +761,8 @@ export type ListingScalarWhereInput = {
   state?: Prisma.StringFilter<"Listing"> | string
   zip?: Prisma.StringFilter<"Listing"> | string
   country?: Prisma.StringFilter<"Listing"> | string
+  latitude?: Prisma.FloatNullableFilter<"Listing"> | number | null
+  longitude?: Prisma.FloatNullableFilter<"Listing"> | number | null
   wifiNetwork?: Prisma.StringNullableFilter<"Listing"> | string | null
   wifiPassword?: Prisma.StringNullableFilter<"Listing"> | string | null
   accessNotes?: Prisma.StringNullableFilter<"Listing"> | string | null
@@ -672,6 +780,8 @@ export type ListingCreateWithoutCalendarLinksInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -689,6 +799,8 @@ export type ListingUncheckedCreateWithoutCalendarLinksInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -722,6 +834,8 @@ export type ListingUpdateWithoutCalendarLinksInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -739,6 +853,8 @@ export type ListingUncheckedUpdateWithoutCalendarLinksInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -756,6 +872,8 @@ export type ListingCreateManyTeamInput = {
   state: string
   zip: string
   country: string
+  latitude?: number | null
+  longitude?: number | null
   wifiNetwork?: string | null
   wifiPassword?: string | null
   accessNotes?: string | null
@@ -772,6 +890,8 @@ export type ListingUpdateWithoutTeamInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -789,6 +909,8 @@ export type ListingUncheckedUpdateWithoutTeamInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -806,6 +928,8 @@ export type ListingUncheckedUpdateManyWithoutTeamInput = {
   state?: Prisma.StringFieldUpdateOperationsInput | string
   zip?: Prisma.StringFieldUpdateOperationsInput | string
   country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -853,6 +977,8 @@ export type ListingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   state?: boolean
   zip?: boolean
   country?: boolean
+  latitude?: boolean
+  longitude?: boolean
   wifiNetwork?: boolean
   wifiPassword?: boolean
   accessNotes?: boolean
@@ -873,6 +999,8 @@ export type ListingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   state?: boolean
   zip?: boolean
   country?: boolean
+  latitude?: boolean
+  longitude?: boolean
   wifiNetwork?: boolean
   wifiPassword?: boolean
   accessNotes?: boolean
@@ -891,6 +1019,8 @@ export type ListingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   state?: boolean
   zip?: boolean
   country?: boolean
+  latitude?: boolean
+  longitude?: boolean
   wifiNetwork?: boolean
   wifiPassword?: boolean
   accessNotes?: boolean
@@ -909,6 +1039,8 @@ export type ListingSelectScalar = {
   state?: boolean
   zip?: boolean
   country?: boolean
+  latitude?: boolean
+  longitude?: boolean
   wifiNetwork?: boolean
   wifiPassword?: boolean
   accessNotes?: boolean
@@ -917,7 +1049,7 @@ export type ListingSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nickname" | "streetAddress" | "streetAddress2" | "city" | "state" | "zip" | "country" | "wifiNetwork" | "wifiPassword" | "accessNotes" | "teamId" | "createdAt" | "updatedAt", ExtArgs["result"]["listing"]>
+export type ListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nickname" | "streetAddress" | "streetAddress2" | "city" | "state" | "zip" | "country" | "latitude" | "longitude" | "wifiNetwork" | "wifiPassword" | "accessNotes" | "teamId" | "createdAt" | "updatedAt", ExtArgs["result"]["listing"]>
 export type ListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   calendarLinks?: boolean | Prisma.Listing$calendarLinksArgs<ExtArgs>
@@ -945,6 +1077,8 @@ export type $ListingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     state: string
     zip: string
     country: string
+    latitude: number | null
+    longitude: number | null
     wifiNetwork: string | null
     wifiPassword: string | null
     accessNotes: string | null
@@ -1384,6 +1518,8 @@ export interface ListingFieldRefs {
   readonly state: Prisma.FieldRef<"Listing", 'String'>
   readonly zip: Prisma.FieldRef<"Listing", 'String'>
   readonly country: Prisma.FieldRef<"Listing", 'String'>
+  readonly latitude: Prisma.FieldRef<"Listing", 'Float'>
+  readonly longitude: Prisma.FieldRef<"Listing", 'Float'>
   readonly wifiNetwork: Prisma.FieldRef<"Listing", 'String'>
   readonly wifiPassword: Prisma.FieldRef<"Listing", 'String'>
   readonly accessNotes: Prisma.FieldRef<"Listing", 'String'>
