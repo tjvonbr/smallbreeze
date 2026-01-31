@@ -55,19 +55,25 @@ export default function SignInScreen() {
 
     setLoading(true);
 
-    const { data, error: signInError } = await authClient.signIn.email({
-      email: email.toLowerCase().trim(),
-      password,
-    });
-    setLoading(false);
+    try {
+      const { data, error: signInError } = await authClient.signIn.email({
+        email: email.toLowerCase().trim(),
+        password,
+      });
 
-    if (signInError) {
-      setError(signInError.message ?? 'Failed to sign in');
-      return;
-    }
+      if (signInError) {
+        setError(signInError.message ?? 'Failed to sign in');
+        return;
+      }
 
-    if (data) {
-      router.replace('/(tabs)');
+      if (data) {
+        router.replace('/(tabs)');
+      }
+    } catch (err) {
+      console.error('Sign in error:', err);
+      setError('Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
 
