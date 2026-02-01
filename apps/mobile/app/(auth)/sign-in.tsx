@@ -2,11 +2,13 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { authClient } from '@/lib/auth-client';
 import { Ionicons } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 import { Link, useRouter } from 'expo-router';
 import { Eye, EyeOff } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,6 +20,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+WebBrowser.maybeCompleteAuthSession();
+
+type SocialProvider = 'google' | 'apple' | 'facebook';
+
 export default function SignInScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
@@ -28,6 +34,40 @@ export default function SignInScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [loadingProvider, setLoadingProvider] = useState<SocialProvider | null>(null);
+
+  const handleSocialSignIn = async (provider: SocialProvider) => {
+    setLoadingProvider(provider);
+    setError(null);
+
+    try {
+      const { data, error: socialError } = await authClient.signIn.social({
+        provider,
+        callbackURL: '/(tabs)',
+      });
+
+      if (socialError) {
+        Alert.alert('Sign In Failed', socialError.message || `Failed to sign in with ${provider}`);
+        return;
+      }
+
+      if (data?.url) {
+        const result = await WebBrowser.openAuthSessionAsync(
+          data.url,
+          'smallbreeze-mobile://'
+        );
+
+        if (result.type === 'success') {
+          router.replace('/(tabs)');
+        }
+      }
+    } catch (err) {
+      console.error(`${provider} sign in error:`, err);
+      Alert.alert('Sign In Failed', `Unable to sign in with ${provider}. Please try again.`);
+    } finally {
+      setLoadingProvider(null);
+    }
+  };
 
   const validateForm = () => {
     if (!email.trim()) {
@@ -162,6 +202,66 @@ export default function SignInScreen() {
                 </Text>
               </Link>
             </Pressable>
+
+            {/* Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={[styles.dividerLine, { backgroundColor: '#E0E0E0' }]} />
+              <Text style={[styles.dividerText, { color: '#999' }]}>or</Text>
+              <View style={[styles.dividerLine, { backgroundColor: '#E0E0E0' }]} />
+            </View>
+
+            {/* Social Login Buttons */}
+            {Platform.OS === 'ios' && (
+              <Pressable
+                style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
+                onPress={() => handleSocialSignIn('apple')}
+                disabled={loadingProvider !== null || loading}
+              >
+                {loadingProvider === 'apple' ? (
+                  <ActivityIndicator size="small" color={colors.text} />
+                ) : (
+                  <Ionicons name="logo-apple" size={20} color={colors.text} />
+                )}
+                <Text style={[styles.socialButtonText, { color: colors.text }]}>
+                  Continue with Apple
+                </Text>
+              </Pressable>
+            )}
+
+            <Pressable
+              style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
+              onPress={() => handleSocialSignIn('google')}
+              disabled={loadingProvider !== null || loading}
+            >
+              {loadingProvider === 'google' ? (
+                <ActivityIndicator size="small" color={colors.text} />
+              ) : (
+                <View style={styles.googleIcon}>
+                  <Text style={styles.googleIconText}>G</Text>
+                </View>
+              )}
+              <Text style={[styles.socialButtonText, { color: colors.text }]}>
+                Continue with Google
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
+              onPress={() => handleSocialSignIn('facebook')}
+              disabled={loadingProvider !== null || loading}
+            >
+              {loadingProvider === 'facebook' ? (
+                <ActivityIndicator size="small" color={colors.text} />
+              ) : (
+                <Ionicons name="logo-facebook" size={20} color="#1877F2" />
+              )}
+              <Text style={[styles.socialButtonText, { color: colors.text }]}>
+                Continue with Facebook
+              </Text>
+            </Pressable>
+
+            {/* Bottom spacing */}
+            <View style={{ height: 40 }} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -267,5 +367,49 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    paddingHorizontal: 16,
+    fontSize: 14,
+  },
+  socialButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+  },
+  socialButtonText: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '500',
+    marginRight: 20,
+  },
+  googleIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  googleIconText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#4285F4',
   },
 });
