@@ -310,6 +310,7 @@ export type ListingWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Listing"> | Date | string
   team?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   calendarLinks?: Prisma.CalendarLinkListRelationFilter
+  photos?: Prisma.ListingPhotoListRelationFilter
 }
 
 export type ListingOrderByWithRelationInput = {
@@ -331,6 +332,7 @@ export type ListingOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   team?: Prisma.TeamOrderByWithRelationInput
   calendarLinks?: Prisma.CalendarLinkOrderByRelationAggregateInput
+  photos?: Prisma.ListingPhotoOrderByRelationAggregateInput
 }
 
 export type ListingWhereUniqueInput = Prisma.AtLeast<{
@@ -355,6 +357,7 @@ export type ListingWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Listing"> | Date | string
   team?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   calendarLinks?: Prisma.CalendarLinkListRelationFilter
+  photos?: Prisma.ListingPhotoListRelationFilter
 }, "id">
 
 export type ListingOrderByWithAggregationInput = {
@@ -421,6 +424,7 @@ export type ListingCreateInput = {
   updatedAt?: Date | string
   team: Prisma.TeamCreateNestedOneWithoutListingsInput
   calendarLinks?: Prisma.CalendarLinkCreateNestedManyWithoutListingInput
+  photos?: Prisma.ListingPhotoCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateInput = {
@@ -441,6 +445,7 @@ export type ListingUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedCreateNestedManyWithoutListingInput
+  photos?: Prisma.ListingPhotoUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingUpdateInput = {
@@ -461,6 +466,7 @@ export type ListingUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   team?: Prisma.TeamUpdateOneRequiredWithoutListingsNestedInput
   calendarLinks?: Prisma.CalendarLinkUpdateManyWithoutListingNestedInput
+  photos?: Prisma.ListingPhotoUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateInput = {
@@ -481,6 +487,7 @@ export type ListingUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedUpdateManyWithoutListingNestedInput
+  photos?: Prisma.ListingPhotoUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type ListingCreateManyInput = {
@@ -671,6 +678,20 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type ListingCreateNestedOneWithoutPhotosInput = {
+  create?: Prisma.XOR<Prisma.ListingCreateWithoutPhotosInput, Prisma.ListingUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.ListingCreateOrConnectWithoutPhotosInput
+  connect?: Prisma.ListingWhereUniqueInput
+}
+
+export type ListingUpdateOneRequiredWithoutPhotosNestedInput = {
+  create?: Prisma.XOR<Prisma.ListingCreateWithoutPhotosInput, Prisma.ListingUncheckedCreateWithoutPhotosInput>
+  connectOrCreate?: Prisma.ListingCreateOrConnectWithoutPhotosInput
+  upsert?: Prisma.ListingUpsertWithoutPhotosInput
+  connect?: Prisma.ListingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ListingUpdateToOneWithWhereWithoutPhotosInput, Prisma.ListingUpdateWithoutPhotosInput>, Prisma.ListingUncheckedUpdateWithoutPhotosInput>
+}
+
 export type ListingCreateNestedOneWithoutCalendarLinksInput = {
   create?: Prisma.XOR<Prisma.ListingCreateWithoutCalendarLinksInput, Prisma.ListingUncheckedCreateWithoutCalendarLinksInput>
   connectOrCreate?: Prisma.ListingCreateOrConnectWithoutCalendarLinksInput
@@ -702,6 +723,7 @@ export type ListingCreateWithoutTeamInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   calendarLinks?: Prisma.CalendarLinkCreateNestedManyWithoutListingInput
+  photos?: Prisma.ListingPhotoCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateWithoutTeamInput = {
@@ -721,6 +743,7 @@ export type ListingUncheckedCreateWithoutTeamInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedCreateNestedManyWithoutListingInput
+  photos?: Prisma.ListingPhotoUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingCreateOrConnectWithoutTeamInput = {
@@ -771,6 +794,102 @@ export type ListingScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Listing"> | Date | string
 }
 
+export type ListingCreateWithoutPhotosInput = {
+  id?: string
+  nickname: string
+  streetAddress: string
+  streetAddress2?: string | null
+  city: string
+  state: string
+  zip: string
+  country: string
+  latitude?: number | null
+  longitude?: number | null
+  wifiNetwork?: string | null
+  wifiPassword?: string | null
+  accessNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  team: Prisma.TeamCreateNestedOneWithoutListingsInput
+  calendarLinks?: Prisma.CalendarLinkCreateNestedManyWithoutListingInput
+}
+
+export type ListingUncheckedCreateWithoutPhotosInput = {
+  id?: string
+  nickname: string
+  streetAddress: string
+  streetAddress2?: string | null
+  city: string
+  state: string
+  zip: string
+  country: string
+  latitude?: number | null
+  longitude?: number | null
+  wifiNetwork?: string | null
+  wifiPassword?: string | null
+  accessNotes?: string | null
+  teamId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  calendarLinks?: Prisma.CalendarLinkUncheckedCreateNestedManyWithoutListingInput
+}
+
+export type ListingCreateOrConnectWithoutPhotosInput = {
+  where: Prisma.ListingWhereUniqueInput
+  create: Prisma.XOR<Prisma.ListingCreateWithoutPhotosInput, Prisma.ListingUncheckedCreateWithoutPhotosInput>
+}
+
+export type ListingUpsertWithoutPhotosInput = {
+  update: Prisma.XOR<Prisma.ListingUpdateWithoutPhotosInput, Prisma.ListingUncheckedUpdateWithoutPhotosInput>
+  create: Prisma.XOR<Prisma.ListingCreateWithoutPhotosInput, Prisma.ListingUncheckedCreateWithoutPhotosInput>
+  where?: Prisma.ListingWhereInput
+}
+
+export type ListingUpdateToOneWithWhereWithoutPhotosInput = {
+  where?: Prisma.ListingWhereInput
+  data: Prisma.XOR<Prisma.ListingUpdateWithoutPhotosInput, Prisma.ListingUncheckedUpdateWithoutPhotosInput>
+}
+
+export type ListingUpdateWithoutPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.StringFieldUpdateOperationsInput | string
+  streetAddress?: Prisma.StringFieldUpdateOperationsInput | string
+  streetAddress2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zip?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  team?: Prisma.TeamUpdateOneRequiredWithoutListingsNestedInput
+  calendarLinks?: Prisma.CalendarLinkUpdateManyWithoutListingNestedInput
+}
+
+export type ListingUncheckedUpdateWithoutPhotosInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nickname?: Prisma.StringFieldUpdateOperationsInput | string
+  streetAddress?: Prisma.StringFieldUpdateOperationsInput | string
+  streetAddress2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.StringFieldUpdateOperationsInput | string
+  state?: Prisma.StringFieldUpdateOperationsInput | string
+  zip?: Prisma.StringFieldUpdateOperationsInput | string
+  country?: Prisma.StringFieldUpdateOperationsInput | string
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  wifiNetwork?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  wifiPassword?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accessNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  teamId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  calendarLinks?: Prisma.CalendarLinkUncheckedUpdateManyWithoutListingNestedInput
+}
+
 export type ListingCreateWithoutCalendarLinksInput = {
   id?: string
   nickname: string
@@ -788,6 +907,7 @@ export type ListingCreateWithoutCalendarLinksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   team: Prisma.TeamCreateNestedOneWithoutListingsInput
+  photos?: Prisma.ListingPhotoCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateWithoutCalendarLinksInput = {
@@ -807,6 +927,7 @@ export type ListingUncheckedCreateWithoutCalendarLinksInput = {
   teamId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  photos?: Prisma.ListingPhotoUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingCreateOrConnectWithoutCalendarLinksInput = {
@@ -842,6 +963,7 @@ export type ListingUpdateWithoutCalendarLinksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   team?: Prisma.TeamUpdateOneRequiredWithoutListingsNestedInput
+  photos?: Prisma.ListingPhotoUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateWithoutCalendarLinksInput = {
@@ -861,6 +983,7 @@ export type ListingUncheckedUpdateWithoutCalendarLinksInput = {
   teamId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  photos?: Prisma.ListingPhotoUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type ListingCreateManyTeamInput = {
@@ -898,6 +1021,7 @@ export type ListingUpdateWithoutTeamInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   calendarLinks?: Prisma.CalendarLinkUpdateManyWithoutListingNestedInput
+  photos?: Prisma.ListingPhotoUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateWithoutTeamInput = {
@@ -917,6 +1041,7 @@ export type ListingUncheckedUpdateWithoutTeamInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedUpdateManyWithoutListingNestedInput
+  photos?: Prisma.ListingPhotoUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateManyWithoutTeamInput = {
@@ -944,10 +1069,12 @@ export type ListingUncheckedUpdateManyWithoutTeamInput = {
 
 export type ListingCountOutputType = {
   calendarLinks: number
+  photos: number
 }
 
 export type ListingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   calendarLinks?: boolean | ListingCountOutputTypeCountCalendarLinksArgs
+  photos?: boolean | ListingCountOutputTypeCountPhotosArgs
 }
 
 /**
@@ -965,6 +1092,13 @@ export type ListingCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
  */
 export type ListingCountOutputTypeCountCalendarLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CalendarLinkWhereInput
+}
+
+/**
+ * ListingCountOutputType without action
+ */
+export type ListingCountOutputTypeCountPhotosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ListingPhotoWhereInput
 }
 
 
@@ -987,6 +1121,7 @@ export type ListingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   calendarLinks?: boolean | Prisma.Listing$calendarLinksArgs<ExtArgs>
+  photos?: boolean | Prisma.Listing$photosArgs<ExtArgs>
   _count?: boolean | Prisma.ListingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["listing"]>
 
@@ -1053,6 +1188,7 @@ export type ListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   calendarLinks?: boolean | Prisma.Listing$calendarLinksArgs<ExtArgs>
+  photos?: boolean | Prisma.Listing$photosArgs<ExtArgs>
   _count?: boolean | Prisma.ListingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ListingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1067,6 +1203,7 @@ export type $ListingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     team: Prisma.$TeamPayload<ExtArgs>
     calendarLinks: Prisma.$CalendarLinkPayload<ExtArgs>[]
+    photos: Prisma.$ListingPhotoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1481,6 +1618,7 @@ export interface Prisma__ListingClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   team<T extends Prisma.TeamDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeamDefaultArgs<ExtArgs>>): Prisma.Prisma__TeamClient<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   calendarLinks<T extends Prisma.Listing$calendarLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Listing$calendarLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  photos<T extends Prisma.Listing$photosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Listing$photosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ListingPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1943,6 +2081,30 @@ export type Listing$calendarLinksArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.CalendarLinkScalarFieldEnum | Prisma.CalendarLinkScalarFieldEnum[]
+}
+
+/**
+ * Listing.photos
+ */
+export type Listing$photosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ListingPhoto
+   */
+  select?: Prisma.ListingPhotoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ListingPhoto
+   */
+  omit?: Prisma.ListingPhotoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ListingPhotoInclude<ExtArgs> | null
+  where?: Prisma.ListingPhotoWhereInput
+  orderBy?: Prisma.ListingPhotoOrderByWithRelationInput | Prisma.ListingPhotoOrderByWithRelationInput[]
+  cursor?: Prisma.ListingPhotoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ListingPhotoScalarFieldEnum | Prisma.ListingPhotoScalarFieldEnum[]
 }
 
 /**

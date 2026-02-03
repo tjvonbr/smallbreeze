@@ -53,6 +53,11 @@ export type VerificationToken = Prisma.VerificationTokenModel
  */
 export type Listing = Prisma.ListingModel
 /**
+ * Model ListingPhoto
+ * 
+ */
+export type ListingPhoto = Prisma.ListingPhotoModel
+/**
  * Model CalendarLink
  * 
  */

@@ -397,6 +397,7 @@ export const ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Listing: 'Listing',
+  ListingPhoto: 'ListingPhoto',
   CalendarLink: 'CalendarLink',
   Verification: 'Verification',
   Invite: 'Invite'
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "team" | "teamMember" | "account" | "session" | "verificationToken" | "listing" | "calendarLink" | "verification" | "invite"
+    modelProps: "user" | "team" | "teamMember" | "account" | "session" | "verificationToken" | "listing" | "listingPhoto" | "calendarLink" | "verification" | "invite"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -937,6 +938,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ListingPhoto: {
+      payload: Prisma.$ListingPhotoPayload<ExtArgs>
+      fields: Prisma.ListingPhotoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ListingPhotoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ListingPhotoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>
+        }
+        findFirst: {
+          args: Prisma.ListingPhotoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ListingPhotoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>
+        }
+        findMany: {
+          args: Prisma.ListingPhotoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>[]
+        }
+        create: {
+          args: Prisma.ListingPhotoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>
+        }
+        createMany: {
+          args: Prisma.ListingPhotoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ListingPhotoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>[]
+        }
+        delete: {
+          args: Prisma.ListingPhotoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>
+        }
+        update: {
+          args: Prisma.ListingPhotoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>
+        }
+        deleteMany: {
+          args: Prisma.ListingPhotoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ListingPhotoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ListingPhotoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>[]
+        }
+        upsert: {
+          args: Prisma.ListingPhotoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingPhotoPayload>
+        }
+        aggregate: {
+          args: Prisma.ListingPhotoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateListingPhoto>
+        }
+        groupBy: {
+          args: Prisma.ListingPhotoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListingPhotoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ListingPhotoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListingPhotoCountAggregateOutputType> | number
+        }
+      }
+    }
     CalendarLink: {
       payload: Prisma.$CalendarLinkPayload<ExtArgs>
       fields: Prisma.CalendarLinkFieldRefs
@@ -1298,6 +1373,19 @@ export const ListingScalarFieldEnum = {
 export type ListingScalarFieldEnum = (typeof ListingScalarFieldEnum)[keyof typeof ListingScalarFieldEnum]
 
 
+export const ListingPhotoScalarFieldEnum = {
+  id: 'id',
+  listingId: 'listingId',
+  s3Key: 's3Key',
+  caption: 'caption',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ListingPhotoScalarFieldEnum = (typeof ListingPhotoScalarFieldEnum)[keyof typeof ListingPhotoScalarFieldEnum]
+
+
 export const CalendarLinkScalarFieldEnum = {
   id: 'id',
   url: 'url',
@@ -1533,6 +1621,7 @@ export type GlobalOmitConfig = {
   session?: Prisma.SessionOmit
   verificationToken?: Prisma.VerificationTokenOmit
   listing?: Prisma.ListingOmit
+  listingPhoto?: Prisma.ListingPhotoOmit
   calendarLink?: Prisma.CalendarLinkOmit
   verification?: Prisma.VerificationOmit
   invite?: Prisma.InviteOmit
