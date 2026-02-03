@@ -4,6 +4,7 @@ import { auth } from './lib/auth.js';
 import { UsersModule } from './users/users.module.js';
 import { ListingsModule } from './listings/listings.module.js';
 import { InvitesModule } from './invites/invites.module.js';
+import { PhotosModule } from './photos/photos.module.js';
 import { AppService } from './app.service.js';
 import { AppController } from './app.controller.js';
 
@@ -13,6 +14,7 @@ import { AppController } from './app.controller.js';
     UsersModule,
     ListingsModule,
     InvitesModule,
+    PhotosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

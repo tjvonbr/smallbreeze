@@ -56,6 +56,7 @@ export const ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Listing: 'Listing',
+  ListingPhoto: 'ListingPhoto',
   CalendarLink: 'CalendarLink',
   Verification: 'Verification',
   Invite: 'Invite'
@@ -175,6 +176,19 @@ export const ListingScalarFieldEnum = {
 } as const
 
 export type ListingScalarFieldEnum = (typeof ListingScalarFieldEnum)[keyof typeof ListingScalarFieldEnum]
+
+
+export const ListingPhotoScalarFieldEnum = {
+  id: 'id',
+  listingId: 'listingId',
+  s3Key: 's3Key',
+  caption: 'caption',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ListingPhotoScalarFieldEnum = (typeof ListingPhotoScalarFieldEnum)[keyof typeof ListingPhotoScalarFieldEnum]
 
 
 export const CalendarLinkScalarFieldEnum = {

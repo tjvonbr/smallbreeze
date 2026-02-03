@@ -121,10 +121,24 @@ model Listing {
   teamId         String
   team           Team           @relation(fields: [teamId], references: [id])
   calendarLinks  CalendarLink[]
+  photos         ListingPhoto[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
   @@map("listings")
+}
+
+model ListingPhoto {
+  id        String   @id @default(uuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  s3Key     String
+  caption   String?
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("listing_photos")
 }
 
 model CalendarLink {
