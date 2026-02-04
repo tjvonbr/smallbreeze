@@ -18,6 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icons } from '@/components/icons';
+import { PhotoCollage, Photo } from '@/components/photo-collage';
 import { useListings, Listing } from '@/context/listings-context';
 import { authClient } from '@/lib/auth-client';
 import { Colors, Fonts } from '@/constants/theme';
@@ -482,15 +483,17 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
 // Info Tab Content
 interface InfoTabProps {
   listing: Listing;
+  photos: Photo[];
   colors: typeof Colors.light;
   colorScheme: 'light' | 'dark';
   onEditNickname: () => void;
   onEditAddress: () => void;
   onEditWiFi: () => void;
   onEditAccessNotes: () => void;
+  onPhotosPress: () => void;
 }
 
-function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes }: InfoTabProps) {
+function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes, onPhotosPress }: InfoTabProps) {
   const formatAddress = (listing: Listing) => {
     const lines = [listing.streetAddress];
     if (listing.streetAddress2) {
@@ -502,6 +505,13 @@ function InfoTab({ listing, colors, colorScheme, onEditNickname, onEditAddress, 
 
   return (
     <ScrollView contentContainerStyle={styles.tabContent}>
+      <PhotoCollage
+        photos={photos}
+        onPress={onPhotosPress}
+        colors={colors}
+        colorScheme={colorScheme}
+      />
+
       <Pressable style={styles.section} onPress={onEditNickname}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Nickname</Text>
         <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
@@ -716,6 +726,40 @@ export default function ListingScreen() {
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>('calendar');
 
+  // Photos state
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photosLoading, setPhotosLoading] = useState(true);
+
+  // Fetch photos when listing changes
+  useEffect(() => {
+    if (listing?.id) {
+      fetchPhotos();
+    }
+  }, [listing?.id]);
+
+  const fetchPhotos = async () => {
+    if (!listing) return;
+
+    try {
+      const response = await authClient.$fetch<{ photos: Photo[] }>(
+        `${apiUrl}/api/listings/${listing.id}/photos`
+      );
+
+      if (response.data?.photos) {
+        setPhotos(response.data.photos);
+      }
+    } catch (err) {
+      console.error('Failed to fetch photos:', err);
+    } finally {
+      setPhotosLoading(false);
+    }
+  };
+
+  const handlePhotosPress = () => {
+    // TODO: Open photo gallery/management modal
+    console.log('Photos pressed');
+  };
+
   // Modal states
   const [nicknameModalVisible, setNicknameModalVisible] = useState(false);
   const [addressModalVisible, setAddressModalVisible] = useState(false);
@@ -923,12 +967,14 @@ export default function ListingScreen() {
       ) : (
         <InfoTab
           listing={listing}
+          photos={photos}
           colors={colors}
           colorScheme={colorScheme}
           onEditNickname={openNicknameModal}
           onEditAddress={openAddressModal}
           onEditWiFi={openWiFiModal}
           onEditAccessNotes={openAccessNotesModal}
+          onPhotosPress={handlePhotosPress}
         />
       )}
 

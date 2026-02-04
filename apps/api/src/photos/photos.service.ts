@@ -12,13 +12,13 @@ import {
 } from '../lib/s3.js';
 import { randomUUID } from 'crypto';
 
-interface PresignResult {
+export interface PresignResult {
   presignedUrl: string;
   s3Key: string;
   expiresIn: number;
 }
 
-interface PhotoWithUrl {
+export interface PhotoWithUrl {
   id: string;
   s3Key: string;
   url: string;
