@@ -69,11 +69,10 @@ export const auth = betterAuth({
     },
   },
   user: {
+    fields: {
+      name: 'firstName',
+    },
     additionalFields: {
-      firstName: {
-        type: 'string',
-        required: true,
-      },
       lastName: {
         type: 'string',
         required: true,
