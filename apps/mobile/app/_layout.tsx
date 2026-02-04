@@ -14,8 +14,12 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const isAuthenticated = !!session;
+
+  if (isPending) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return (
