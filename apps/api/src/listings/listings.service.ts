@@ -5,6 +5,16 @@ import { geocodeAddress, isGeocodingEnabled } from '../lib/geocoding.js';
 
 export type { CalendarEvent };
 
+interface CreateListingData {
+  nickname: string;
+  streetAddress: string;
+  streetAddress2?: string | null;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}
+
 interface UpdateListingData {
   nickname?: string;
   streetAddress?: string;
@@ -63,6 +73,63 @@ export class ListingsService {
     );
 
     return listingsWithNextCheckIn;
+  }
+
+  async create(userId: string, data: CreateListingData) {
+    // Get the user's first team
+    let teamMembership = await prisma.teamMember.findFirst({
+      where: { userId },
+      select: { teamId: true },
+    });
+
+    // If user doesn't have a team, create one
+    if (!teamMembership) {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { firstName: true, lastName: true },
+      });
+
+      if (!user) {
+        return null;
+      }
+
+      // Create a new team for the user
+      const team = await prisma.team.create({
+        data: {
+          name: `${user.firstName}'s Team`,
+          memberships: {
+            create: {
+              userId,
+              role: 'ADMIN',
+            },
+          },
+        },
+      });
+
+      teamMembership = { teamId: team.id };
+    }
+
+    // Create the listing
+    const listing = await prisma.listing.create({
+      data: {
+        nickname: data.nickname,
+        streetAddress: data.streetAddress,
+        streetAddress2: data.streetAddress2 || null,
+        city: data.city,
+        state: data.state,
+        zip: data.zip,
+        country: data.country,
+        teamId: teamMembership.teamId,
+      },
+      include: {
+        calendarLinks: true,
+      },
+    });
+
+    return {
+      ...listing,
+      nextCheckIn: null,
+    };
   }
 
   async update(listingId: string, userId: string, data: UpdateListingData) {

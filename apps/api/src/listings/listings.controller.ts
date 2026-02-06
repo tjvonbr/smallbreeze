@@ -12,6 +12,16 @@ import {
 import { Session } from '@thallesp/nestjs-better-auth';
 import { ListingsService, CalendarEvent } from './listings.service.js';
 
+interface CreateListingDto {
+  nickname: string;
+  streetAddress: string;
+  streetAddress2?: string | null;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}
+
 interface UpdateListingDto {
   nickname?: string;
   streetAddress?: string;
@@ -38,6 +48,27 @@ export class ListingsController {
     const listings = await this.listingsService.findAllForUser(session.user.id);
 
     return { listings };
+  }
+
+  @Post()
+  async create(
+    @Body() createListingDto: CreateListingDto,
+    @Session() session: { user?: { id: string } } | null,
+  ) {
+    if (!session?.user?.id) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    const listing = await this.listingsService.create(
+      session.user.id,
+      createListingDto,
+    );
+
+    if (!listing) {
+      throw new BadRequestException('Failed to create listing. Make sure you belong to a team.');
+    }
+
+    return { listing };
   }
 
   @Patch(':id')
