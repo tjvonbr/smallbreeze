@@ -32,11 +32,22 @@ export interface Listing {
   updatedAt: string;
 }
 
+interface CreateListingData {
+  nickname: string;
+  streetAddress: string;
+  streetAddress2?: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+}
+
 interface ListingsContextType {
   listings: Listing[];
   loading: boolean;
   error: string | null;
   fetchListings: () => Promise<void>;
+  addListing: (data: CreateListingData) => Promise<Listing | null>;
   updateListing: (updatedListing: Listing) => void;
   getListing: (id: string) => Listing | undefined;
 }
@@ -70,6 +81,26 @@ export function ListingsProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const addListing = useCallback(async (data: CreateListingData): Promise<Listing | null> => {
+    try {
+      const response = await authClient.$fetch<{ listing: Listing }>(
+        `${apiUrl}/api/listings`,
+        {
+          method: 'POST',
+          body: data,
+        }
+      );
+
+      if (response.data?.listing) {
+        setListings((prev) => [response.data!.listing, ...prev]);
+        return response.data.listing;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }, []);
+
   const updateListing = useCallback((updatedListing: Listing) => {
     setListings((prev) =>
       prev.map((listing) =>
@@ -90,6 +121,7 @@ export function ListingsProvider({ children }: { children: React.ReactNode }) {
         loading,
         error,
         fetchListings,
+        addListing,
         updateListing,
         getListing,
       }}
