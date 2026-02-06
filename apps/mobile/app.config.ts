@@ -45,6 +45,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         photosPermission:
           "Allow $(PRODUCT_NAME) to access your photos to upload staging photos.",
+        cameraPermission:
+          "Allow $(PRODUCT_NAME) to use your camera to take staging photos.",
       },
     ],
   ],

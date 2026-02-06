@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ActionSheetIOS,
   ActivityIndicator,
   Alert,
   Dimensions,
@@ -773,7 +774,28 @@ export default function ListingScreen() {
     setStagedAssets([]);
   };
 
-  const pickPhotos = async () => {
+  const pickPhotos = () => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['Cancel', 'Upload from your device', 'Take a photo'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          if (buttonIndex === 1) openPhotoLibrary();
+          if (buttonIndex === 2) openCamera();
+        },
+      );
+    } else {
+      Alert.alert('Add Photos', '', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Upload from your device', onPress: openPhotoLibrary },
+        { text: 'Take a photo', onPress: openCamera },
+      ]);
+    }
+  };
+
+  const openPhotoLibrary = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert(
@@ -787,6 +809,25 @@ export default function ListingScreen() {
       mediaTypes: ['images'],
       allowsMultipleSelection: true,
       selectionLimit: 50,
+    });
+
+    if (result.canceled || result.assets.length === 0) return;
+
+    setStagedAssets((prev) => [...prev, ...result.assets]);
+  };
+
+  const openCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission Required',
+        'Please allow camera access to take photos.',
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
     });
 
     if (result.canceled || result.assets.length === 0) return;
