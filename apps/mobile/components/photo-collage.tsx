@@ -6,7 +6,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Icons } from './icons';
 import { Colors } from '@/constants/theme';
 
 export interface Photo {
@@ -25,20 +24,31 @@ interface PhotoCollageProps {
 
 export function PhotoCollage({ photos, onPress, colors, colorScheme }: PhotoCollageProps) {
   const cardBackground = colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5';
+  const placeholderColor = colorScheme === 'dark' ? '#2C2C2E' : '#E0E0E0';
   const photoCount = photos.length;
 
   if (photoCount === 0) {
     return (
       <Pressable style={styles.container} onPress={onPress}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Staging Photos</Text>
-        <View style={[styles.emptyCard, { backgroundColor: cardBackground }]}>
-          <Icons.image size={32} color={colors.icon} />
-          <Text style={[styles.emptyText, { color: colors.icon }]}>
-            No staging photos yet
-          </Text>
-          <Text style={[styles.emptySubtext, { color: colors.icon }]}>
-            Tap to add photos
-          </Text>
+        <View style={[styles.collageCard, { backgroundColor: cardBackground }]}>
+          <View style={styles.collageWrapper}>
+            {/* Back placeholder */}
+            <View style={[styles.photoLayer, styles.photoBack, { backgroundColor: placeholderColor }]} />
+
+            {/* Middle placeholder */}
+            <View style={[styles.photoLayer, styles.photoMiddle, { backgroundColor: placeholderColor }]} />
+
+            {/* Front placeholder with text */}
+            <View style={[styles.photoLayer, styles.photoFront, styles.placeholderFront, { backgroundColor: placeholderColor }]}>
+              <Text style={[styles.placeholderText, { color: colors.icon }]}>
+                No staging photos yet
+              </Text>
+              <Text style={[styles.placeholderSubtext, { color: colors.icon }]}>
+                Tap to add
+              </Text>
+            </View>
+          </View>
         </View>
       </Pressable>
     );
@@ -54,7 +64,7 @@ export function PhotoCollage({ photos, onPress, colors, colorScheme }: PhotoColl
         <View style={styles.collageWrapper}>
           {/* Back photo (third) - only if 3+ photos */}
           {displayPhotos.length >= 3 && (
-            <View style={[styles.photoLayer, styles.photoBack]}>
+            <View style={[styles.photoLayer, styles.photoBack, styles.photoLayerImage]}>
               <Image
                 source={{ uri: displayPhotos[2].url }}
                 style={styles.collageImage}
@@ -65,7 +75,7 @@ export function PhotoCollage({ photos, onPress, colors, colorScheme }: PhotoColl
 
           {/* Middle photo (second) - only if 2+ photos */}
           {displayPhotos.length >= 2 && (
-            <View style={[styles.photoLayer, styles.photoMiddle]}>
+            <View style={[styles.photoLayer, styles.photoMiddle, styles.photoLayerImage]}>
               <Image
                 source={{ uri: displayPhotos[1].url }}
                 style={styles.collageImage}
@@ -75,7 +85,7 @@ export function PhotoCollage({ photos, onPress, colors, colorScheme }: PhotoColl
           )}
 
           {/* Front photo (first) - always shown */}
-          <View style={[styles.photoLayer, styles.photoFront]}>
+          <View style={[styles.photoLayer, styles.photoFront, styles.photoLayerImage]}>
             <Image
               source={{ uri: displayPhotos[0].url }}
               style={styles.collageImage}
@@ -105,21 +115,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     opacity: 0.6,
   },
-  emptyCard: {
-    borderRadius: 12,
-    padding: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  emptyText: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginTop: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-  },
   collageCard: {
     borderRadius: 12,
     padding: 20,
@@ -136,15 +131,17 @@ const styles = StyleSheet.create({
     width: '75%',
     aspectRatio: 4 / 3,
     borderRadius: 16,
-    overflow: 'hidden',
     backgroundColor: '#ddd',
     // Shadow for iOS
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
     // Shadow for Android
-    elevation: 8,
+    elevation: 12,
+  },
+  photoLayerImage: {
+    overflow: 'hidden',
   },
   photoBack: {
     transform: [{ rotate: '6deg' }, { translateX: 30 }, { scale: 0.9 }],
@@ -157,6 +154,20 @@ const styles = StyleSheet.create({
   photoFront: {
     transform: [{ rotate: '0deg' }],
     zIndex: 3,
+  },
+  placeholderFront: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  placeholderText: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  placeholderSubtext: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
   },
   collageImage: {
     width: '100%',

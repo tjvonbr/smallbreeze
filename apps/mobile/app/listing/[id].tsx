@@ -1,10 +1,13 @@
 import Constants from 'expo-constants';
+import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -755,9 +758,120 @@ export default function ListingScreen() {
     }
   };
 
+  // Photo modal state
+  const [photoModalVisible, setPhotoModalVisible] = useState(false);
+  const [stagedAssets, setStagedAssets] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null);
+
   const handlePhotosPress = () => {
-    // TODO: Open photo gallery/management modal
-    console.log('Photos pressed');
+    setPhotoModalVisible(true);
+  };
+
+  const closePhotoModal = () => {
+    setPhotoModalVisible(false);
+    setStagedAssets([]);
+  };
+
+  const pickPhotos = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        'Permission Required',
+        'Please allow access to your photo library to upload photos.',
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsMultipleSelection: true,
+      selectionLimit: 50,
+    });
+
+    if (result.canceled || result.assets.length === 0) return;
+
+    setStagedAssets((prev) => [...prev, ...result.assets]);
+  };
+
+  const removeStagedPhoto = (uri: string) => {
+    setStagedAssets((prev) => prev.filter((a) => a.uri !== uri));
+  };
+
+  const uploadStagedPhotos = async () => {
+    if (!listing || stagedAssets.length === 0) return;
+
+    setUploading(true);
+    try {
+      for (const asset of stagedAssets) {
+        const mimeType = asset.mimeType || 'image/jpeg';
+
+        // 1. Get presigned URL
+        const presignResponse = await authClient.$fetch<{
+          presignedUrl: string;
+          s3Key: string;
+          expiresIn: number;
+        }>(`${apiUrl}/api/listings/${listing.id}/photos/presign`, {
+          method: 'POST',
+          body: { contentType: mimeType },
+        });
+
+        if (!presignResponse.data) continue;
+
+        const { presignedUrl, s3Key } = presignResponse.data;
+
+        // 2. Upload to S3
+        const fileResponse = await fetch(asset.uri);
+        const blob = await fileResponse.blob();
+
+        await fetch(presignedUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': mimeType },
+          body: blob,
+        });
+
+        // 3. Confirm upload
+        await authClient.$fetch(`${apiUrl}/api/listings/${listing.id}/photos/confirm`, {
+          method: 'POST',
+          body: { s3Key },
+        });
+      }
+
+      setStagedAssets([]);
+      await fetchPhotos();
+    } catch (err) {
+      console.error('Failed to upload photos:', err);
+      Alert.alert('Upload Failed', 'Some photos could not be uploaded. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const deletePhoto = async (photoId: string) => {
+    if (!listing) return;
+
+    Alert.alert('Delete Photo', 'Are you sure you want to delete this photo?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          setDeletingPhotoId(photoId);
+          try {
+            await authClient.$fetch(
+              `${apiUrl}/api/listings/${listing.id}/photos/${photoId}`,
+              { method: 'DELETE' },
+            );
+            await fetchPhotos();
+          } catch (err) {
+            console.error('Failed to delete photo:', err);
+            Alert.alert('Error', 'Failed to delete photo. Please try again.');
+          } finally {
+            setDeletingPhotoId(null);
+          }
+        },
+      },
+    ]);
   };
 
   // Modal states
@@ -1143,6 +1257,125 @@ export default function ListingScreen() {
           Document how to access the property, where supplies are located, and any other important information.
         </Text>
       </EditModal>
+
+      {/* Photo Management Modal */}
+      <Modal
+        visible={photoModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={closePhotoModal}
+      >
+        <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+          <View style={[styles.modalHeader, { borderBottomColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}>
+            <Pressable onPress={closePhotoModal} style={styles.photoModalCloseButton}>
+              <View style={[styles.modalCloseCircle, { backgroundColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}>
+                <Text style={[styles.modalCloseX, { color: colors.text }]}>×</Text>
+              </View>
+            </Pressable>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Staging Photos</Text>
+            <Pressable
+              onPress={pickPhotos}
+              style={[styles.photoModalAddButton, { backgroundColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}
+              disabled={uploading}
+            >
+              <Icons.plus size={18} color={colors.text} />
+            </Pressable>
+          </View>
+
+          <ScrollView
+            style={styles.modalContent}
+            contentContainerStyle={styles.photoModalContent}
+          >
+            {photos.length === 0 && stagedAssets.length === 0 && !uploading ? (
+              <View style={styles.photoEmptyState}>
+                <Icons.image size={48} color={colors.icon} />
+                <Text style={[styles.photoEmptyTitle, { color: colors.text }]}>
+                  No photos yet
+                </Text>
+                <Text style={[styles.photoEmptySubtitle, { color: colors.icon }]}>
+                  Tap + to add photos from your camera roll
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.photoGrid}>
+                {photos.map((photo) => (
+                  <View key={photo.id} style={styles.photoGridItem}>
+                    <Image
+                      source={{ uri: photo.url }}
+                      style={styles.photoGridImage}
+                      resizeMode="cover"
+                    />
+                    <Pressable
+                      style={styles.photoDeleteButton}
+                      onPress={() => deletePhoto(photo.id)}
+                      disabled={deletingPhotoId === photo.id}
+                    >
+                      {deletingPhotoId === photo.id ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <Icons.trash size={14} color="white" />
+                      )}
+                    </Pressable>
+                  </View>
+                ))}
+                {stagedAssets.map((asset) => (
+                  <View key={asset.uri} style={styles.photoGridItem}>
+                    <Image
+                      source={{ uri: asset.uri }}
+                      style={styles.photoGridImage}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.stagedBadge}>
+                      <Text style={styles.stagedBadgeText}>New</Text>
+                    </View>
+                    <Pressable
+                      style={styles.photoDeleteButton}
+                      onPress={() => removeStagedPhoto(asset.uri)}
+                    >
+                      <Icons.x size={14} color="white" />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {uploading && (
+              <View style={styles.uploadingIndicator}>
+                <ActivityIndicator size="small" color={colors.tint} />
+                <Text style={[styles.uploadingText, { color: colors.icon }]}>
+                  Uploading photos...
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+
+          <View style={[styles.modalFooter, { borderTopColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}>
+            <Pressable
+              onPress={closePhotoModal}
+              style={styles.cancelButton}
+            >
+              <Text style={[styles.cancelButtonText, { color: colors.text }]}>Close</Text>
+            </Pressable>
+            <Pressable
+              onPress={uploadStagedPhotos}
+              style={[
+                styles.saveButton,
+                { backgroundColor: colors.tint },
+                stagedAssets.length === 0 && styles.saveButtonDisabled,
+              ]}
+              disabled={uploading || stagedAssets.length === 0}
+            >
+              {uploading ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text style={styles.saveButtonText}>
+                  Add {stagedAssets.length > 0 ? `${stagedAssets.length} ` : ''}Photo{stagedAssets.length !== 1 ? 's' : ''}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1486,5 +1719,91 @@ const styles = StyleSheet.create({
   },
   halfField: {
     flex: 1,
+  },
+  saveButtonDisabled: {
+    opacity: 0.5,
+  },
+  // Photo modal styles
+  photoModalCloseButton: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 1,
+  },
+  photoModalAddButton: {
+    position: 'absolute',
+    right: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  photoModalContent: {
+    padding: 20,
+  },
+  photoEmptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    gap: 8,
+  },
+  photoEmptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  photoEmptySubtitle: {
+    fontSize: 14,
+  },
+  photoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  photoGridItem: {
+    width: (Dimensions.get('window').width - 56) / 3,
+    aspectRatio: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  photoGridImage: {
+    width: '100%',
+    height: '100%',
+  },
+  photoDeleteButton: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  uploadingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+  },
+  uploadingText: {
+    fontSize: 14,
+  },
+  stagedBadge: {
+    position: 'absolute',
+    bottom: 4,
+    left: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  stagedBadgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '600',
   },
 });
