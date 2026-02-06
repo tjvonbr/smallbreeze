@@ -15,6 +15,7 @@ const trustedOrigins = [
   'http://localhost:3001',
   'exp://localhost:8081',
   'exp://192.168.1.1:8081',
+  'http://192.168.0.161:3001',
 ].filter(Boolean) as string[];
 
 // Build social providers config based on available env vars
