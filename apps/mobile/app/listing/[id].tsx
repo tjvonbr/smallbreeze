@@ -493,9 +493,12 @@ interface InfoTabProps {
   onEditWiFi: () => void;
   onEditAccessNotes: () => void;
   onPhotosPress: () => void;
+  onAddCalendarLink: () => void;
+  onDeleteCalendarLink: (linkId: string) => void;
+  deletingLinkId: string | null;
 }
 
-function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes, onPhotosPress }: InfoTabProps) {
+function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes, onPhotosPress, onAddCalendarLink, onDeleteCalendarLink, deletingLinkId }: InfoTabProps) {
   const formatAddress = (listing: Listing) => {
     const lines = [listing.streetAddress];
     if (listing.streetAddress2) {
@@ -576,13 +579,22 @@ function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditA
         </View>
       </View>
 
-      {listing.calendarLinks.length > 0 && (
-        <View style={styles.section}>
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Calendar Links ({listing.calendarLinks.length})
+            iCal Links{listing.calendarLinks.length > 0 ? ` (${listing.calendarLinks.length})` : ''}
           </Text>
-          <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
-            {listing.calendarLinks.map((link, index) => (
+        </View>
+        <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+          {listing.calendarLinks.length === 0 ? (
+            <Pressable onPress={onAddCalendarLink} style={styles.calendarLinkEmpty}>
+              <Icons.link size={18} color={colors.icon} />
+              <Text style={[styles.calendarLinkEmptyText, { color: colors.icon }]}>
+                Add an iCal link to sync reservations
+              </Text>
+            </Pressable>
+          ) : (
+            listing.calendarLinks.map((link, index) => (
               <View
                 key={link.id}
                 style={[
@@ -597,11 +609,22 @@ function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditA
                 >
                   {link.url}
                 </Text>
+                <Pressable
+                  onPress={() => onDeleteCalendarLink(link.id)}
+                  disabled={deletingLinkId === link.id}
+                  hitSlop={8}
+                >
+                  {deletingLinkId === link.id ? (
+                    <ActivityIndicator size="small" color={colors.icon} />
+                  ) : (
+                    <Icons.trash size={16} color={colors.icon} />
+                  )}
+                </Pressable>
               </View>
-            ))}
-          </View>
+            ))
+          )}
         </View>
-      )}
+      </View>
     </ScrollView>
   );
 }
@@ -1082,6 +1105,72 @@ export default function ListingScreen() {
     }
   };
 
+  // Calendar link state
+  const [calendarLinkModalVisible, setCalendarLinkModalVisible] = useState(false);
+  const [calendarLinkUrl, setCalendarLinkUrl] = useState('');
+  const [savingLink, setSavingLink] = useState(false);
+  const [deletingLinkId, setDeletingLinkId] = useState<string | null>(null);
+
+  const openCalendarLinkModal = () => {
+    setCalendarLinkUrl('');
+    setCalendarLinkModalVisible(true);
+  };
+
+  const addCalendarLink = async () => {
+    if (!listing || !calendarLinkUrl.trim()) return;
+
+    setSavingLink(true);
+    try {
+      const response = await authClient.$fetch<{
+        calendarLink: { id: string; url: string };
+        listing: Listing;
+      }>(`${apiUrl}/api/listings/${listing.id}/calendar-links`, {
+        method: 'POST',
+        body: { url: calendarLinkUrl.trim() },
+      });
+
+      if (response.data?.listing) {
+        updateListing(response.data.listing);
+      }
+      setCalendarLinkModalVisible(false);
+      setCalendarLinkUrl('');
+    } catch (err) {
+      console.error('Failed to add calendar link:', err);
+      Alert.alert('Error', 'Failed to add calendar link. Please check the URL and try again.');
+    } finally {
+      setSavingLink(false);
+    }
+  };
+
+  const deleteCalendarLink = (linkId: string) => {
+    if (!listing) return;
+
+    Alert.alert('Remove Link', 'Are you sure you want to remove this iCal link?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          setDeletingLinkId(linkId);
+          try {
+            const response = await authClient.$fetch<{ listing: Listing }>(
+              `${apiUrl}/api/listings/${listing.id}/calendar-links/${linkId}`,
+              { method: 'DELETE' },
+            );
+            if (response.data?.listing) {
+              updateListing(response.data.listing);
+            }
+          } catch (err) {
+            console.error('Failed to delete calendar link:', err);
+            Alert.alert('Error', 'Failed to remove calendar link. Please try again.');
+          } finally {
+            setDeletingLinkId(null);
+          }
+        },
+      },
+    ]);
+  };
+
   if (!listing) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -1128,6 +1217,9 @@ export default function ListingScreen() {
           onEditWiFi={openWiFiModal}
           onEditAccessNotes={openAccessNotesModal}
           onPhotosPress={handlePhotosPress}
+          onAddCalendarLink={openCalendarLinkModal}
+          onDeleteCalendarLink={deleteCalendarLink}
+          deletingLinkId={deletingLinkId}
         />
       )}
 
@@ -1294,6 +1386,30 @@ export default function ListingScreen() {
         </View>
         <Text style={[styles.fieldHint, { color: colors.icon }]}>
           Document how to access the property, where supplies are located, and any other important information.
+        </Text>
+      </EditModal>
+
+      {/* Add iCal Link Modal */}
+      <EditModal
+        visible={calendarLinkModalVisible}
+        title="Add iCal Link"
+        onClose={() => setCalendarLinkModalVisible(false)}
+        onSave={addCalendarLink}
+        saving={savingLink}
+        colors={colors}
+        colorScheme={colorScheme}
+      >
+        <FormField
+          label="iCal URL"
+          value={calendarLinkUrl}
+          onChangeText={setCalendarLinkUrl}
+          placeholder="https://..."
+          colors={colors}
+          colorScheme={colorScheme}
+          autoCapitalize="none"
+        />
+        <Text style={[styles.fieldHint, { color: colors.icon }]}>
+          Paste an iCal link from Airbnb, VRBO, or any other booking platform to sync reservations.
         </Text>
       </EditModal>
 
@@ -1637,10 +1753,22 @@ const styles = StyleSheet.create({
     fontSize: 17,
     minHeight: 200,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionAddButton: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   calendarLinkItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     gap: 8,
   },
   calendarLinkBorder: {
@@ -1650,6 +1778,16 @@ const styles = StyleSheet.create({
   calendarLinkUrl: {
     flex: 1,
     fontSize: 14,
+  },
+  calendarLinkEmpty: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 4,
+  },
+  calendarLinkEmptyText: {
+    fontSize: 14,
+    fontStyle: 'italic',
   },
   // Modal styles
   modalContainer: {

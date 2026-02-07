@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronLeft, Eye, EyeOff, House, Image, Plus, Trash2, User, UserPlus, Wifi, X } from 'lucide-react-native';
+import { CalendarDays, ChevronLeft, Eye, EyeOff, House, Image, Link, Plus, Trash2, User, UserPlus, Wifi, X } from 'lucide-react-native';
 
 export const Icons = {
   chevronLeft: ChevronLeft,
@@ -7,6 +7,7 @@ export const Icons = {
   eyeOff: EyeOff,
   house: House,
   image: Image,
+  link: Link,
   plus: Plus,
   trash: Trash2,
   user: User,

@@ -309,4 +309,108 @@ export class ListingsService {
 
     return { listing: updatedListing, geocoded: true };
   }
+
+  async addCalendarLink(listingId: string, userId: string, url: string) {
+    const teamMemberships = await prisma.teamMember.findMany({
+      where: { userId },
+      select: { teamId: true },
+    });
+
+    const teamIds = teamMemberships.map((tm: { teamId: string }) => tm.teamId);
+
+    const listing = await prisma.listing.findFirst({
+      where: {
+        id: listingId,
+        teamId: { in: teamIds },
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    const calendarLink = await prisma.calendarLink.create({
+      data: {
+        url,
+        listingId,
+      },
+    });
+
+    // Return the updated listing with all calendar links
+    const updatedListing = await prisma.listing.findUnique({
+      where: { id: listingId },
+      include: { calendarLinks: true },
+    });
+
+    // Recalculate next check-in
+    let nextCheckIn: Date | null = null;
+    for (const link of updatedListing!.calendarLinks) {
+      const events = await parseCalendarUrl(link.url);
+      const checkIn = getNextCheckIn(events);
+      if (checkIn && (!nextCheckIn || checkIn < nextCheckIn)) {
+        nextCheckIn = checkIn;
+      }
+    }
+
+    return {
+      calendarLink,
+      listing: {
+        ...updatedListing!,
+        nextCheckIn: nextCheckIn?.toISOString() ?? null,
+      },
+    };
+  }
+
+  async deleteCalendarLink(listingId: string, linkId: string, userId: string) {
+    const teamMemberships = await prisma.teamMember.findMany({
+      where: { userId },
+      select: { teamId: true },
+    });
+
+    const teamIds = teamMemberships.map((tm: { teamId: string }) => tm.teamId);
+
+    const listing = await prisma.listing.findFirst({
+      where: {
+        id: listingId,
+        teamId: { in: teamIds },
+      },
+    });
+
+    if (!listing) {
+      return null;
+    }
+
+    // Verify the link belongs to this listing
+    const link = await prisma.calendarLink.findFirst({
+      where: { id: linkId, listingId },
+    });
+
+    if (!link) {
+      return null;
+    }
+
+    await prisma.calendarLink.delete({
+      where: { id: linkId },
+    });
+
+    // Return the updated listing
+    const updatedListing = await prisma.listing.findUnique({
+      where: { id: listingId },
+      include: { calendarLinks: true },
+    });
+
+    let nextCheckIn: Date | null = null;
+    for (const cl of updatedListing!.calendarLinks) {
+      const events = await parseCalendarUrl(cl.url);
+      const checkIn = getNextCheckIn(events);
+      if (checkIn && (!nextCheckIn || checkIn < nextCheckIn)) {
+        nextCheckIn = checkIn;
+      }
+    }
+
+    return {
+      ...updatedListing!,
+      nextCheckIn: nextCheckIn?.toISOString() ?? null,
+    };
+  }
 }
