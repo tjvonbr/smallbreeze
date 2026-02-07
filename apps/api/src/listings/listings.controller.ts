@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -138,5 +139,55 @@ export class ListingsController {
     }
 
     return { listing: result.listing };
+  }
+
+  @Post(':id/calendar-links')
+  async addCalendarLink(
+    @Param('id') id: string,
+    @Body() body: { url: string },
+    @Session() session: { user?: { id: string } } | null,
+  ) {
+    if (!session?.user?.id) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    if (!body.url) {
+      throw new BadRequestException('URL is required');
+    }
+
+    const result = await this.listingsService.addCalendarLink(
+      id,
+      session.user.id,
+      body.url,
+    );
+
+    if (!result) {
+      throw new NotFoundException('Listing not found');
+    }
+
+    return result;
+  }
+
+  @Delete(':id/calendar-links/:linkId')
+  async deleteCalendarLink(
+    @Param('id') id: string,
+    @Param('linkId') linkId: string,
+    @Session() session: { user?: { id: string } } | null,
+  ) {
+    if (!session?.user?.id) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    const listing = await this.listingsService.deleteCalendarLink(
+      id,
+      linkId,
+      session.user.id,
+    );
+
+    if (!listing) {
+      throw new NotFoundException('Listing or calendar link not found');
+    }
+
+    return { listing };
   }
 }
