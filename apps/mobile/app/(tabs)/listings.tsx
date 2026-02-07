@@ -128,7 +128,7 @@ export default function ListingsScreen() {
         closeModal();
         router.push({
           pathname: '/listing/[id]',
-          params: { id: newListing.id },
+          params: { id: newListing.id, tab: 'info' },
         });
       } else {
         Alert.alert('Error', 'Failed to create listing. Please try again.');

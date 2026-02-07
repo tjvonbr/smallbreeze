@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { apiUrl } from '@/lib/api-url';
 import { authClient } from '@/lib/auth-client';
-import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Mail, RotateCw, Trash2, UserPlus } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -21,7 +21,6 @@ import {
 import { Swipeable } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
 
 interface Invite {
   id: string;

@@ -1,6 +1,6 @@
-import Constants from 'expo-constants';
 import React, { createContext, useCallback, useContext, useState } from 'react';
 
+import { apiUrl } from '@/lib/api-url';
 import { authClient } from '@/lib/auth-client';
 
 interface CalendarLink {
@@ -54,7 +54,6 @@ interface ListingsContextType {
 
 const ListingsContext = createContext<ListingsContextType | null>(null);
 
-const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
 
 export function ListingsProvider({ children }: { children: React.ReactNode }) {
   const [listings, setListings] = useState<Listing[]>([]);

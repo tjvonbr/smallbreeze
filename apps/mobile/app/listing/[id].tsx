@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -24,6 +23,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icons } from '@/components/icons';
 import { PhotoCollage, Photo } from '@/components/photo-collage';
 import { useListings, Listing } from '@/context/listings-context';
+import { apiUrl } from '@/lib/api-url';
 import { authClient } from '@/lib/auth-client';
 import { Colors, Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -41,8 +41,6 @@ interface WifiForm {
   wifiNetwork: string;
   wifiPassword: string;
 }
-
-const apiUrl = Constants.expoConfig?.extra?.apiUrl ?? 'http://localhost:3001';
 
 type TabType = 'calendar' | 'info';
 
@@ -719,7 +717,7 @@ function FormField({ label, value, onChangeText, placeholder, colors, colorSchem
 
 // Main Screen Component
 export default function ListingScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, tab } = useLocalSearchParams<{ id: string; tab?: string }>();
   const router = useRouter();
   const { getListing, updateListing } = useListings();
   const colorScheme = useColorScheme() ?? 'light';
@@ -728,7 +726,7 @@ export default function ListingScreen() {
   const listing = getListing(id);
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<TabType>('calendar');
+  const [activeTab, setActiveTab] = useState<TabType>(tab === 'info' ? 'info' : 'calendar');
 
   // Photos state
   const [photos, setPhotos] = useState<Photo[]>([]);
