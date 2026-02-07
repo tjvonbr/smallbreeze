@@ -1,4 +1,5 @@
 
+import { networkInterfaces } from 'os';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { betterAuth } from "better-auth";
 import { prisma } from './prisma.js';
@@ -14,9 +15,23 @@ const trustedOrigins = [
   'https://localhost:3000',
   'http://localhost:3001',
   'exp://localhost:8081',
-  'exp://192.168.1.1:8081',
-  'http://192.168.0.161:3001',
 ].filter(Boolean) as string[];
+
+// In development, trust requests from any of this machine's LAN IPs so
+// physical devices on the same network can reach the API without needing
+// to hard-code a specific IP that changes between networks.
+if (process.env.NODE_ENV !== 'production') {
+  const nets = networkInterfaces();
+  for (const name of Object.keys(nets)) {
+    for (const iface of nets[name] ?? []) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        trustedOrigins.push(`http://${iface.address}:3001`);
+        trustedOrigins.push(`http://${iface.address}:3000`);
+        trustedOrigins.push(`exp://${iface.address}:8081`);
+      }
+    }
+  }
+}
 
 // Build social providers config based on available env vars
 const socialProviders: Record<string, { clientId: string; clientSecret: string }> = {};
