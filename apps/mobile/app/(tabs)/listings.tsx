@@ -355,7 +355,7 @@ export default function ListingsScreen() {
               </View>
             </View>
 
-            <View style={styles.rowFields}>
+            <View style={[styles.rowFields, styles.formField]}>
               <View style={styles.halfField}>
                 <View style={[styles.inputContainer, { borderColor: colorScheme === 'dark' ? '#444' : '#DDD' }]}>
                   <Text style={[styles.inputLabel, { color: colors.icon }]}>State</Text>
