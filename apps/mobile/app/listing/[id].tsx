@@ -21,6 +21,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Icons } from '@/components/icons';
+import LocationMap from '@/components/location-map';
 import { PhotoCollage, Photo } from '@/components/photo-collage';
 import { useListings, Listing } from '@/context/listings-context';
 import { apiUrl } from '@/lib/api-url';
@@ -536,6 +537,17 @@ function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditA
           ))}
         </View>
       </Pressable>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Location</Text>
+        <LocationMap
+          latitude={listing.latitude}
+          longitude={listing.longitude}
+          address={`${listing.streetAddress}, ${listing.city}, ${listing.state} ${listing.zip}`}
+          colorScheme={colorScheme}
+          colors={colors}
+        />
+      </View>
 
       <Pressable style={styles.section} onPress={onEditWiFi}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>WiFi</Text>
