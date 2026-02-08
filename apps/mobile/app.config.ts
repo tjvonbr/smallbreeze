@@ -56,5 +56,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     apiUrl: process.env.API_URL ?? "http://localhost:3001",
+    mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN ?? "",
   },
 });
