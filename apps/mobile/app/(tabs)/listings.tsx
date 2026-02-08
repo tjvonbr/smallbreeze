@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import AddressAutocomplete, { ParsedAddress } from '@/components/address-autocomplete';
 import { Icons } from '@/components/icons';
 import { useListings, Listing } from '@/context/listings-context';
 import { Colors, Fonts } from '@/constants/theme';
@@ -309,16 +310,23 @@ export default function ListingsScreen() {
             </View>
 
             <View style={styles.formField}>
-              <View style={[styles.inputContainer, { borderColor: colorScheme === 'dark' ? '#444' : '#DDD' }]}>
-                <Text style={[styles.inputLabel, { color: colors.icon }]}>Street Address</Text>
-                <TextInput
-                  style={[styles.input, { color: colors.text }]}
-                  value={form.streetAddress}
-                  onChangeText={(text) => setForm((prev) => ({ ...prev, streetAddress: text }))}
-                  placeholder="123 Main St"
-                  placeholderTextColor={colors.icon}
-                />
-              </View>
+              <AddressAutocomplete
+                onAddressSelect={(address: ParsedAddress) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    streetAddress: address.streetAddress,
+                    city: address.city || prev.city,
+                    state: address.state || prev.state,
+                    zip: address.zip || prev.zip,
+                    country: address.country || prev.country,
+                  }));
+                }}
+                onTextChange={(text) => setForm((prev) => ({ ...prev, streetAddress: text }))}
+                borderColor={colorScheme === 'dark' ? '#444' : '#DDD'}
+                labelColor={colors.icon}
+                textColor={colors.text}
+                placeholderColor={colors.icon}
+              />
             </View>
 
             <View style={styles.formField}>
