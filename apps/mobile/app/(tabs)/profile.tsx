@@ -56,7 +56,6 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     await authClient.signOut();
-    router.replace('/(auth)/sign-in');
   };
 
   const userInitial = session?.user?.name?.charAt(0)?.toUpperCase() ?? 'U';
