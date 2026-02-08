@@ -58,7 +58,7 @@ export default function SignInScreen() {
         );
 
         if (result.type === 'success') {
-          router.replace('/(tabs)');
+          // Root layout handles navigation when session updates
         }
       }
     } catch (err) {
@@ -107,7 +107,7 @@ export default function SignInScreen() {
       }
 
       if (data) {
-        router.replace('/(tabs)');
+        // Root layout handles navigation when session updates
       }
     } catch (err) {
       console.error('Sign in error:', err);

@@ -47,7 +47,7 @@ export default function AuthLandingScreen() {
         );
 
         if (result.type === 'success') {
-          router.replace('/(tabs)');
+          // Root layout handles navigation when session updates
         }
       }
     } catch (err) {
