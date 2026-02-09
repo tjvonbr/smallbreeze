@@ -1,8 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
 import { Cron } from '@nestjs/schedule';
+import { Queue } from 'bullmq';
 import { prisma } from '../lib/prisma.js';
 import { parseCalendarUrl } from '../lib/ics-parser.js';
 import { geocodeAddress, isGeocodingEnabled } from '../lib/geocoding.js';
+import type { NewReservationJobData } from './new-reservation.processor.js';
 
 interface CreateListingData {
   nickname: string;
@@ -32,6 +35,11 @@ const ADDRESS_FIELDS = ['streetAddress', 'city', 'state', 'zip', 'country'] as c
 @Injectable()
 export class ListingsService {
   private readonly logger = new Logger(ListingsService.name);
+
+  constructor(
+    @InjectQueue('new-reservation')
+    private readonly newReservationQueue: Queue<NewReservationJobData>,
+  ) {}
 
   @Cron('*/15 * * * *')
   async syncAllReservations() {
@@ -392,10 +400,20 @@ export class ListingsService {
   private async syncReservationsForLink(calendarLinkId: string, listingId: string, url: string) {
     const events = await parseCalendarUrl(url);
 
+    // Fetch existing icalUids for this calendar link to detect new reservations
+    const existingReservations = await prisma.reservation.findMany({
+      where: { calendarLinkId },
+      select: { icalUid: true },
+    });
+    const existingUids = new Set(existingReservations.map((r) => r.icalUid));
+
+    const newReservations: NewReservationJobData[] = [];
     const icalUids: string[] = [];
     for (const event of events) {
       icalUids.push(event.id);
-      await prisma.reservation.upsert({
+      const isNew = !existingUids.has(event.id);
+
+      const reservation = await prisma.reservation.upsert({
         where: { calendarLinkId_icalUid: { calendarLinkId, icalUid: event.id } },
         create: {
           listingId,
@@ -417,6 +435,23 @@ export class ListingsService {
           allDay: event.allDay,
         },
       });
+
+      if (isNew) {
+        newReservations.push({
+          reservationId: reservation.id,
+          listingId,
+          calendarLinkId,
+          icalUid: event.id,
+          summary: event.summary ?? null,
+          startDate: event.start.toISOString(),
+          endDate: event.end.toISOString(),
+        });
+      }
+    }
+
+    // Enqueue jobs for new reservations
+    for (const data of newReservations) {
+      await this.newReservationQueue.add('new-reservation', data);
     }
 
     // Soft-delete reservations from this link that are no longer in the feed

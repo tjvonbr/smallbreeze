@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bullmq';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './lib/auth.js';
@@ -11,6 +12,9 @@ import { AppController } from './app.controller.js';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      connection: { url: process.env.REDIS_URL },
+    }),
     ScheduleModule.forRoot(),
     AuthModule.forRoot({ auth }),
     UsersModule,
