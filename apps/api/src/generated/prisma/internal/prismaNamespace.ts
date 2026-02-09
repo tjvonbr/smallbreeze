@@ -399,6 +399,7 @@ export const ModelName = {
   Listing: 'Listing',
   ListingPhoto: 'ListingPhoto',
   CalendarLink: 'CalendarLink',
+  Reservation: 'Reservation',
   Verification: 'Verification',
   Invite: 'Invite'
 } as const
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "team" | "teamMember" | "account" | "session" | "verificationToken" | "listing" | "listingPhoto" | "calendarLink" | "verification" | "invite"
+    modelProps: "user" | "team" | "teamMember" | "account" | "session" | "verificationToken" | "listing" | "listingPhoto" | "calendarLink" | "reservation" | "verification" | "invite"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1086,6 +1087,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Reservation: {
+      payload: Prisma.$ReservationPayload<ExtArgs>
+      fields: Prisma.ReservationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReservationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReservationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>
+        }
+        findFirst: {
+          args: Prisma.ReservationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReservationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>
+        }
+        findMany: {
+          args: Prisma.ReservationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>[]
+        }
+        create: {
+          args: Prisma.ReservationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>
+        }
+        createMany: {
+          args: Prisma.ReservationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReservationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>[]
+        }
+        delete: {
+          args: Prisma.ReservationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>
+        }
+        update: {
+          args: Prisma.ReservationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReservationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReservationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReservationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReservationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReservationPayload>
+        }
+        aggregate: {
+          args: Prisma.ReservationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReservation>
+        }
+        groupBy: {
+          args: Prisma.ReservationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReservationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReservationCountAggregateOutputType> | number
+        }
+      }
+    }
     Verification: {
       payload: Prisma.$VerificationPayload<ExtArgs>
       fields: Prisma.VerificationFieldRefs
@@ -1397,6 +1472,24 @@ export const CalendarLinkScalarFieldEnum = {
 export type CalendarLinkScalarFieldEnum = (typeof CalendarLinkScalarFieldEnum)[keyof typeof CalendarLinkScalarFieldEnum]
 
 
+export const ReservationScalarFieldEnum = {
+  id: 'id',
+  listingId: 'listingId',
+  calendarLinkId: 'calendarLinkId',
+  icalUid: 'icalUid',
+  summary: 'summary',
+  description: 'description',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  location: 'location',
+  allDay: 'allDay',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationScalarFieldEnum = (typeof ReservationScalarFieldEnum)[keyof typeof ReservationScalarFieldEnum]
+
+
 export const VerificationScalarFieldEnum = {
   id: 'id',
   identifier: 'identifier',
@@ -1623,6 +1716,7 @@ export type GlobalOmitConfig = {
   listing?: Prisma.ListingOmit
   listingPhoto?: Prisma.ListingPhotoOmit
   calendarLink?: Prisma.CalendarLinkOmit
+  reservation?: Prisma.ReservationOmit
   verification?: Prisma.VerificationOmit
   invite?: Prisma.InviteOmit
 }

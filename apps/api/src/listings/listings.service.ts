@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { prisma } from '../lib/prisma.js';
-import { parseCalendarUrl, getNextCheckIn, CalendarEvent } from '../lib/ics-parser.js';
+import { parseCalendarUrl } from '../lib/ics-parser.js';
 import { geocodeAddress, isGeocodingEnabled } from '../lib/geocoding.js';
-
-export type { CalendarEvent };
 
 interface CreateListingData {
   nickname: string;
@@ -53,21 +51,11 @@ export class ListingsService {
     });
 
     const listingsWithNextCheckIn = await Promise.all(
-      listings.map(async (listing: { calendarLinks: { url: string }[] }) => {
-        let nextCheckIn: Date | null = null;
-
-        for (const calendarLink of listing.calendarLinks) {
-          const events = await parseCalendarUrl(calendarLink.url);
-          const checkIn = getNextCheckIn(events);
-
-          if (checkIn && (!nextCheckIn || checkIn < nextCheckIn)) {
-            nextCheckIn = checkIn;
-          }
-        }
-
+      listings.map(async (listing) => {
+        const nextCheckIn = await this.getNextCheckInFromDb(listing.id);
         return {
           ...listing,
-          nextCheckIn: nextCheckIn?.toISOString() ?? null,
+          nextCheckIn,
         };
       })
     );
@@ -196,21 +184,11 @@ export class ListingsService {
       },
     });
 
-    // Calculate next check-in
-    let nextCheckIn: Date | null = null;
-
-    for (const calendarLink of updatedListing.calendarLinks) {
-      const events = await parseCalendarUrl(calendarLink.url);
-      const checkIn = getNextCheckIn(events);
-
-      if (checkIn && (!nextCheckIn || checkIn < nextCheckIn)) {
-        nextCheckIn = checkIn;
-      }
-    }
+    const nextCheckIn = await this.getNextCheckInFromDb(listingId);
 
     return {
       ...updatedListing,
-      nextCheckIn: nextCheckIn?.toISOString() ?? null,
+      nextCheckIn,
     };
   }
 
@@ -228,35 +206,26 @@ export class ListingsService {
         id: listingId,
         teamId: { in: teamIds },
       },
-      include: {
-        calendarLinks: true,
-      },
     });
 
     if (!listing) {
       return null;
     }
 
-    // Fetch all events from all calendar links
-    const allEvents: CalendarEvent[] = [];
+    const reservations = await prisma.reservation.findMany({
+      where: { listingId },
+      orderBy: { startDate: 'asc' },
+    });
 
-    for (const calendarLink of listing.calendarLinks) {
-      const events = await parseCalendarUrl(calendarLink.url);
-      allEvents.push(...events);
-    }
-
-    // Sort by start date and return serializable format
-    return allEvents
-      .sort((a, b) => a.start.getTime() - b.start.getTime())
-      .map((event) => ({
-        id: event.id,
-        summary: event.summary,
-        description: event.description,
-        start: event.start.toISOString(),
-        end: event.end.toISOString(),
-        location: event.location,
-        allDay: event.allDay,
-      }));
+    return reservations.map((r) => ({
+      id: r.id,
+      summary: r.summary,
+      description: r.description,
+      start: r.startDate.toISOString(),
+      end: r.endDate.toISOString(),
+      location: r.location,
+      allDay: r.allDay,
+    }));
   }
 
   /**
@@ -336,27 +305,22 @@ export class ListingsService {
       },
     });
 
+    // Sync reservations from the new calendar link
+    await this.syncReservationsForLink(calendarLink.id, listingId, url);
+
     // Return the updated listing with all calendar links
     const updatedListing = await prisma.listing.findUnique({
       where: { id: listingId },
       include: { calendarLinks: true },
     });
 
-    // Recalculate next check-in
-    let nextCheckIn: Date | null = null;
-    for (const link of updatedListing!.calendarLinks) {
-      const events = await parseCalendarUrl(link.url);
-      const checkIn = getNextCheckIn(events);
-      if (checkIn && (!nextCheckIn || checkIn < nextCheckIn)) {
-        nextCheckIn = checkIn;
-      }
-    }
+    const nextCheckIn = await this.getNextCheckInFromDb(listingId);
 
     return {
       calendarLink,
       listing: {
         ...updatedListing!,
-        nextCheckIn: nextCheckIn?.toISOString() ?? null,
+        nextCheckIn,
       },
     };
   }
@@ -399,18 +363,56 @@ export class ListingsService {
       include: { calendarLinks: true },
     });
 
-    let nextCheckIn: Date | null = null;
-    for (const cl of updatedListing!.calendarLinks) {
-      const events = await parseCalendarUrl(cl.url);
-      const checkIn = getNextCheckIn(events);
-      if (checkIn && (!nextCheckIn || checkIn < nextCheckIn)) {
-        nextCheckIn = checkIn;
-      }
-    }
+    const nextCheckIn = await this.getNextCheckInFromDb(listingId);
 
     return {
       ...updatedListing!,
-      nextCheckIn: nextCheckIn?.toISOString() ?? null,
+      nextCheckIn,
     };
+  }
+
+  private async syncReservationsForLink(calendarLinkId: string, listingId: string, url: string) {
+    const events = await parseCalendarUrl(url);
+
+    const icalUids: string[] = [];
+    for (const event of events) {
+      icalUids.push(event.id);
+      await prisma.reservation.upsert({
+        where: { calendarLinkId_icalUid: { calendarLinkId, icalUid: event.id } },
+        create: {
+          listingId,
+          calendarLinkId,
+          icalUid: event.id,
+          summary: event.summary,
+          description: event.description,
+          startDate: event.start,
+          endDate: event.end,
+          location: event.location,
+          allDay: event.allDay,
+        },
+        update: {
+          summary: event.summary,
+          description: event.description,
+          startDate: event.start,
+          endDate: event.end,
+          location: event.location,
+          allDay: event.allDay,
+        },
+      });
+    }
+
+    // Remove reservations from this link that are no longer in the feed
+    await prisma.reservation.deleteMany({
+      where: { calendarLinkId, icalUid: { notIn: icalUids } },
+    });
+  }
+
+  private async getNextCheckInFromDb(listingId: string): Promise<string | null> {
+    const next = await prisma.reservation.findFirst({
+      where: { listingId, startDate: { gt: new Date() } },
+      orderBy: { startDate: 'asc' },
+      select: { startDate: true },
+    });
+    return next?.startDate.toISOString() ?? null;
   }
 }
