@@ -57,6 +57,26 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Testing emails
+
+### Preview templates
+
+Start the React Email dev server to preview email templates in the browser:
+
+```bash
+$ npx react-email dev --dir src/lib/emails
+```
+
+### Test the new-reservation email flow
+
+With the API server running, enqueue a test job to send a real new-reservation email to all team members on a listing:
+
+```bash
+$ npx tsx scripts/test-new-reservation.ts <listingId>
+```
+
+This requires `REDIS_URL`, `RESEND_API_KEY`, `EMAIL_SENDER_NAME`, and `EMAIL_SENDER_ADDRESS` to be set in your `.env`.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
