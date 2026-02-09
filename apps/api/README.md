@@ -75,6 +75,9 @@ With the API server running, enqueue a test job to send a real email to all team
 # New reservation
 $ npx tsx scripts/test-new-reservation.ts <listingId>
 
+# Updated reservation
+$ npx tsx scripts/test-updated-reservation.ts <listingId>
+
 # Canceled reservation
 $ npx tsx scripts/test-canceled-reservation.ts <listingId>
 ```

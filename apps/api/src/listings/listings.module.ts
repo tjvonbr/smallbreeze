@@ -4,13 +4,15 @@ import { ListingsService } from './listings.service.js';
 import { ListingsController } from './listings.controller.js';
 import { NewReservationProcessor } from './new-reservation.processor.js';
 import { CanceledReservationProcessor } from './canceled-reservation.processor.js';
+import { UpdatedReservationProcessor } from './updated-reservation.processor.js';
 
 @Module({
   imports: [
     BullModule.registerQueue({ name: 'new-reservation' }),
     BullModule.registerQueue({ name: 'canceled-reservation' }),
+    BullModule.registerQueue({ name: 'updated-reservation' }),
   ],
   controllers: [ListingsController],
-  providers: [ListingsService, NewReservationProcessor, CanceledReservationProcessor],
+  providers: [ListingsService, NewReservationProcessor, CanceledReservationProcessor, UpdatedReservationProcessor],
 })
 export class ListingsModule {}
