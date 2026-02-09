@@ -7,6 +7,7 @@ import { parseCalendarUrl } from '../lib/ics-parser.js';
 import { geocodeAddress, isGeocodingEnabled } from '../lib/geocoding.js';
 import type { NewReservationJobData } from './new-reservation.processor.js';
 import type { CanceledReservationJobData } from './canceled-reservation.processor.js';
+import type { UpdatedReservationJobData } from './updated-reservation.processor.js';
 
 interface CreateListingData {
   nickname: string;
@@ -42,6 +43,8 @@ export class ListingsService {
     private readonly newReservationQueue: Queue<NewReservationJobData>,
     @InjectQueue('canceled-reservation')
     private readonly canceledReservationQueue: Queue<CanceledReservationJobData>,
+    @InjectQueue('updated-reservation')
+    private readonly updatedReservationQueue: Queue<UpdatedReservationJobData>,
   ) {}
 
   @Cron('*/15 * * * *')
@@ -403,14 +406,16 @@ export class ListingsService {
   private async syncReservationsForLink(calendarLinkId: string, listingId: string, url: string) {
     const events = await parseCalendarUrl(url);
 
-    // Fetch existing icalUids for this calendar link to detect new reservations
+    // Fetch existing reservations for this calendar link to detect new and updated reservations
     const existingReservations = await prisma.reservation.findMany({
       where: { calendarLinkId },
-      select: { icalUid: true },
+      select: { icalUid: true, summary: true, startDate: true, endDate: true },
     });
     const existingUids = new Set(existingReservations.map((r) => r.icalUid));
+    const existingByUid = new Map(existingReservations.map((r) => [r.icalUid, r]));
 
     const newReservations: NewReservationJobData[] = [];
+    const updatedReservations: UpdatedReservationJobData[] = [];
     const icalUids: string[] = [];
     for (const event of events) {
       icalUids.push(event.id);
@@ -449,12 +454,35 @@ export class ListingsService {
           startDate: event.start.toISOString(),
           endDate: event.end.toISOString(),
         });
+      } else {
+        const existing = existingByUid.get(event.id);
+        if (
+          existing &&
+          (existing.summary !== event.summary ||
+            existing.startDate.getTime() !== event.start.getTime() ||
+            existing.endDate.getTime() !== event.end.getTime())
+        ) {
+          updatedReservations.push({
+            reservationId: reservation.id,
+            listingId,
+            calendarLinkId,
+            icalUid: event.id,
+            summary: event.summary ?? null,
+            startDate: event.start.toISOString(),
+            endDate: event.end.toISOString(),
+          });
+        }
       }
     }
 
     // Enqueue jobs for new reservations
     for (const data of newReservations) {
       await this.newReservationQueue.add('new-reservation', data);
+    }
+
+    // Enqueue jobs for updated reservations
+    for (const data of updatedReservations) {
+      await this.updatedReservationQueue.add('updated-reservation', data);
     }
 
     // Find reservations that will be soft-deleted so we can notify
