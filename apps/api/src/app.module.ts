@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './lib/auth.js';
 import { UsersModule } from './users/users.module.js';
@@ -10,6 +11,7 @@ import { AppController } from './app.controller.js';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     AuthModule.forRoot({ auth }),
     UsersModule,
     ListingsModule,

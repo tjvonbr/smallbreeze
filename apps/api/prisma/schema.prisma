@@ -167,6 +167,7 @@ model Reservation {
   endDate        DateTime
   location       String?
   allDay         Boolean      @default(true)
+  cancelledAt    DateTime?
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 

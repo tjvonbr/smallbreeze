@@ -35,6 +35,7 @@ export type ReservationMinAggregateOutputType = {
   endDate: Date | null
   location: string | null
   allDay: boolean | null
+  cancelledAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +51,7 @@ export type ReservationMaxAggregateOutputType = {
   endDate: Date | null
   location: string | null
   allDay: boolean | null
+  cancelledAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -65,6 +67,7 @@ export type ReservationCountAggregateOutputType = {
   endDate: number
   location: number
   allDay: number
+  cancelledAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -82,6 +85,7 @@ export type ReservationMinAggregateInputType = {
   endDate?: true
   location?: true
   allDay?: true
+  cancelledAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -97,6 +101,7 @@ export type ReservationMaxAggregateInputType = {
   endDate?: true
   location?: true
   allDay?: true
+  cancelledAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +117,7 @@ export type ReservationCountAggregateInputType = {
   endDate?: true
   location?: true
   allDay?: true
+  cancelledAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -200,6 +206,7 @@ export type ReservationGroupByOutputType = {
   endDate: Date
   location: string | null
   allDay: boolean
+  cancelledAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: ReservationCountAggregateOutputType | null
@@ -236,6 +243,7 @@ export type ReservationWhereInput = {
   endDate?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   location?: Prisma.StringNullableFilter<"Reservation"> | string | null
   allDay?: Prisma.BoolFilter<"Reservation"> | boolean
+  cancelledAt?: Prisma.DateTimeNullableFilter<"Reservation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
@@ -253,6 +261,7 @@ export type ReservationOrderByWithRelationInput = {
   endDate?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   allDay?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   listing?: Prisma.ListingOrderByWithRelationInput
@@ -274,6 +283,7 @@ export type ReservationWhereUniqueInput = Prisma.AtLeast<{
   endDate?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   location?: Prisma.StringNullableFilter<"Reservation"> | string | null
   allDay?: Prisma.BoolFilter<"Reservation"> | boolean
+  cancelledAt?: Prisma.DateTimeNullableFilter<"Reservation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
@@ -291,6 +301,7 @@ export type ReservationOrderByWithAggregationInput = {
   endDate?: Prisma.SortOrder
   location?: Prisma.SortOrderInput | Prisma.SortOrder
   allDay?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ReservationCountOrderByAggregateInput
@@ -312,6 +323,7 @@ export type ReservationScalarWhereWithAggregatesInput = {
   endDate?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
   location?: Prisma.StringNullableWithAggregatesFilter<"Reservation"> | string | null
   allDay?: Prisma.BoolWithAggregatesFilter<"Reservation"> | boolean
+  cancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Reservation"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Reservation"> | Date | string
 }
@@ -325,6 +337,7 @@ export type ReservationCreateInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   listing: Prisma.ListingCreateNestedOneWithoutReservationsInput
@@ -342,6 +355,7 @@ export type ReservationUncheckedCreateInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -355,6 +369,7 @@ export type ReservationUpdateInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   listing?: Prisma.ListingUpdateOneRequiredWithoutReservationsNestedInput
@@ -372,6 +387,7 @@ export type ReservationUncheckedUpdateInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -387,6 +403,7 @@ export type ReservationCreateManyInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -400,6 +417,7 @@ export type ReservationUpdateManyMutationInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -415,6 +433,7 @@ export type ReservationUncheckedUpdateManyInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -445,6 +464,7 @@ export type ReservationCountOrderByAggregateInput = {
   endDate?: Prisma.SortOrder
   location?: Prisma.SortOrder
   allDay?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -460,6 +480,7 @@ export type ReservationMaxOrderByAggregateInput = {
   endDate?: Prisma.SortOrder
   location?: Prisma.SortOrder
   allDay?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -475,6 +496,7 @@ export type ReservationMinOrderByAggregateInput = {
   endDate?: Prisma.SortOrder
   location?: Prisma.SortOrder
   allDay?: Prisma.SortOrder
+  cancelledAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -572,6 +594,7 @@ export type ReservationCreateWithoutListingInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   calendarLink: Prisma.CalendarLinkCreateNestedOneWithoutReservationsInput
@@ -587,6 +610,7 @@ export type ReservationUncheckedCreateWithoutListingInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -631,6 +655,7 @@ export type ReservationScalarWhereInput = {
   endDate?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   location?: Prisma.StringNullableFilter<"Reservation"> | string | null
   allDay?: Prisma.BoolFilter<"Reservation"> | boolean
+  cancelledAt?: Prisma.DateTimeNullableFilter<"Reservation"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
 }
@@ -644,6 +669,7 @@ export type ReservationCreateWithoutCalendarLinkInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   listing: Prisma.ListingCreateNestedOneWithoutReservationsInput
@@ -659,6 +685,7 @@ export type ReservationUncheckedCreateWithoutCalendarLinkInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -699,6 +726,7 @@ export type ReservationCreateManyListingInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -712,6 +740,7 @@ export type ReservationUpdateWithoutListingInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   calendarLink?: Prisma.CalendarLinkUpdateOneRequiredWithoutReservationsNestedInput
@@ -727,6 +756,7 @@ export type ReservationUncheckedUpdateWithoutListingInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -741,6 +771,7 @@ export type ReservationUncheckedUpdateManyWithoutListingInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -755,6 +786,7 @@ export type ReservationCreateManyCalendarLinkInput = {
   endDate: Date | string
   location?: string | null
   allDay?: boolean
+  cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -768,6 +800,7 @@ export type ReservationUpdateWithoutCalendarLinkInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   listing?: Prisma.ListingUpdateOneRequiredWithoutReservationsNestedInput
@@ -783,6 +816,7 @@ export type ReservationUncheckedUpdateWithoutCalendarLinkInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -797,6 +831,7 @@ export type ReservationUncheckedUpdateManyWithoutCalendarLinkInput = {
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -814,6 +849,7 @@ export type ReservationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   endDate?: boolean
   location?: boolean
   allDay?: boolean
+  cancelledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
@@ -831,6 +867,7 @@ export type ReservationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   endDate?: boolean
   location?: boolean
   allDay?: boolean
+  cancelledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
@@ -848,6 +885,7 @@ export type ReservationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   endDate?: boolean
   location?: boolean
   allDay?: boolean
+  cancelledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
@@ -865,11 +903,12 @@ export type ReservationSelectScalar = {
   endDate?: boolean
   location?: boolean
   allDay?: boolean
+  cancelledAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "listingId" | "calendarLinkId" | "icalUid" | "summary" | "description" | "startDate" | "endDate" | "location" | "allDay" | "createdAt" | "updatedAt", ExtArgs["result"]["reservation"]>
+export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "listingId" | "calendarLinkId" | "icalUid" | "summary" | "description" | "startDate" | "endDate" | "location" | "allDay" | "cancelledAt" | "createdAt" | "updatedAt", ExtArgs["result"]["reservation"]>
 export type ReservationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
   calendarLink?: boolean | Prisma.CalendarLinkDefaultArgs<ExtArgs>
@@ -900,6 +939,7 @@ export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     endDate: Date
     location: string | null
     allDay: boolean
+    cancelledAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["reservation"]>
@@ -1337,6 +1377,7 @@ export interface ReservationFieldRefs {
   readonly endDate: Prisma.FieldRef<"Reservation", 'DateTime'>
   readonly location: Prisma.FieldRef<"Reservation", 'String'>
   readonly allDay: Prisma.FieldRef<"Reservation", 'Boolean'>
+  readonly cancelledAt: Prisma.FieldRef<"Reservation", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Reservation", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Reservation", 'DateTime'>
 }
