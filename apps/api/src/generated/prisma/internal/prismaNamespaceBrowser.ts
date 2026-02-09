@@ -214,6 +214,7 @@ export const ReservationScalarFieldEnum = {
   endDate: 'endDate',
   location: 'location',
   allDay: 'allDay',
+  cancelledAt: 'cancelledAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

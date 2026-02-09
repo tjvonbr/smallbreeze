@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { prisma } from '../lib/prisma.js';
 import { parseCalendarUrl } from '../lib/ics-parser.js';
 import { geocodeAddress, isGeocodingEnabled } from '../lib/geocoding.js';
@@ -30,6 +31,23 @@ const ADDRESS_FIELDS = ['streetAddress', 'city', 'state', 'zip', 'country'] as c
 
 @Injectable()
 export class ListingsService {
+  private readonly logger = new Logger(ListingsService.name);
+
+  @Cron('*/15 * * * *')
+  async syncAllReservations() {
+    const calendarLinks = await prisma.calendarLink.findMany({
+      select: { id: true, listingId: true, url: true },
+    });
+
+    for (const link of calendarLinks) {
+      try {
+        await this.syncReservationsForLink(link.id, link.listingId, link.url);
+      } catch (error) {
+        this.logger.error(`Failed to sync calendar link ${link.id}`, error);
+      }
+    }
+  }
+
   async findAllForUser(userId: string) {
     const teamMemberships = await prisma.teamMember.findMany({
       where: { userId },
@@ -213,7 +231,7 @@ export class ListingsService {
     }
 
     const reservations = await prisma.reservation.findMany({
-      where: { listingId },
+      where: { listingId, cancelledAt: null },
       orderBy: { startDate: 'asc' },
     });
 
@@ -401,15 +419,22 @@ export class ListingsService {
       });
     }
 
-    // Remove reservations from this link that are no longer in the feed
-    await prisma.reservation.deleteMany({
-      where: { calendarLinkId, icalUid: { notIn: icalUids } },
+    // Soft-delete reservations from this link that are no longer in the feed
+    await prisma.reservation.updateMany({
+      where: { calendarLinkId, icalUid: { notIn: icalUids }, cancelledAt: null },
+      data: { cancelledAt: new Date() },
+    });
+
+    // Restore any previously cancelled reservations that reappeared in the feed
+    await prisma.reservation.updateMany({
+      where: { calendarLinkId, icalUid: { in: icalUids }, cancelledAt: { not: null } },
+      data: { cancelledAt: null },
     });
   }
 
   private async getNextCheckInFromDb(listingId: string): Promise<string | null> {
     const next = await prisma.reservation.findFirst({
-      where: { listingId, startDate: { gt: new Date() } },
+      where: { listingId, cancelledAt: null, startDate: { gt: new Date() } },
       orderBy: { startDate: 'asc' },
       select: { startDate: true },
     });
