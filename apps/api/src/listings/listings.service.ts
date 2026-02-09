@@ -6,6 +6,7 @@ import { prisma } from '../lib/prisma.js';
 import { parseCalendarUrl } from '../lib/ics-parser.js';
 import { geocodeAddress, isGeocodingEnabled } from '../lib/geocoding.js';
 import type { NewReservationJobData } from './new-reservation.processor.js';
+import type { CanceledReservationJobData } from './canceled-reservation.processor.js';
 
 interface CreateListingData {
   nickname: string;
@@ -39,6 +40,8 @@ export class ListingsService {
   constructor(
     @InjectQueue('new-reservation')
     private readonly newReservationQueue: Queue<NewReservationJobData>,
+    @InjectQueue('canceled-reservation')
+    private readonly canceledReservationQueue: Queue<CanceledReservationJobData>,
   ) {}
 
   @Cron('*/15 * * * *')
@@ -454,11 +457,30 @@ export class ListingsService {
       await this.newReservationQueue.add('new-reservation', data);
     }
 
+    // Find reservations that will be soft-deleted so we can notify
+    const canceledReservations = await prisma.reservation.findMany({
+      where: { calendarLinkId, icalUid: { notIn: icalUids }, cancelledAt: null },
+      select: { id: true, icalUid: true, summary: true, startDate: true, endDate: true },
+    });
+
     // Soft-delete reservations from this link that are no longer in the feed
     await prisma.reservation.updateMany({
       where: { calendarLinkId, icalUid: { notIn: icalUids }, cancelledAt: null },
       data: { cancelledAt: new Date() },
     });
+
+    // Enqueue jobs for canceled reservations
+    for (const r of canceledReservations) {
+      await this.canceledReservationQueue.add('canceled-reservation', {
+        reservationId: r.id,
+        listingId,
+        calendarLinkId,
+        icalUid: r.icalUid,
+        summary: r.summary ?? null,
+        startDate: r.startDate.toISOString(),
+        endDate: r.endDate.toISOString(),
+      });
+    }
 
     // Restore any previously cancelled reservations that reappeared in the feed
     await prisma.reservation.updateMany({

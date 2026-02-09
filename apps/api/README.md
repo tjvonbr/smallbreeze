@@ -67,12 +67,16 @@ Start the React Email dev server to preview email templates in the browser:
 $ npx react-email dev --dir src/lib/emails
 ```
 
-### Test the new-reservation email flow
+### Test email flows
 
-With the API server running, enqueue a test job to send a real new-reservation email to all team members on a listing:
+With the API server running, enqueue a test job to send a real email to all team members on a listing:
 
 ```bash
+# New reservation
 $ npx tsx scripts/test-new-reservation.ts <listingId>
+
+# Canceled reservation
+$ npx tsx scripts/test-canceled-reservation.ts <listingId>
 ```
 
 This requires `REDIS_URL`, `RESEND_API_KEY`, `EMAIL_SENDER_NAME`, and `EMAIL_SENDER_ADDRESS` to be set in your `.env`.
