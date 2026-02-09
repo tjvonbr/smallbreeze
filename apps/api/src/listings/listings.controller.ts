@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Session } from '@thallesp/nestjs-better-auth';
-import { ListingsService, CalendarEvent } from './listings.service.js';
+import { ListingsService } from './listings.service.js';
 
 interface CreateListingDto {
   nickname: string;

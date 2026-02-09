@@ -122,6 +122,7 @@ model Listing {
   team           Team           @relation(fields: [teamId], references: [id])
   calendarLinks  CalendarLink[]
   photos         ListingPhoto[]
+  reservations   Reservation[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -142,14 +143,35 @@ model ListingPhoto {
 }
 
 model CalendarLink {
-  id        String   @id @default(uuid())
-  url       String
-  listingId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  listing   Listing  @relation(fields: [listingId], references: [id])
+  id           String        @id @default(uuid())
+  url          String
+  listingId    String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  listing      Listing       @relation(fields: [listingId], references: [id])
+  reservations Reservation[]
 
   @@map("calendar_links")
+}
+
+model Reservation {
+  id             String       @id @default(uuid())
+  listingId      String
+  listing        Listing      @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  calendarLinkId String
+  calendarLink   CalendarLink @relation(fields: [calendarLinkId], references: [id], onDelete: Cascade)
+  icalUid        String
+  summary        String
+  description    String?
+  startDate      DateTime
+  endDate        DateTime
+  location       String?
+  allDay         Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([calendarLinkId, icalUid])
+  @@map("reservations")
 }
 
 model Verification {

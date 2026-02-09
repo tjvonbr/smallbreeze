@@ -183,6 +183,7 @@ export type CalendarLinkWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"CalendarLink"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CalendarLink"> | Date | string
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
+  reservations?: Prisma.ReservationListRelationFilter
 }
 
 export type CalendarLinkOrderByWithRelationInput = {
@@ -192,6 +193,7 @@ export type CalendarLinkOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   listing?: Prisma.ListingOrderByWithRelationInput
+  reservations?: Prisma.ReservationOrderByRelationAggregateInput
 }
 
 export type CalendarLinkWhereUniqueInput = Prisma.AtLeast<{
@@ -204,6 +206,7 @@ export type CalendarLinkWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"CalendarLink"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CalendarLink"> | Date | string
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
+  reservations?: Prisma.ReservationListRelationFilter
 }, "id">
 
 export type CalendarLinkOrderByWithAggregationInput = {
@@ -234,6 +237,7 @@ export type CalendarLinkCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   listing: Prisma.ListingCreateNestedOneWithoutCalendarLinksInput
+  reservations?: Prisma.ReservationCreateNestedManyWithoutCalendarLinkInput
 }
 
 export type CalendarLinkUncheckedCreateInput = {
@@ -242,6 +246,7 @@ export type CalendarLinkUncheckedCreateInput = {
   listingId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCalendarLinkInput
 }
 
 export type CalendarLinkUpdateInput = {
@@ -250,6 +255,7 @@ export type CalendarLinkUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   listing?: Prisma.ListingUpdateOneRequiredWithoutCalendarLinksNestedInput
+  reservations?: Prisma.ReservationUpdateManyWithoutCalendarLinkNestedInput
 }
 
 export type CalendarLinkUncheckedUpdateInput = {
@@ -258,6 +264,7 @@ export type CalendarLinkUncheckedUpdateInput = {
   listingId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCalendarLinkNestedInput
 }
 
 export type CalendarLinkCreateManyInput = {
@@ -317,6 +324,11 @@ export type CalendarLinkMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type CalendarLinkScalarRelationFilter = {
+  is?: Prisma.CalendarLinkWhereInput
+  isNot?: Prisma.CalendarLinkWhereInput
+}
+
 export type CalendarLinkCreateNestedManyWithoutListingInput = {
   create?: Prisma.XOR<Prisma.CalendarLinkCreateWithoutListingInput, Prisma.CalendarLinkUncheckedCreateWithoutListingInput> | Prisma.CalendarLinkCreateWithoutListingInput[] | Prisma.CalendarLinkUncheckedCreateWithoutListingInput[]
   connectOrCreate?: Prisma.CalendarLinkCreateOrConnectWithoutListingInput | Prisma.CalendarLinkCreateOrConnectWithoutListingInput[]
@@ -359,11 +371,26 @@ export type CalendarLinkUncheckedUpdateManyWithoutListingNestedInput = {
   deleteMany?: Prisma.CalendarLinkScalarWhereInput | Prisma.CalendarLinkScalarWhereInput[]
 }
 
+export type CalendarLinkCreateNestedOneWithoutReservationsInput = {
+  create?: Prisma.XOR<Prisma.CalendarLinkCreateWithoutReservationsInput, Prisma.CalendarLinkUncheckedCreateWithoutReservationsInput>
+  connectOrCreate?: Prisma.CalendarLinkCreateOrConnectWithoutReservationsInput
+  connect?: Prisma.CalendarLinkWhereUniqueInput
+}
+
+export type CalendarLinkUpdateOneRequiredWithoutReservationsNestedInput = {
+  create?: Prisma.XOR<Prisma.CalendarLinkCreateWithoutReservationsInput, Prisma.CalendarLinkUncheckedCreateWithoutReservationsInput>
+  connectOrCreate?: Prisma.CalendarLinkCreateOrConnectWithoutReservationsInput
+  upsert?: Prisma.CalendarLinkUpsertWithoutReservationsInput
+  connect?: Prisma.CalendarLinkWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CalendarLinkUpdateToOneWithWhereWithoutReservationsInput, Prisma.CalendarLinkUpdateWithoutReservationsInput>, Prisma.CalendarLinkUncheckedUpdateWithoutReservationsInput>
+}
+
 export type CalendarLinkCreateWithoutListingInput = {
   id?: string
   url: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  reservations?: Prisma.ReservationCreateNestedManyWithoutCalendarLinkInput
 }
 
 export type CalendarLinkUncheckedCreateWithoutListingInput = {
@@ -371,6 +398,7 @@ export type CalendarLinkUncheckedCreateWithoutListingInput = {
   url: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutCalendarLinkInput
 }
 
 export type CalendarLinkCreateOrConnectWithoutListingInput = {
@@ -410,6 +438,54 @@ export type CalendarLinkScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"CalendarLink"> | Date | string
 }
 
+export type CalendarLinkCreateWithoutReservationsInput = {
+  id?: string
+  url: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  listing: Prisma.ListingCreateNestedOneWithoutCalendarLinksInput
+}
+
+export type CalendarLinkUncheckedCreateWithoutReservationsInput = {
+  id?: string
+  url: string
+  listingId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CalendarLinkCreateOrConnectWithoutReservationsInput = {
+  where: Prisma.CalendarLinkWhereUniqueInput
+  create: Prisma.XOR<Prisma.CalendarLinkCreateWithoutReservationsInput, Prisma.CalendarLinkUncheckedCreateWithoutReservationsInput>
+}
+
+export type CalendarLinkUpsertWithoutReservationsInput = {
+  update: Prisma.XOR<Prisma.CalendarLinkUpdateWithoutReservationsInput, Prisma.CalendarLinkUncheckedUpdateWithoutReservationsInput>
+  create: Prisma.XOR<Prisma.CalendarLinkCreateWithoutReservationsInput, Prisma.CalendarLinkUncheckedCreateWithoutReservationsInput>
+  where?: Prisma.CalendarLinkWhereInput
+}
+
+export type CalendarLinkUpdateToOneWithWhereWithoutReservationsInput = {
+  where?: Prisma.CalendarLinkWhereInput
+  data: Prisma.XOR<Prisma.CalendarLinkUpdateWithoutReservationsInput, Prisma.CalendarLinkUncheckedUpdateWithoutReservationsInput>
+}
+
+export type CalendarLinkUpdateWithoutReservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  listing?: Prisma.ListingUpdateOneRequiredWithoutCalendarLinksNestedInput
+}
+
+export type CalendarLinkUncheckedUpdateWithoutReservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  url?: Prisma.StringFieldUpdateOperationsInput | string
+  listingId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type CalendarLinkCreateManyListingInput = {
   id?: string
   url: string
@@ -422,6 +498,7 @@ export type CalendarLinkUpdateWithoutListingInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reservations?: Prisma.ReservationUpdateManyWithoutCalendarLinkNestedInput
 }
 
 export type CalendarLinkUncheckedUpdateWithoutListingInput = {
@@ -429,6 +506,7 @@ export type CalendarLinkUncheckedUpdateWithoutListingInput = {
   url?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reservations?: Prisma.ReservationUncheckedUpdateManyWithoutCalendarLinkNestedInput
 }
 
 export type CalendarLinkUncheckedUpdateManyWithoutListingInput = {
@@ -439,6 +517,35 @@ export type CalendarLinkUncheckedUpdateManyWithoutListingInput = {
 }
 
 
+/**
+ * Count Type CalendarLinkCountOutputType
+ */
+
+export type CalendarLinkCountOutputType = {
+  reservations: number
+}
+
+export type CalendarLinkCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  reservations?: boolean | CalendarLinkCountOutputTypeCountReservationsArgs
+}
+
+/**
+ * CalendarLinkCountOutputType without action
+ */
+export type CalendarLinkCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CalendarLinkCountOutputType
+   */
+  select?: Prisma.CalendarLinkCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * CalendarLinkCountOutputType without action
+ */
+export type CalendarLinkCountOutputTypeCountReservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReservationWhereInput
+}
+
 
 export type CalendarLinkSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -447,6 +554,8 @@ export type CalendarLinkSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdAt?: boolean
   updatedAt?: boolean
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  reservations?: boolean | Prisma.CalendarLink$reservationsArgs<ExtArgs>
+  _count?: boolean | Prisma.CalendarLinkCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["calendarLink"]>
 
 export type CalendarLinkSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -478,6 +587,8 @@ export type CalendarLinkSelectScalar = {
 export type CalendarLinkOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "listingId" | "createdAt" | "updatedAt", ExtArgs["result"]["calendarLink"]>
 export type CalendarLinkInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  reservations?: boolean | Prisma.CalendarLink$reservationsArgs<ExtArgs>
+  _count?: boolean | Prisma.CalendarLinkCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CalendarLinkIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
@@ -490,6 +601,7 @@ export type $CalendarLinkPayload<ExtArgs extends runtime.Types.Extensions.Intern
   name: "CalendarLink"
   objects: {
     listing: Prisma.$ListingPayload<ExtArgs>
+    reservations: Prisma.$ReservationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -892,6 +1004,7 @@ readonly fields: CalendarLinkFieldRefs;
 export interface Prisma__CalendarLinkClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   listing<T extends Prisma.ListingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ListingDefaultArgs<ExtArgs>>): Prisma.Prisma__ListingClient<runtime.Types.Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  reservations<T extends Prisma.CalendarLink$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CalendarLink$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1319,6 +1432,30 @@ export type CalendarLinkDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many CalendarLinks to delete.
    */
   limit?: number
+}
+
+/**
+ * CalendarLink.reservations
+ */
+export type CalendarLink$reservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Reservation
+   */
+  select?: Prisma.ReservationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Reservation
+   */
+  omit?: Prisma.ReservationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReservationInclude<ExtArgs> | null
+  where?: Prisma.ReservationWhereInput
+  orderBy?: Prisma.ReservationOrderByWithRelationInput | Prisma.ReservationOrderByWithRelationInput[]
+  cursor?: Prisma.ReservationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReservationScalarFieldEnum | Prisma.ReservationScalarFieldEnum[]
 }
 
 /**

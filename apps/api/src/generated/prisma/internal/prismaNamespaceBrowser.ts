@@ -58,6 +58,7 @@ export const ModelName = {
   Listing: 'Listing',
   ListingPhoto: 'ListingPhoto',
   CalendarLink: 'CalendarLink',
+  Reservation: 'Reservation',
   Verification: 'Verification',
   Invite: 'Invite'
 } as const
@@ -200,6 +201,24 @@ export const CalendarLinkScalarFieldEnum = {
 } as const
 
 export type CalendarLinkScalarFieldEnum = (typeof CalendarLinkScalarFieldEnum)[keyof typeof CalendarLinkScalarFieldEnum]
+
+
+export const ReservationScalarFieldEnum = {
+  id: 'id',
+  listingId: 'listingId',
+  calendarLinkId: 'calendarLinkId',
+  icalUid: 'icalUid',
+  summary: 'summary',
+  description: 'description',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  location: 'location',
+  allDay: 'allDay',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReservationScalarFieldEnum = (typeof ReservationScalarFieldEnum)[keyof typeof ReservationScalarFieldEnum]
 
 
 export const VerificationScalarFieldEnum = {

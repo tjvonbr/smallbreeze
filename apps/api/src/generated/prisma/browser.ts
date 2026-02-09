@@ -63,6 +63,11 @@ export type ListingPhoto = Prisma.ListingPhotoModel
  */
 export type CalendarLink = Prisma.CalendarLinkModel
 /**
+ * Model Reservation
+ * 
+ */
+export type Reservation = Prisma.ReservationModel
+/**
  * Model Verification
  * 
  */
