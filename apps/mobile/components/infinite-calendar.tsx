@@ -5,6 +5,7 @@ import MonthView from './month-view';
 type InfiniteCalendarProps = {
   onVisibleYearChange?: (year: number) => void;
   topPadding?: number;
+  checkoutCounts?: Map<string, number>;
 };
 
 const TOTAL_MONTHS = 1200; // ~100 years
@@ -23,7 +24,7 @@ export type InfiniteCalendarHandle = {
 };
 
 function InfiniteCalendarImpl(
-  { onVisibleYearChange, topPadding = 0 }: InfiniteCalendarProps,
+  { onVisibleYearChange, topPadding = 0, checkoutCounts }: InfiniteCalendarProps,
   ref: ForwardedRef<InfiniteCalendarHandle | null>
 ) {
   const listRef = useRef<FlatList<number>>(null);
@@ -36,13 +37,13 @@ function InfiniteCalendarImpl(
   const renderItem = useCallback(({ index }: { index: number }) => {
     const monthDate = addMonths(new Date(), index - START_INDEX);
     monthDate.setDate(1);
-    return <MonthView monthDate={monthDate} />;
-  }, []);
+    return <MonthView monthDate={monthDate} checkoutCounts={checkoutCounts} />;
+  }, [checkoutCounts]);
 
   const getItemLayout = useCallback((_: unknown, index: number) => {
     // Approximate month heights. This enables initialScrollIndex snapping without measuring.
     // 6-row months are taller, but a generous estimate avoids "out of range" errors.
-    const length = 360;
+    const length = 528;
     return { length, offset: length * index, index };
   }, []);
 

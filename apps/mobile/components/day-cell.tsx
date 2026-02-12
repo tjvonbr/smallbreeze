@@ -5,12 +5,17 @@ type DayCellProps = {
   dayNumber: number;
   isToday: boolean;
   isInCurrentMonth: boolean;
+  checkoutCount?: number;
 };
 
-export function DayCell({ dayNumber, isToday, isInCurrentMonth }: DayCellProps) {
+export function DayCell({ dayNumber, isToday, isInCurrentMonth, checkoutCount = 0 }: DayCellProps) {
   return (
     <View style={styles.container}>
-      <View style={[styles.circle, isToday && styles.circleToday]} />
+      {checkoutCount > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{checkoutCount}</Text>
+        </View>
+      )}
       <Text
         style={[
           styles.label,
@@ -29,18 +34,30 @@ const TEXT = '#11181C';
 
 const styles = StyleSheet.create({
   container: {
+    height: 72,
+    alignItems: 'center',
+    paddingTop: 4,
+  },
+  badge: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 44,
   },
-  circle: {
-    position: 'absolute',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-  },
-  circleToday: {
+  badgeText: {
     backgroundColor: IOS_RED,
+    color: 'white',
+    fontSize: 11,
+    fontWeight: '700',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    textAlign: 'center',
+    lineHeight: 20,
+    overflow: 'hidden',
   },
   label: {
     fontSize: 16,
@@ -50,11 +67,9 @@ const styles = StyleSheet.create({
     color: MUTED,
   },
   labelToday: {
-    color: 'white',
+    color: IOS_RED,
     fontWeight: '600',
   },
 });
 
 export default DayCell;
-
-
