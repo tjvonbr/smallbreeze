@@ -1,5 +1,7 @@
 import CalendarHeader from '@/components/calendar-header';
 import InfiniteCalendar, { InfiniteCalendarHandle } from '@/components/infinite-calendar';
+import { useListings } from '@/context/listings-context';
+import { parseICalText } from '@/lib/ical-parser';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
@@ -10,6 +12,51 @@ export default function HomeScreen() {
   const listRef = React.useRef<InfiniteCalendarHandle | null>(null);
   const params = useLocalSearchParams<{ targetYear?: string; targetMonth?: string }>();
   const hasAppliedTargetRef = React.useRef(false);
+  const { listings } = useListings();
+  const [checkoutCounts, setCheckoutCounts] = React.useState<Map<string, number>>(new Map());
+
+  // Fetch iCal data from all listings and compute checkout counts
+  React.useEffect(() => {
+    const calendarUrls: string[] = [];
+    for (const listing of listings) {
+      for (const link of listing.calendarLinks) {
+        calendarUrls.push(link.url);
+      }
+    }
+    console.log('[checkout] listings:', listings.length, 'calendarUrls:', calendarUrls.length);
+    if (calendarUrls.length === 0) return;
+
+    let cancelled = false;
+
+    (async () => {
+      const counts = new Map<string, number>();
+
+      await Promise.all(
+        calendarUrls.map(async (url) => {
+          try {
+            const response = await fetch(url);
+            const icalText = await response.text();
+            const events = parseICalText(icalText);
+            console.log('[checkout] url:', url, 'events:', events.length);
+            for (const event of events) {
+              // end date is the checkout day — extract YYYY-MM-DD
+              const dateKey = event.end.substring(0, 10);
+              counts.set(dateKey, (counts.get(dateKey) || 0) + 1);
+            }
+          } catch (err) {
+            console.error('Failed to fetch calendar:', url, err);
+          }
+        })
+      );
+
+      console.log('[checkout] total dates with checkouts:', counts.size, Object.fromEntries(counts));
+      if (!cancelled) {
+        setCheckoutCounts(counts);
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [listings]);
 
   React.useEffect(() => {
     if (hasAppliedTargetRef.current) return;
@@ -27,7 +74,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <CalendarHeader year={visibleYear} />
-      <InfiniteCalendar ref={listRef} onVisibleYearChange={setVisibleYear} />
+      <InfiniteCalendar ref={listRef} onVisibleYearChange={setVisibleYear} checkoutCounts={checkoutCounts} />
       <Pressable accessibilityRole="button" onPress={() => listRef.current?.scrollToToday()} style={styles.todayButton}>
         <Text style={styles.todayButtonText}>Today</Text>
       </Pressable>

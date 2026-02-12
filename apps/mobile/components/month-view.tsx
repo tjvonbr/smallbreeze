@@ -4,14 +4,16 @@ import { DayCell } from './day-cell';
 
 type MonthViewProps = {
   monthDate: Date; // first day of month
+  checkoutCounts?: Map<string, number>;
 };
 
 const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-function MonthView({ monthDate }: MonthViewProps) {
+function MonthView({ monthDate, checkoutCounts }: MonthViewProps) {
   const {
     monthName,
     year,
+    monthIndex,
     grid,
     todayInfo,
   } = useMemo(() => buildMonthGrid(monthDate), [monthDate]);
@@ -40,6 +42,9 @@ function MonthView({ monthDate }: MonthViewProps) {
                   day.inCurrentMonth
                 }
                 isInCurrentMonth={day.inCurrentMonth}
+                checkoutCount={checkoutCounts?.get(
+                  `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day.dayNumber).padStart(2, '0')}`
+                )}
               />
             ) : (
               <View style={styles.emptyCell} />
@@ -67,6 +72,7 @@ const monthGridCache = new Map<string, {
   grid: GridDay[];
   monthName: string;
   year: number;
+  monthIndex: number;
   todayInfo: { isToday: boolean; day: number };
 }>();
 
@@ -116,6 +122,7 @@ function buildMonthGrid(date: Date) {
     grid,
     monthName,
     year,
+    monthIndex,
     todayInfo,
   };
   monthGridCache.set(cacheKey, result);
@@ -156,7 +163,7 @@ const styles = StyleSheet.create({
     width: CELL_WIDTH,
   },
   emptyCell: {
-    height: 44,
+    height: 72,
   },
   yearHidden: {
     height: 0,
