@@ -43,6 +43,7 @@ export default function HomeScreen() {
             const events = parseICalText(icalText);
             console.log('[checkout] url:', url, 'events:', events.length);
             for (const event of events) {
+              if (event.summary?.toLowerCase() !== 'reserved') continue;
               // end date is the checkout day — extract YYYY-MM-DD
               const dateKey = event.end.substring(0, 10);
               counts.set(dateKey, (counts.get(dateKey) || 0) + 1);

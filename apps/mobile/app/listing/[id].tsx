@@ -200,9 +200,9 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
         }
       }
 
-      // Sort by start date
-      allEvents.sort((a, b) => a.start.localeCompare(b.start));
-      setReservations(allEvents);
+      const reserved = allEvents.filter((e) => e.summary?.toLowerCase() === 'reserved');
+      reserved.sort((a, b) => a.start.localeCompare(b.start));
+      setReservations(reserved);
     } catch (err) {
       console.error('Failed to fetch reservations:', err);
     } finally {
