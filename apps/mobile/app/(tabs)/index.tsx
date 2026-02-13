@@ -12,8 +12,12 @@ export default function HomeScreen() {
   const listRef = React.useRef<InfiniteCalendarHandle | null>(null);
   const params = useLocalSearchParams<{ targetYear?: string; targetMonth?: string }>();
   const hasAppliedTargetRef = React.useRef(false);
-  const { listings } = useListings();
+  const { listings, fetchListings } = useListings();
   const [checkoutCounts, setCheckoutCounts] = React.useState<Map<string, number>>(new Map());
+
+  React.useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
 
   // Fetch iCal data from all listings and compute checkout counts
   React.useEffect(() => {
