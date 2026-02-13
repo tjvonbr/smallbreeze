@@ -15,3 +15,12 @@ export const TeamRole = {
 } as const
 
 export type TeamRole = (typeof TeamRole)[keyof typeof TeamRole]
+
+
+export const TaskStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus]
