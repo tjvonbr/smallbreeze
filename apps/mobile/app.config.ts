@@ -12,6 +12,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
+    infoPlist: {
+      UIBackgroundModes: ["location"],
+    },
   },
   android: {
     adaptiveIcon: {
@@ -49,6 +52,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           "Allow $(PRODUCT_NAME) to use your camera to take staging photos.",
       },
     ],
+    [
+      "expo-location",
+      {
+        locationAlwaysAndWhenInUsePermission:
+          "Allow $(PRODUCT_NAME) to use your location to notify you when you're near a listing.",
+        locationAlwaysPermission:
+          "Allow $(PRODUCT_NAME) to use your location in the background to notify you when you're near a listing.",
+        locationWhenInUsePermission:
+          "Allow $(PRODUCT_NAME) to use your location to notify you when you're near a listing.",
+        isAndroidBackgroundLocationEnabled: true,
+        isIosBackgroundLocationEnabled: true,
+      },
+    ],
+    "expo-notifications",
   ],
   experiments: {
     typedRoutes: true,
