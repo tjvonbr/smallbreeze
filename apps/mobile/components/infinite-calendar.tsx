@@ -1,6 +1,7 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewToken } from 'react-native';
+import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, ViewToken } from 'react-native';
 import MonthView from './month-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type InfiniteCalendarProps = {
   onVisibleYearChange?: (year: number) => void;
@@ -51,6 +52,15 @@ function InfiniteCalendarImpl(
     // Reserved for future: could update sticky year or "Today" button visibility.
   };
 
+  // On mount, nudge scroll so current month clears the header overlay
+  useEffect(() => {
+    if (topPadding > 0) {
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToIndex({ index: START_INDEX, viewOffset: topPadding, animated: false });
+      });
+    }
+  }, [topPadding]);
+
   // Report the initially visible year (today) on mount
   useEffect(() => {
     if (onVisibleYearChange) {
@@ -95,7 +105,7 @@ function InfiniteCalendarImpl(
   }));
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         ref={listRef}
         data={data}
@@ -106,7 +116,7 @@ function InfiniteCalendarImpl(
         onScroll={onScroll}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
-        contentContainerStyle={[styles.contentContainer, topPadding ? { paddingTop: topPadding } : null]}
+        contentContainerStyle={styles.contentContainer}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         windowSize={3}
@@ -115,7 +125,7 @@ function InfiniteCalendarImpl(
         updateCellsBatchingPeriod={50}
         removeClippedSubviews
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

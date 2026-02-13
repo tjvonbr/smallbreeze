@@ -79,7 +79,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <CalendarHeader year={visibleYear} />
-      <InfiniteCalendar ref={listRef} onVisibleYearChange={setVisibleYear} checkoutCounts={checkoutCounts} />
+      <InfiniteCalendar ref={listRef} onVisibleYearChange={setVisibleYear} checkoutCounts={checkoutCounts} topPadding={110} />
       <Pressable accessibilityRole="button" onPress={() => listRef.current?.scrollToToday()} style={styles.todayButton}>
         <Text style={styles.todayButtonText}>Today</Text>
       </Pressable>
