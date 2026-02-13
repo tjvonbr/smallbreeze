@@ -130,7 +130,7 @@ export class ListingsService {
     }
 
     // Create the listing
-    const listing = await prisma.listing.create({
+    let listing = await prisma.listing.create({
       data: {
         nickname: data.nickname,
         streetAddress: data.streetAddress,
@@ -145,6 +145,32 @@ export class ListingsService {
         calendarLinks: true,
       },
     });
+
+    // Geocode the address to get coordinates
+    if (isGeocodingEnabled()) {
+      const result = await geocodeAddress(
+        data.streetAddress,
+        data.city,
+        data.state,
+        data.zip,
+        data.country
+      );
+
+      if (result.coordinates) {
+        listing = await prisma.listing.update({
+          where: { id: listing.id },
+          data: {
+            latitude: result.coordinates.latitude,
+            longitude: result.coordinates.longitude,
+          },
+          include: {
+            calendarLinks: true,
+          },
+        });
+      } else if (result.error) {
+        this.logger.warn(`Geocoding failed for new listing ${listing.id}: ${result.error}`);
+      }
+    }
 
     return {
       ...listing,
