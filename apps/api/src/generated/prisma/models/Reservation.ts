@@ -248,6 +248,7 @@ export type ReservationWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
   calendarLink?: Prisma.XOR<Prisma.CalendarLinkScalarRelationFilter, Prisma.CalendarLinkWhereInput>
+  tasks?: Prisma.TaskListRelationFilter
 }
 
 export type ReservationOrderByWithRelationInput = {
@@ -266,6 +267,7 @@ export type ReservationOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   listing?: Prisma.ListingOrderByWithRelationInput
   calendarLink?: Prisma.CalendarLinkOrderByWithRelationInput
+  tasks?: Prisma.TaskOrderByRelationAggregateInput
 }
 
 export type ReservationWhereUniqueInput = Prisma.AtLeast<{
@@ -288,6 +290,7 @@ export type ReservationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Reservation"> | Date | string
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
   calendarLink?: Prisma.XOR<Prisma.CalendarLinkScalarRelationFilter, Prisma.CalendarLinkWhereInput>
+  tasks?: Prisma.TaskListRelationFilter
 }, "id" | "calendarLinkId_icalUid">
 
 export type ReservationOrderByWithAggregationInput = {
@@ -342,6 +345,7 @@ export type ReservationCreateInput = {
   updatedAt?: Date | string
   listing: Prisma.ListingCreateNestedOneWithoutReservationsInput
   calendarLink: Prisma.CalendarLinkCreateNestedOneWithoutReservationsInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutReservationInput
 }
 
 export type ReservationUncheckedCreateInput = {
@@ -358,6 +362,7 @@ export type ReservationUncheckedCreateInput = {
   cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReservationInput
 }
 
 export type ReservationUpdateInput = {
@@ -374,6 +379,7 @@ export type ReservationUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   listing?: Prisma.ListingUpdateOneRequiredWithoutReservationsNestedInput
   calendarLink?: Prisma.CalendarLinkUpdateOneRequiredWithoutReservationsNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutReservationNestedInput
 }
 
 export type ReservationUncheckedUpdateInput = {
@@ -390,6 +396,7 @@ export type ReservationUncheckedUpdateInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutReservationNestedInput
 }
 
 export type ReservationCreateManyInput = {
@@ -501,6 +508,11 @@ export type ReservationMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type ReservationNullableScalarRelationFilter = {
+  is?: Prisma.ReservationWhereInput | null
+  isNot?: Prisma.ReservationWhereInput | null
+}
+
 export type ReservationCreateNestedManyWithoutListingInput = {
   create?: Prisma.XOR<Prisma.ReservationCreateWithoutListingInput, Prisma.ReservationUncheckedCreateWithoutListingInput> | Prisma.ReservationCreateWithoutListingInput[] | Prisma.ReservationUncheckedCreateWithoutListingInput[]
   connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutListingInput | Prisma.ReservationCreateOrConnectWithoutListingInput[]
@@ -585,6 +597,22 @@ export type ReservationUncheckedUpdateManyWithoutCalendarLinkNestedInput = {
   deleteMany?: Prisma.ReservationScalarWhereInput | Prisma.ReservationScalarWhereInput[]
 }
 
+export type ReservationCreateNestedOneWithoutTasksInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTasksInput, Prisma.ReservationUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTasksInput
+  connect?: Prisma.ReservationWhereUniqueInput
+}
+
+export type ReservationUpdateOneWithoutTasksNestedInput = {
+  create?: Prisma.XOR<Prisma.ReservationCreateWithoutTasksInput, Prisma.ReservationUncheckedCreateWithoutTasksInput>
+  connectOrCreate?: Prisma.ReservationCreateOrConnectWithoutTasksInput
+  upsert?: Prisma.ReservationUpsertWithoutTasksInput
+  disconnect?: Prisma.ReservationWhereInput | boolean
+  delete?: Prisma.ReservationWhereInput | boolean
+  connect?: Prisma.ReservationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ReservationUpdateToOneWithWhereWithoutTasksInput, Prisma.ReservationUpdateWithoutTasksInput>, Prisma.ReservationUncheckedUpdateWithoutTasksInput>
+}
+
 export type ReservationCreateWithoutListingInput = {
   id?: string
   icalUid: string
@@ -598,6 +626,7 @@ export type ReservationCreateWithoutListingInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   calendarLink: Prisma.CalendarLinkCreateNestedOneWithoutReservationsInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutReservationInput
 }
 
 export type ReservationUncheckedCreateWithoutListingInput = {
@@ -613,6 +642,7 @@ export type ReservationUncheckedCreateWithoutListingInput = {
   cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReservationInput
 }
 
 export type ReservationCreateOrConnectWithoutListingInput = {
@@ -673,6 +703,7 @@ export type ReservationCreateWithoutCalendarLinkInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   listing: Prisma.ListingCreateNestedOneWithoutReservationsInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutReservationInput
 }
 
 export type ReservationUncheckedCreateWithoutCalendarLinkInput = {
@@ -688,6 +719,7 @@ export type ReservationUncheckedCreateWithoutCalendarLinkInput = {
   cancelledAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutReservationInput
 }
 
 export type ReservationCreateOrConnectWithoutCalendarLinkInput = {
@@ -714,6 +746,86 @@ export type ReservationUpdateWithWhereUniqueWithoutCalendarLinkInput = {
 export type ReservationUpdateManyWithWhereWithoutCalendarLinkInput = {
   where: Prisma.ReservationScalarWhereInput
   data: Prisma.XOR<Prisma.ReservationUpdateManyMutationInput, Prisma.ReservationUncheckedUpdateManyWithoutCalendarLinkInput>
+}
+
+export type ReservationCreateWithoutTasksInput = {
+  id?: string
+  icalUid: string
+  summary: string
+  description?: string | null
+  startDate: Date | string
+  endDate: Date | string
+  location?: string | null
+  allDay?: boolean
+  cancelledAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  listing: Prisma.ListingCreateNestedOneWithoutReservationsInput
+  calendarLink: Prisma.CalendarLinkCreateNestedOneWithoutReservationsInput
+}
+
+export type ReservationUncheckedCreateWithoutTasksInput = {
+  id?: string
+  listingId: string
+  calendarLinkId: string
+  icalUid: string
+  summary: string
+  description?: string | null
+  startDate: Date | string
+  endDate: Date | string
+  location?: string | null
+  allDay?: boolean
+  cancelledAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ReservationCreateOrConnectWithoutTasksInput = {
+  where: Prisma.ReservationWhereUniqueInput
+  create: Prisma.XOR<Prisma.ReservationCreateWithoutTasksInput, Prisma.ReservationUncheckedCreateWithoutTasksInput>
+}
+
+export type ReservationUpsertWithoutTasksInput = {
+  update: Prisma.XOR<Prisma.ReservationUpdateWithoutTasksInput, Prisma.ReservationUncheckedUpdateWithoutTasksInput>
+  create: Prisma.XOR<Prisma.ReservationCreateWithoutTasksInput, Prisma.ReservationUncheckedCreateWithoutTasksInput>
+  where?: Prisma.ReservationWhereInput
+}
+
+export type ReservationUpdateToOneWithWhereWithoutTasksInput = {
+  where?: Prisma.ReservationWhereInput
+  data: Prisma.XOR<Prisma.ReservationUpdateWithoutTasksInput, Prisma.ReservationUncheckedUpdateWithoutTasksInput>
+}
+
+export type ReservationUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  icalUid?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  listing?: Prisma.ListingUpdateOneRequiredWithoutReservationsNestedInput
+  calendarLink?: Prisma.CalendarLinkUpdateOneRequiredWithoutReservationsNestedInput
+}
+
+export type ReservationUncheckedUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  listingId?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarLinkId?: Prisma.StringFieldUpdateOperationsInput | string
+  icalUid?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  allDay?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ReservationCreateManyListingInput = {
@@ -744,6 +856,7 @@ export type ReservationUpdateWithoutListingInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   calendarLink?: Prisma.CalendarLinkUpdateOneRequiredWithoutReservationsNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutReservationNestedInput
 }
 
 export type ReservationUncheckedUpdateWithoutListingInput = {
@@ -759,6 +872,7 @@ export type ReservationUncheckedUpdateWithoutListingInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutReservationNestedInput
 }
 
 export type ReservationUncheckedUpdateManyWithoutListingInput = {
@@ -804,6 +918,7 @@ export type ReservationUpdateWithoutCalendarLinkInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   listing?: Prisma.ListingUpdateOneRequiredWithoutReservationsNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutReservationNestedInput
 }
 
 export type ReservationUncheckedUpdateWithoutCalendarLinkInput = {
@@ -819,6 +934,7 @@ export type ReservationUncheckedUpdateWithoutCalendarLinkInput = {
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutReservationNestedInput
 }
 
 export type ReservationUncheckedUpdateManyWithoutCalendarLinkInput = {
@@ -837,6 +953,35 @@ export type ReservationUncheckedUpdateManyWithoutCalendarLinkInput = {
 }
 
 
+/**
+ * Count Type ReservationCountOutputType
+ */
+
+export type ReservationCountOutputType = {
+  tasks: number
+}
+
+export type ReservationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  tasks?: boolean | ReservationCountOutputTypeCountTasksArgs
+}
+
+/**
+ * ReservationCountOutputType without action
+ */
+export type ReservationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReservationCountOutputType
+   */
+  select?: Prisma.ReservationCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ReservationCountOutputType without action
+ */
+export type ReservationCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskWhereInput
+}
+
 
 export type ReservationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -854,6 +999,8 @@ export type ReservationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   updatedAt?: boolean
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
   calendarLink?: boolean | Prisma.CalendarLinkDefaultArgs<ExtArgs>
+  tasks?: boolean | Prisma.Reservation$tasksArgs<ExtArgs>
+  _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["reservation"]>
 
 export type ReservationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -912,6 +1059,8 @@ export type ReservationOmit<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type ReservationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
   calendarLink?: boolean | Prisma.CalendarLinkDefaultArgs<ExtArgs>
+  tasks?: boolean | Prisma.Reservation$tasksArgs<ExtArgs>
+  _count?: boolean | Prisma.ReservationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReservationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
@@ -927,6 +1076,7 @@ export type $ReservationPayload<ExtArgs extends runtime.Types.Extensions.Interna
   objects: {
     listing: Prisma.$ListingPayload<ExtArgs>
     calendarLink: Prisma.$CalendarLinkPayload<ExtArgs>
+    tasks: Prisma.$TaskPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1338,6 +1488,7 @@ export interface Prisma__ReservationClient<T, Null = never, ExtArgs extends runt
   readonly [Symbol.toStringTag]: "PrismaPromise"
   listing<T extends Prisma.ListingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ListingDefaultArgs<ExtArgs>>): Prisma.Prisma__ListingClient<runtime.Types.Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   calendarLink<T extends Prisma.CalendarLinkDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CalendarLinkDefaultArgs<ExtArgs>>): Prisma.Prisma__CalendarLinkClient<runtime.Types.Result.GetResult<Prisma.$CalendarLinkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  tasks<T extends Prisma.Reservation$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Reservation$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1773,6 +1924,30 @@ export type ReservationDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many Reservations to delete.
    */
   limit?: number
+}
+
+/**
+ * Reservation.tasks
+ */
+export type Reservation$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Task
+   */
+  select?: Prisma.TaskSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Task
+   */
+  omit?: Prisma.TaskOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskInclude<ExtArgs> | null
+  where?: Prisma.TaskWhereInput
+  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[]
+  cursor?: Prisma.TaskWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
 }
 
 /**

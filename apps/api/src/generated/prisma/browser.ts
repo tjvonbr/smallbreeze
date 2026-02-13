@@ -77,3 +77,13 @@ export type Verification = Prisma.VerificationModel
  * 
  */
 export type Invite = Prisma.InviteModel
+/**
+ * Model Task
+ * 
+ */
+export type Task = Prisma.TaskModel
+/**
+ * Model TaskAssignment
+ * 
+ */
+export type TaskAssignment = Prisma.TaskAssignmentModel

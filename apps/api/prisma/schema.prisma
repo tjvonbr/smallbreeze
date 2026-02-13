@@ -19,6 +19,12 @@ enum TeamRole {
   MEMBER
 }
 
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
 model User {
   id            String    @id @default(uuid())
   firstName     String
@@ -47,14 +53,15 @@ model Team {
 }
 
 model TeamMember {
-  id        String   @id @default(uuid())
-  teamId    String
-  userId    String
-  role      TeamRole @default(MEMBER)
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String           @id @default(uuid())
+  teamId          String
+  userId          String
+  role            TeamRole         @default(MEMBER)
+  team            Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskAssignments TaskAssignment[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@unique([teamId, userId])
   @@map("team_members")
@@ -123,6 +130,7 @@ model Listing {
   calendarLinks  CalendarLink[]
   photos         ListingPhoto[]
   reservations   Reservation[]
+  tasks          Task[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -168,6 +176,7 @@ model Reservation {
   location       String?
   allDay         Boolean      @default(true)
   cancelledAt    DateTime?
+  tasks          Task[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
@@ -197,5 +206,37 @@ model Invite {
 
 
   @@map("invites")
+}
+
+model Task {
+  id            String           @id @default(uuid())
+  name          String
+  description   String?
+  status        TaskStatus       @default(PENDING)
+  dueDate       DateTime?
+  completedAt   DateTime?
+  deletedAt     DateTime?
+  listingId     String
+  listing       Listing          @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  reservationId String?
+  reservation   Reservation?     @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  assignments   TaskAssignment[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@map("tasks")
+}
+
+model TaskAssignment {
+  id           String     @id @default(uuid())
+  taskId       String
+  task         Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  teamMemberId String
+  teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([taskId, teamMemberId])
+  @@map("task_assignments")
 }
 

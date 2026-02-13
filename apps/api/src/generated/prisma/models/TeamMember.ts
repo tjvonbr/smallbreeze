@@ -192,6 +192,7 @@ export type TeamMemberWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"TeamMember"> | Date | string
   team?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
 }
 
 export type TeamMemberOrderByWithRelationInput = {
@@ -203,6 +204,7 @@ export type TeamMemberOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   team?: Prisma.TeamOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
+  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
 }
 
 export type TeamMemberWhereUniqueInput = Prisma.AtLeast<{
@@ -218,6 +220,7 @@ export type TeamMemberWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"TeamMember"> | Date | string
   team?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
 }, "id" | "teamId_userId">
 
 export type TeamMemberOrderByWithAggregationInput = {
@@ -251,6 +254,7 @@ export type TeamMemberCreateInput = {
   updatedAt?: Date | string
   team: Prisma.TeamCreateNestedOneWithoutMembershipsInput
   user: Prisma.UserCreateNestedOneWithoutTeamMembersInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeamMemberInput
 }
 
 export type TeamMemberUncheckedCreateInput = {
@@ -260,6 +264,7 @@ export type TeamMemberUncheckedCreateInput = {
   role?: $Enums.TeamRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeamMemberInput
 }
 
 export type TeamMemberUpdateInput = {
@@ -269,6 +274,7 @@ export type TeamMemberUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   team?: Prisma.TeamUpdateOneRequiredWithoutMembershipsNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutTeamMembersNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeamMemberNestedInput
 }
 
 export type TeamMemberUncheckedUpdateInput = {
@@ -278,6 +284,7 @@ export type TeamMemberUncheckedUpdateInput = {
   role?: Prisma.EnumTeamRoleFieldUpdateOperationsInput | $Enums.TeamRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeamMemberNestedInput
 }
 
 export type TeamMemberCreateManyInput = {
@@ -345,6 +352,11 @@ export type TeamMemberMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type TeamMemberScalarRelationFilter = {
+  is?: Prisma.TeamMemberWhereInput
+  isNot?: Prisma.TeamMemberWhereInput
 }
 
 export type TeamMemberCreateNestedManyWithoutUserInput = {
@@ -435,12 +447,27 @@ export type EnumTeamRoleFieldUpdateOperationsInput = {
   set?: $Enums.TeamRole
 }
 
+export type TeamMemberCreateNestedOneWithoutTaskAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.TeamMemberCreateWithoutTaskAssignmentsInput, Prisma.TeamMemberUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.TeamMemberCreateOrConnectWithoutTaskAssignmentsInput
+  connect?: Prisma.TeamMemberWhereUniqueInput
+}
+
+export type TeamMemberUpdateOneRequiredWithoutTaskAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.TeamMemberCreateWithoutTaskAssignmentsInput, Prisma.TeamMemberUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.TeamMemberCreateOrConnectWithoutTaskAssignmentsInput
+  upsert?: Prisma.TeamMemberUpsertWithoutTaskAssignmentsInput
+  connect?: Prisma.TeamMemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TeamMemberUpdateToOneWithWhereWithoutTaskAssignmentsInput, Prisma.TeamMemberUpdateWithoutTaskAssignmentsInput>, Prisma.TeamMemberUncheckedUpdateWithoutTaskAssignmentsInput>
+}
+
 export type TeamMemberCreateWithoutUserInput = {
   id?: string
   role?: $Enums.TeamRole
   createdAt?: Date | string
   updatedAt?: Date | string
   team: Prisma.TeamCreateNestedOneWithoutMembershipsInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeamMemberInput
 }
 
 export type TeamMemberUncheckedCreateWithoutUserInput = {
@@ -449,6 +476,7 @@ export type TeamMemberUncheckedCreateWithoutUserInput = {
   role?: $Enums.TeamRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeamMemberInput
 }
 
 export type TeamMemberCreateOrConnectWithoutUserInput = {
@@ -495,6 +523,7 @@ export type TeamMemberCreateWithoutTeamInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTeamMembersInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTeamMemberInput
 }
 
 export type TeamMemberUncheckedCreateWithoutTeamInput = {
@@ -503,6 +532,7 @@ export type TeamMemberUncheckedCreateWithoutTeamInput = {
   role?: $Enums.TeamRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTeamMemberInput
 }
 
 export type TeamMemberCreateOrConnectWithoutTeamInput = {
@@ -531,6 +561,58 @@ export type TeamMemberUpdateManyWithWhereWithoutTeamInput = {
   data: Prisma.XOR<Prisma.TeamMemberUpdateManyMutationInput, Prisma.TeamMemberUncheckedUpdateManyWithoutTeamInput>
 }
 
+export type TeamMemberCreateWithoutTaskAssignmentsInput = {
+  id?: string
+  role?: $Enums.TeamRole
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  team: Prisma.TeamCreateNestedOneWithoutMembershipsInput
+  user: Prisma.UserCreateNestedOneWithoutTeamMembersInput
+}
+
+export type TeamMemberUncheckedCreateWithoutTaskAssignmentsInput = {
+  id?: string
+  teamId: string
+  userId: string
+  role?: $Enums.TeamRole
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TeamMemberCreateOrConnectWithoutTaskAssignmentsInput = {
+  where: Prisma.TeamMemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.TeamMemberCreateWithoutTaskAssignmentsInput, Prisma.TeamMemberUncheckedCreateWithoutTaskAssignmentsInput>
+}
+
+export type TeamMemberUpsertWithoutTaskAssignmentsInput = {
+  update: Prisma.XOR<Prisma.TeamMemberUpdateWithoutTaskAssignmentsInput, Prisma.TeamMemberUncheckedUpdateWithoutTaskAssignmentsInput>
+  create: Prisma.XOR<Prisma.TeamMemberCreateWithoutTaskAssignmentsInput, Prisma.TeamMemberUncheckedCreateWithoutTaskAssignmentsInput>
+  where?: Prisma.TeamMemberWhereInput
+}
+
+export type TeamMemberUpdateToOneWithWhereWithoutTaskAssignmentsInput = {
+  where?: Prisma.TeamMemberWhereInput
+  data: Prisma.XOR<Prisma.TeamMemberUpdateWithoutTaskAssignmentsInput, Prisma.TeamMemberUncheckedUpdateWithoutTaskAssignmentsInput>
+}
+
+export type TeamMemberUpdateWithoutTaskAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumTeamRoleFieldUpdateOperationsInput | $Enums.TeamRole
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  team?: Prisma.TeamUpdateOneRequiredWithoutMembershipsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutTeamMembersNestedInput
+}
+
+export type TeamMemberUncheckedUpdateWithoutTaskAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumTeamRoleFieldUpdateOperationsInput | $Enums.TeamRole
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TeamMemberCreateManyUserInput = {
   id?: string
   teamId: string
@@ -545,6 +627,7 @@ export type TeamMemberUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   team?: Prisma.TeamUpdateOneRequiredWithoutMembershipsNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeamMemberNestedInput
 }
 
 export type TeamMemberUncheckedUpdateWithoutUserInput = {
@@ -553,6 +636,7 @@ export type TeamMemberUncheckedUpdateWithoutUserInput = {
   role?: Prisma.EnumTeamRoleFieldUpdateOperationsInput | $Enums.TeamRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeamMemberNestedInput
 }
 
 export type TeamMemberUncheckedUpdateManyWithoutUserInput = {
@@ -577,6 +661,7 @@ export type TeamMemberUpdateWithoutTeamInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTeamMembersNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutTeamMemberNestedInput
 }
 
 export type TeamMemberUncheckedUpdateWithoutTeamInput = {
@@ -585,6 +670,7 @@ export type TeamMemberUncheckedUpdateWithoutTeamInput = {
   role?: Prisma.EnumTeamRoleFieldUpdateOperationsInput | $Enums.TeamRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTeamMemberNestedInput
 }
 
 export type TeamMemberUncheckedUpdateManyWithoutTeamInput = {
@@ -596,6 +682,35 @@ export type TeamMemberUncheckedUpdateManyWithoutTeamInput = {
 }
 
 
+/**
+ * Count Type TeamMemberCountOutputType
+ */
+
+export type TeamMemberCountOutputType = {
+  taskAssignments: number
+}
+
+export type TeamMemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  taskAssignments?: boolean | TeamMemberCountOutputTypeCountTaskAssignmentsArgs
+}
+
+/**
+ * TeamMemberCountOutputType without action
+ */
+export type TeamMemberCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TeamMemberCountOutputType
+   */
+  select?: Prisma.TeamMemberCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * TeamMemberCountOutputType without action
+ */
+export type TeamMemberCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentWhereInput
+}
+
 
 export type TeamMemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -606,6 +721,8 @@ export type TeamMemberSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   updatedAt?: boolean
   team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.TeamMember$taskAssignmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.TeamMemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["teamMember"]>
 
 export type TeamMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -643,6 +760,8 @@ export type TeamMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type TeamMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.TeamMember$taskAssignmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.TeamMemberCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TeamMemberIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
@@ -658,6 +777,7 @@ export type $TeamMemberPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     team: Prisma.$TeamPayload<ExtArgs>
     user: Prisma.$UserPayload<ExtArgs>
+    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1062,6 +1182,7 @@ export interface Prisma__TeamMemberClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   team<T extends Prisma.TeamDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeamDefaultArgs<ExtArgs>>): Prisma.Prisma__TeamClient<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  taskAssignments<T extends Prisma.TeamMember$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeamMember$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1490,6 +1611,30 @@ export type TeamMemberDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many TeamMembers to delete.
    */
   limit?: number
+}
+
+/**
+ * TeamMember.taskAssignments
+ */
+export type TeamMember$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TaskAssignment
+   */
+  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TaskAssignment
+   */
+  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null
+  where?: Prisma.TaskAssignmentWhereInput
+  orderBy?: Prisma.TaskAssignmentOrderByWithRelationInput | Prisma.TaskAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
 }
 
 /**

@@ -60,7 +60,9 @@ export const ModelName = {
   CalendarLink: 'CalendarLink',
   Reservation: 'Reservation',
   Verification: 'Verification',
-  Invite: 'Invite'
+  Invite: 'Invite',
+  Task: 'Task',
+  TaskAssignment: 'TaskAssignment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -244,6 +246,34 @@ export const InviteScalarFieldEnum = {
 } as const
 
 export type InviteScalarFieldEnum = (typeof InviteScalarFieldEnum)[keyof typeof InviteScalarFieldEnum]
+
+
+export const TaskScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  status: 'status',
+  dueDate: 'dueDate',
+  completedAt: 'completedAt',
+  deletedAt: 'deletedAt',
+  listingId: 'listingId',
+  reservationId: 'reservationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const TaskAssignmentScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  teamMemberId: 'teamMemberId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TaskAssignmentScalarFieldEnum = (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum]
 
 
 export const SortOrder = {
