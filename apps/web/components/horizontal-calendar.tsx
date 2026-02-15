@@ -7,6 +7,7 @@ import type { CalendarEvent } from "@/lib/ics-parser"
 import BookingBar from "./booking-bar"
 import { isSameDay } from "@/lib/utils"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 interface HorizontalCalendarProps {
   listings: ListingWithCalendarLinks[]
@@ -42,6 +43,7 @@ export default function HorizontalCalendar({
   extendDaysOnScroll = 60,
   dayWidthPx = 40,
 }: HorizontalCalendarProps) {
+  const router = useRouter()
   const wrapperRef = React.useRef<HTMLDivElement | null>(null)
   const today = startOfDayUtc(new Date())
   const initialPastDays = 21
@@ -234,18 +236,20 @@ export default function HorizontalCalendar({
           <div ref={scrollRef} className="relative flex-1 overflow-x-auto overflow-y-hidden no-scrollbar">
             <div className="relative" style={{ width: totalWidth }}>
               {/* Grid background with weekend shading */}
-              <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0">
                 <div className="grid h-full" style={{ gridTemplateColumns: `repeat(${numDays}, ${columnWidth}px)` }}>
                   {daysArray.map((d, i) => {
                     const isWeekend = d.getDay() === 0 || d.getDay() === 6
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
                     return (
                       <div
                         key={i}
                         className={cn(
-                          "border-r border-border",
+                          "border-r border-border cursor-pointer hover:bg-muted/20",
                           isWeekend && "bg-muted/10",
                           i === todayIndex - 1 && "border-r-0"
                         )}
+                        onClick={() => router.push(`/calendar/${dateStr}`)}
                       />
                     )
                   })}

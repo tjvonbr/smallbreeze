@@ -1,5 +1,6 @@
+import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DayCell } from './day-cell';
 
 type MonthViewProps = {
@@ -10,6 +11,7 @@ type MonthViewProps = {
 const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 function MonthView({ monthDate, checkoutCounts }: MonthViewProps) {
+  const router = useRouter();
   const {
     monthName,
     year,
@@ -34,18 +36,25 @@ function MonthView({ monthDate, checkoutCounts }: MonthViewProps) {
         {grid.map((day, idx) => (
           <View key={idx} style={styles.cell}>
             {day.inCurrentMonth ? (
-              <DayCell
-                dayNumber={day.dayNumber}
-                isToday={
-                  todayInfo.isToday &&
-                  todayInfo.day === day.dayNumber &&
-                  day.inCurrentMonth
-                }
-                isInCurrentMonth={day.inCurrentMonth}
-                checkoutCount={checkoutCounts?.get(
-                  `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day.dayNumber).padStart(2, '0')}`
-                )}
-              />
+              <Pressable
+                onPress={() => {
+                  const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day.dayNumber).padStart(2, '0')}`;
+                  router.push(`/day/${dateStr}`);
+                }}
+              >
+                <DayCell
+                  dayNumber={day.dayNumber}
+                  isToday={
+                    todayInfo.isToday &&
+                    todayInfo.day === day.dayNumber &&
+                    day.inCurrentMonth
+                  }
+                  isInCurrentMonth={day.inCurrentMonth}
+                  checkoutCount={checkoutCounts?.get(
+                    `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(day.dayNumber).padStart(2, '0')}`
+                  )}
+                />
+              </Pressable>
             ) : (
               <View style={styles.emptyCell} />
             )}
