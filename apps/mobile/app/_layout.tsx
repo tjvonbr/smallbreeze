@@ -51,6 +51,7 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="listing/[id]" />
+            <Stack.Screen name="day/[date]" />
             <Stack.Screen name="invites" />
             <Stack.Screen name="year" />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
