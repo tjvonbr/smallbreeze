@@ -34,10 +34,12 @@ export default function RootLayout() {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
-          </Stack>
-          <StatusBar style="auto" />
+          <ListingsProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(auth)" />
+            </Stack>
+            <StatusBar style="auto" />
+          </ListingsProvider>
         </ThemeProvider>
       </GestureHandlerRootView>
     );
@@ -53,6 +55,7 @@ export default function RootLayout() {
             <Stack.Screen name="listing/[id]" />
             <Stack.Screen name="day/[date]" />
             <Stack.Screen name="invites" />
+            <Stack.Screen name="tasks" />
             <Stack.Screen name="year" />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           </Stack>

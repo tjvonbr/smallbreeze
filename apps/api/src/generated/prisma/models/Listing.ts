@@ -642,6 +642,11 @@ export type ListingScalarRelationFilter = {
   isNot?: Prisma.ListingWhereInput
 }
 
+export type ListingNullableScalarRelationFilter = {
+  is?: Prisma.ListingWhereInput | null
+  isNot?: Prisma.ListingWhereInput | null
+}
+
 export type ListingCreateNestedManyWithoutTeamInput = {
   create?: Prisma.XOR<Prisma.ListingCreateWithoutTeamInput, Prisma.ListingUncheckedCreateWithoutTeamInput> | Prisma.ListingCreateWithoutTeamInput[] | Prisma.ListingUncheckedCreateWithoutTeamInput[]
   connectOrCreate?: Prisma.ListingCreateOrConnectWithoutTeamInput | Prisma.ListingCreateOrConnectWithoutTeamInput[]
@@ -740,10 +745,12 @@ export type ListingCreateNestedOneWithoutTasksInput = {
   connect?: Prisma.ListingWhereUniqueInput
 }
 
-export type ListingUpdateOneRequiredWithoutTasksNestedInput = {
+export type ListingUpdateOneWithoutTasksNestedInput = {
   create?: Prisma.XOR<Prisma.ListingCreateWithoutTasksInput, Prisma.ListingUncheckedCreateWithoutTasksInput>
   connectOrCreate?: Prisma.ListingCreateOrConnectWithoutTasksInput
   upsert?: Prisma.ListingUpsertWithoutTasksInput
+  disconnect?: Prisma.ListingWhereInput | boolean
+  delete?: Prisma.ListingWhereInput | boolean
   connect?: Prisma.ListingWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ListingUpdateToOneWithWhereWithoutTasksInput, Prisma.ListingUpdateWithoutTasksInput>, Prisma.ListingUncheckedUpdateWithoutTasksInput>
 }
