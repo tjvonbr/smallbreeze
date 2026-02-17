@@ -312,7 +312,7 @@ export type ListingWhereInput = {
   calendarLinks?: Prisma.CalendarLinkListRelationFilter
   photos?: Prisma.ListingPhotoListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
-  tasks?: Prisma.TaskListRelationFilter
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
 }
 
 export type ListingOrderByWithRelationInput = {
@@ -336,7 +336,7 @@ export type ListingOrderByWithRelationInput = {
   calendarLinks?: Prisma.CalendarLinkOrderByRelationAggregateInput
   photos?: Prisma.ListingPhotoOrderByRelationAggregateInput
   reservations?: Prisma.ReservationOrderByRelationAggregateInput
-  tasks?: Prisma.TaskOrderByRelationAggregateInput
+  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
 }
 
 export type ListingWhereUniqueInput = Prisma.AtLeast<{
@@ -363,7 +363,7 @@ export type ListingWhereUniqueInput = Prisma.AtLeast<{
   calendarLinks?: Prisma.CalendarLinkListRelationFilter
   photos?: Prisma.ListingPhotoListRelationFilter
   reservations?: Prisma.ReservationListRelationFilter
-  tasks?: Prisma.TaskListRelationFilter
+  taskAssignments?: Prisma.TaskAssignmentListRelationFilter
 }, "id">
 
 export type ListingOrderByWithAggregationInput = {
@@ -432,7 +432,7 @@ export type ListingCreateInput = {
   calendarLinks?: Prisma.CalendarLinkCreateNestedManyWithoutListingInput
   photos?: Prisma.ListingPhotoCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateInput = {
@@ -455,7 +455,7 @@ export type ListingUncheckedCreateInput = {
   calendarLinks?: Prisma.CalendarLinkUncheckedCreateNestedManyWithoutListingInput
   photos?: Prisma.ListingPhotoUncheckedCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingUpdateInput = {
@@ -478,7 +478,7 @@ export type ListingUpdateInput = {
   calendarLinks?: Prisma.CalendarLinkUpdateManyWithoutListingNestedInput
   photos?: Prisma.ListingPhotoUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateInput = {
@@ -501,7 +501,7 @@ export type ListingUncheckedUpdateInput = {
   calendarLinks?: Prisma.CalendarLinkUncheckedUpdateManyWithoutListingNestedInput
   photos?: Prisma.ListingPhotoUncheckedUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type ListingCreateManyInput = {
@@ -734,18 +734,18 @@ export type ListingUpdateOneRequiredWithoutReservationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ListingUpdateToOneWithWhereWithoutReservationsInput, Prisma.ListingUpdateWithoutReservationsInput>, Prisma.ListingUncheckedUpdateWithoutReservationsInput>
 }
 
-export type ListingCreateNestedOneWithoutTasksInput = {
-  create?: Prisma.XOR<Prisma.ListingCreateWithoutTasksInput, Prisma.ListingUncheckedCreateWithoutTasksInput>
-  connectOrCreate?: Prisma.ListingCreateOrConnectWithoutTasksInput
+export type ListingCreateNestedOneWithoutTaskAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.ListingCreateWithoutTaskAssignmentsInput, Prisma.ListingUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.ListingCreateOrConnectWithoutTaskAssignmentsInput
   connect?: Prisma.ListingWhereUniqueInput
 }
 
-export type ListingUpdateOneRequiredWithoutTasksNestedInput = {
-  create?: Prisma.XOR<Prisma.ListingCreateWithoutTasksInput, Prisma.ListingUncheckedCreateWithoutTasksInput>
-  connectOrCreate?: Prisma.ListingCreateOrConnectWithoutTasksInput
-  upsert?: Prisma.ListingUpsertWithoutTasksInput
+export type ListingUpdateOneRequiredWithoutTaskAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ListingCreateWithoutTaskAssignmentsInput, Prisma.ListingUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.ListingCreateOrConnectWithoutTaskAssignmentsInput
+  upsert?: Prisma.ListingUpsertWithoutTaskAssignmentsInput
   connect?: Prisma.ListingWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ListingUpdateToOneWithWhereWithoutTasksInput, Prisma.ListingUpdateWithoutTasksInput>, Prisma.ListingUncheckedUpdateWithoutTasksInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ListingUpdateToOneWithWhereWithoutTaskAssignmentsInput, Prisma.ListingUpdateWithoutTaskAssignmentsInput>, Prisma.ListingUncheckedUpdateWithoutTaskAssignmentsInput>
 }
 
 export type ListingCreateWithoutTeamInput = {
@@ -767,7 +767,7 @@ export type ListingCreateWithoutTeamInput = {
   calendarLinks?: Prisma.CalendarLinkCreateNestedManyWithoutListingInput
   photos?: Prisma.ListingPhotoCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateWithoutTeamInput = {
@@ -789,7 +789,7 @@ export type ListingUncheckedCreateWithoutTeamInput = {
   calendarLinks?: Prisma.CalendarLinkUncheckedCreateNestedManyWithoutListingInput
   photos?: Prisma.ListingPhotoUncheckedCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingCreateOrConnectWithoutTeamInput = {
@@ -859,7 +859,7 @@ export type ListingCreateWithoutPhotosInput = {
   team: Prisma.TeamCreateNestedOneWithoutListingsInput
   calendarLinks?: Prisma.CalendarLinkCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateWithoutPhotosInput = {
@@ -881,7 +881,7 @@ export type ListingUncheckedCreateWithoutPhotosInput = {
   updatedAt?: Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingCreateOrConnectWithoutPhotosInput = {
@@ -919,7 +919,7 @@ export type ListingUpdateWithoutPhotosInput = {
   team?: Prisma.TeamUpdateOneRequiredWithoutListingsNestedInput
   calendarLinks?: Prisma.CalendarLinkUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateWithoutPhotosInput = {
@@ -941,7 +941,7 @@ export type ListingUncheckedUpdateWithoutPhotosInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type ListingCreateWithoutCalendarLinksInput = {
@@ -963,7 +963,7 @@ export type ListingCreateWithoutCalendarLinksInput = {
   team: Prisma.TeamCreateNestedOneWithoutListingsInput
   photos?: Prisma.ListingPhotoCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateWithoutCalendarLinksInput = {
@@ -985,7 +985,7 @@ export type ListingUncheckedCreateWithoutCalendarLinksInput = {
   updatedAt?: Date | string
   photos?: Prisma.ListingPhotoUncheckedCreateNestedManyWithoutListingInput
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingCreateOrConnectWithoutCalendarLinksInput = {
@@ -1023,7 +1023,7 @@ export type ListingUpdateWithoutCalendarLinksInput = {
   team?: Prisma.TeamUpdateOneRequiredWithoutListingsNestedInput
   photos?: Prisma.ListingPhotoUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateWithoutCalendarLinksInput = {
@@ -1045,7 +1045,7 @@ export type ListingUncheckedUpdateWithoutCalendarLinksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   photos?: Prisma.ListingPhotoUncheckedUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type ListingCreateWithoutReservationsInput = {
@@ -1067,7 +1067,7 @@ export type ListingCreateWithoutReservationsInput = {
   team: Prisma.TeamCreateNestedOneWithoutListingsInput
   calendarLinks?: Prisma.CalendarLinkCreateNestedManyWithoutListingInput
   photos?: Prisma.ListingPhotoCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutListingInput
 }
 
 export type ListingUncheckedCreateWithoutReservationsInput = {
@@ -1089,7 +1089,7 @@ export type ListingUncheckedCreateWithoutReservationsInput = {
   updatedAt?: Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedCreateNestedManyWithoutListingInput
   photos?: Prisma.ListingPhotoUncheckedCreateNestedManyWithoutListingInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutListingInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type ListingCreateOrConnectWithoutReservationsInput = {
@@ -1127,7 +1127,7 @@ export type ListingUpdateWithoutReservationsInput = {
   team?: Prisma.TeamUpdateOneRequiredWithoutListingsNestedInput
   calendarLinks?: Prisma.CalendarLinkUpdateManyWithoutListingNestedInput
   photos?: Prisma.ListingPhotoUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateWithoutReservationsInput = {
@@ -1149,10 +1149,10 @@ export type ListingUncheckedUpdateWithoutReservationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   calendarLinks?: Prisma.CalendarLinkUncheckedUpdateManyWithoutListingNestedInput
   photos?: Prisma.ListingPhotoUncheckedUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutListingNestedInput
 }
 
-export type ListingCreateWithoutTasksInput = {
+export type ListingCreateWithoutTaskAssignmentsInput = {
   id?: string
   nickname: string
   streetAddress: string
@@ -1174,7 +1174,7 @@ export type ListingCreateWithoutTasksInput = {
   reservations?: Prisma.ReservationCreateNestedManyWithoutListingInput
 }
 
-export type ListingUncheckedCreateWithoutTasksInput = {
+export type ListingUncheckedCreateWithoutTaskAssignmentsInput = {
   id?: string
   nickname: string
   streetAddress: string
@@ -1196,23 +1196,23 @@ export type ListingUncheckedCreateWithoutTasksInput = {
   reservations?: Prisma.ReservationUncheckedCreateNestedManyWithoutListingInput
 }
 
-export type ListingCreateOrConnectWithoutTasksInput = {
+export type ListingCreateOrConnectWithoutTaskAssignmentsInput = {
   where: Prisma.ListingWhereUniqueInput
-  create: Prisma.XOR<Prisma.ListingCreateWithoutTasksInput, Prisma.ListingUncheckedCreateWithoutTasksInput>
+  create: Prisma.XOR<Prisma.ListingCreateWithoutTaskAssignmentsInput, Prisma.ListingUncheckedCreateWithoutTaskAssignmentsInput>
 }
 
-export type ListingUpsertWithoutTasksInput = {
-  update: Prisma.XOR<Prisma.ListingUpdateWithoutTasksInput, Prisma.ListingUncheckedUpdateWithoutTasksInput>
-  create: Prisma.XOR<Prisma.ListingCreateWithoutTasksInput, Prisma.ListingUncheckedCreateWithoutTasksInput>
+export type ListingUpsertWithoutTaskAssignmentsInput = {
+  update: Prisma.XOR<Prisma.ListingUpdateWithoutTaskAssignmentsInput, Prisma.ListingUncheckedUpdateWithoutTaskAssignmentsInput>
+  create: Prisma.XOR<Prisma.ListingCreateWithoutTaskAssignmentsInput, Prisma.ListingUncheckedCreateWithoutTaskAssignmentsInput>
   where?: Prisma.ListingWhereInput
 }
 
-export type ListingUpdateToOneWithWhereWithoutTasksInput = {
+export type ListingUpdateToOneWithWhereWithoutTaskAssignmentsInput = {
   where?: Prisma.ListingWhereInput
-  data: Prisma.XOR<Prisma.ListingUpdateWithoutTasksInput, Prisma.ListingUncheckedUpdateWithoutTasksInput>
+  data: Prisma.XOR<Prisma.ListingUpdateWithoutTaskAssignmentsInput, Prisma.ListingUncheckedUpdateWithoutTaskAssignmentsInput>
 }
 
-export type ListingUpdateWithoutTasksInput = {
+export type ListingUpdateWithoutTaskAssignmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nickname?: Prisma.StringFieldUpdateOperationsInput | string
   streetAddress?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1234,7 +1234,7 @@ export type ListingUpdateWithoutTasksInput = {
   reservations?: Prisma.ReservationUpdateManyWithoutListingNestedInput
 }
 
-export type ListingUncheckedUpdateWithoutTasksInput = {
+export type ListingUncheckedUpdateWithoutTaskAssignmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nickname?: Prisma.StringFieldUpdateOperationsInput | string
   streetAddress?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1293,7 +1293,7 @@ export type ListingUpdateWithoutTeamInput = {
   calendarLinks?: Prisma.CalendarLinkUpdateManyWithoutListingNestedInput
   photos?: Prisma.ListingPhotoUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateWithoutTeamInput = {
@@ -1315,7 +1315,7 @@ export type ListingUncheckedUpdateWithoutTeamInput = {
   calendarLinks?: Prisma.CalendarLinkUncheckedUpdateManyWithoutListingNestedInput
   photos?: Prisma.ListingPhotoUncheckedUpdateManyWithoutListingNestedInput
   reservations?: Prisma.ReservationUncheckedUpdateManyWithoutListingNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutListingNestedInput
+  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type ListingUncheckedUpdateManyWithoutTeamInput = {
@@ -1345,14 +1345,14 @@ export type ListingCountOutputType = {
   calendarLinks: number
   photos: number
   reservations: number
-  tasks: number
+  taskAssignments: number
 }
 
 export type ListingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   calendarLinks?: boolean | ListingCountOutputTypeCountCalendarLinksArgs
   photos?: boolean | ListingCountOutputTypeCountPhotosArgs
   reservations?: boolean | ListingCountOutputTypeCountReservationsArgs
-  tasks?: boolean | ListingCountOutputTypeCountTasksArgs
+  taskAssignments?: boolean | ListingCountOutputTypeCountTaskAssignmentsArgs
 }
 
 /**
@@ -1389,8 +1389,8 @@ export type ListingCountOutputTypeCountReservationsArgs<ExtArgs extends runtime.
 /**
  * ListingCountOutputType without action
  */
-export type ListingCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskWhereInput
+export type ListingCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssignmentWhereInput
 }
 
 
@@ -1415,7 +1415,7 @@ export type ListingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   calendarLinks?: boolean | Prisma.Listing$calendarLinksArgs<ExtArgs>
   photos?: boolean | Prisma.Listing$photosArgs<ExtArgs>
   reservations?: boolean | Prisma.Listing$reservationsArgs<ExtArgs>
-  tasks?: boolean | Prisma.Listing$tasksArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Listing$taskAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ListingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["listing"]>
 
@@ -1484,7 +1484,7 @@ export type ListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   calendarLinks?: boolean | Prisma.Listing$calendarLinksArgs<ExtArgs>
   photos?: boolean | Prisma.Listing$photosArgs<ExtArgs>
   reservations?: boolean | Prisma.Listing$reservationsArgs<ExtArgs>
-  tasks?: boolean | Prisma.Listing$tasksArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Listing$taskAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ListingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ListingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1501,7 +1501,7 @@ export type $ListingPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     calendarLinks: Prisma.$CalendarLinkPayload<ExtArgs>[]
     photos: Prisma.$ListingPhotoPayload<ExtArgs>[]
     reservations: Prisma.$ReservationPayload<ExtArgs>[]
-    tasks: Prisma.$TaskPayload<ExtArgs>[]
+    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1918,7 +1918,7 @@ export interface Prisma__ListingClient<T, Null = never, ExtArgs extends runtime.
   calendarLinks<T extends Prisma.Listing$calendarLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Listing$calendarLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CalendarLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   photos<T extends Prisma.Listing$photosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Listing$photosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ListingPhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reservations<T extends Prisma.Listing$reservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Listing$reservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  tasks<T extends Prisma.Listing$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Listing$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskAssignments<T extends Prisma.Listing$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Listing$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2432,27 +2432,27 @@ export type Listing$reservationsArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * Listing.tasks
+ * Listing.taskAssignments
  */
-export type Listing$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Listing$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Task
+   * Select specific fields to fetch from the TaskAssignment
    */
-  select?: Prisma.TaskSelect<ExtArgs> | null
+  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Task
+   * Omit specific fields from the TaskAssignment
    */
-  omit?: Prisma.TaskOmit<ExtArgs> | null
+  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TaskInclude<ExtArgs> | null
-  where?: Prisma.TaskWhereInput
-  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[]
-  cursor?: Prisma.TaskWhereUniqueInput
+  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null
+  where?: Prisma.TaskAssignmentWhereInput
+  orderBy?: Prisma.TaskAssignmentOrderByWithRelationInput | Prisma.TaskAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssignmentWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
+  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[]
 }
 
 /**

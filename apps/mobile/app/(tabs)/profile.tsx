@@ -7,6 +7,7 @@ import {
   Bell,
   ChevronRight,
   CircleHelp,
+  ClipboardList,
   FileText,
   Home,
   LogOut,
@@ -154,6 +155,11 @@ export default function ProfileScreen() {
             icon={<UserPlus size={24} color={colors.text} />}
             label="Invite team member"
             onPress={() => router.push('/invites' as never)}
+          />
+          <MenuItem
+            icon={<ClipboardList size={24} color={colors.text} />}
+            label="Create a new task"
+            onPress={() => router.push('/tasks' as never)}
           />
 
           <View style={styles.divider} />
