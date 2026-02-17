@@ -35,11 +35,6 @@ interface Task {
   isTemplate: boolean;
   dueDate: string | null;
   teamId: string;
-  listingId: string | null;
-  listing: {
-    id: string;
-    nickname: string;
-  } | null;
   assignments: {
     id: string;
     teamMember: {
@@ -50,6 +45,10 @@ interface Task {
         lastName: string;
         email: string;
       };
+    };
+    listing: {
+      id: string;
+      nickname: string;
     };
   }[];
   createdAt: string;
@@ -310,7 +309,7 @@ export default function TaskDetailScreen() {
 
   const openListingModal = () => {
     if (task) {
-      setSelectedListingId(task.listingId);
+      setSelectedListingId(task.assignments[0]?.listing?.id ?? null);
       setListingModalVisible(true);
     }
   };
@@ -366,7 +365,9 @@ export default function TaskDetailScreen() {
   }
 
   const statusConfig = STATUS_CONFIG[task.status];
-  const assignee = task.assignments[0]?.teamMember;
+  const assignment = task.assignments[0];
+  const assignee = assignment?.teamMember;
+  const assignmentListing = assignment?.listing;
 
   const formatDueDate = (dateString: string | null): string => {
     if (!dateString) return 'No due date';
@@ -438,10 +439,10 @@ export default function TaskDetailScreen() {
           <Pressable style={styles.section} onPress={openListingModal}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Listing</Text>
             <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
-              {task.listing ? (
+              {assignmentListing ? (
                 <View style={styles.iconRow}>
                   <Home size={16} color={colors.icon} />
-                  <Text style={[styles.cardText, { color: colors.text }]}>{task.listing.nickname}</Text>
+                  <Text style={[styles.cardText, { color: colors.text }]}>{assignmentListing.nickname}</Text>
                 </View>
               ) : (
                 <Text style={[styles.placeholderText, { color: colors.icon }]}>No listing assigned</Text>

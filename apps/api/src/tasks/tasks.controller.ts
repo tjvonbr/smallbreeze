@@ -16,10 +16,10 @@ import { TasksService } from './tasks.service.js';
 interface CreateTaskDto {
   name: string;
   description?: string;
-  listingId?: string;
   dueDate?: string;
   isTemplate?: boolean;
   assigneeTeamMemberId?: string;
+  listingId?: string;
 }
 
 interface UpdateTaskDto {
@@ -27,9 +27,9 @@ interface UpdateTaskDto {
   description?: string | null;
   status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
   isTemplate?: boolean;
-  listingId?: string | null;
   dueDate?: string | null;
   assigneeTeamMemberId?: string | null;
+  listingId?: string | null;
 }
 
 @Controller('api/tasks')
@@ -79,15 +79,11 @@ export class TasksController {
       throw new UnauthorizedException('Authentication required');
     }
 
-    const { name, description, listingId, dueDate, isTemplate, assigneeTeamMemberId } =
+    const { name, description, dueDate, isTemplate, assigneeTeamMemberId, listingId } =
       createTaskDto;
 
     if (!name || !name.trim()) {
       throw new BadRequestException('Task name is required');
-    }
-
-    if (!isTemplate && !listingId) {
-      throw new BadRequestException('Listing is required for one-time tasks');
     }
 
     const teamId = await this.tasksService.getTeamIdForUser(session.user.id);
@@ -99,11 +95,11 @@ export class TasksController {
     const task = await this.tasksService.createTask({
       name: name.trim(),
       description: description?.trim(),
-      listingId: isTemplate ? undefined : listingId,
       dueDate,
       isTemplate: isTemplate ?? false,
       teamId,
       assigneeTeamMemberId: isTemplate ? undefined : assigneeTeamMemberId,
+      listingId: isTemplate ? undefined : listingId,
     });
 
     return { task };

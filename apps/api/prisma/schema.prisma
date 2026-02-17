@@ -131,7 +131,7 @@ model Listing {
   calendarLinks  CalendarLink[]
   photos         ListingPhoto[]
   reservations   Reservation[]
-  tasks          Task[]
+  taskAssignments TaskAssignment[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
@@ -214,14 +214,11 @@ model Task {
   name          String
   description   String?
   status        TaskStatus       @default(PENDING)
-  isTemplate    Boolean          @default(false)
   dueDate       DateTime?
   completedAt   DateTime?
   deletedAt     DateTime?
   teamId        String
   team          Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  listingId     String?
-  listing       Listing?         @relation(fields: [listingId], references: [id], onDelete: Cascade)
   reservationId String?
   reservation   Reservation?     @relation(fields: [reservationId], references: [id], onDelete: SetNull)
   assignments   TaskAssignment[]
@@ -237,10 +234,13 @@ model TaskAssignment {
   task         Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
   teamMemberId String
   teamMember   TeamMember @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  listingId    String
+  listing      Listing    @relation(fields: [listingId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime? 
 
-  @@unique([taskId, teamMemberId])
+  @@unique([taskId, teamMemberId, listingId])
   @@map("task_assignments")
 }
 

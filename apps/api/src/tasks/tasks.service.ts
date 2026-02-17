@@ -1,6 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { prisma } from '../lib/prisma.js';
 
+const ASSIGNMENT_INCLUDE = {
+  include: {
+    teamMember: {
+      include: {
+        user: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+      },
+    },
+    listing: {
+      select: { id: true, nickname: true },
+    },
+  },
+} as const;
+
 @Injectable()
 export class TasksService {
   async getTeamIdForUser(userId: string): Promise<string | null> {
@@ -31,20 +46,7 @@ export class TasksService {
         deletedAt: null,
       },
       include: {
-        listing: {
-          select: { id: true, nickname: true },
-        },
-        assignments: {
-          include: {
-            teamMember: {
-              include: {
-                user: {
-                  select: { id: true, firstName: true, lastName: true, email: true },
-                },
-              },
-            },
-          },
-        },
+        assignments: ASSIGNMENT_INCLUDE,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -53,43 +55,32 @@ export class TasksService {
   async createTask(data: {
     name: string;
     description?: string;
-    listingId?: string;
     dueDate?: string;
     isTemplate: boolean;
     teamId: string;
     assigneeTeamMemberId?: string;
+    listingId?: string;
   }) {
     return prisma.task.create({
       data: {
         name: data.name,
         description: data.description,
-        listingId: data.listingId ?? null,
         dueDate: data.dueDate ? new Date(data.dueDate) : null,
         isTemplate: data.isTemplate,
         teamId: data.teamId,
-        ...(data.assigneeTeamMemberId
+        ...(data.assigneeTeamMemberId && data.listingId
           ? {
               assignments: {
-                create: { teamMemberId: data.assigneeTeamMemberId },
+                create: {
+                  teamMemberId: data.assigneeTeamMemberId,
+                  listingId: data.listingId,
+                },
               },
             }
           : {}),
       },
       include: {
-        listing: {
-          select: { id: true, nickname: true },
-        },
-        assignments: {
-          include: {
-            teamMember: {
-              include: {
-                user: {
-                  select: { id: true, firstName: true, lastName: true, email: true },
-                },
-              },
-            },
-          },
-        },
+        assignments: ASSIGNMENT_INCLUDE,
       },
     });
   }
@@ -97,11 +88,6 @@ export class TasksService {
   async getTask(taskId: string) {
     return prisma.task.findUnique({
       where: { id: taskId },
-      include: {
-        listing: {
-          select: { id: true, nickname: true, teamId: true },
-        },
-      },
     });
   }
 
@@ -109,20 +95,7 @@ export class TasksService {
     return prisma.task.findUnique({
       where: { id: taskId },
       include: {
-        listing: {
-          select: { id: true, nickname: true },
-        },
-        assignments: {
-          include: {
-            teamMember: {
-              include: {
-                user: {
-                  select: { id: true, firstName: true, lastName: true, email: true },
-                },
-              },
-            },
-          },
-        },
+        assignments: ASSIGNMENT_INCLUDE,
       },
     });
   }
@@ -134,9 +107,9 @@ export class TasksService {
       description?: string | null;
       status?: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
       isTemplate?: boolean;
-      listingId?: string | null;
       dueDate?: string | null;
       assigneeTeamMemberId?: string | null;
+      listingId?: string | null;
     },
   ) {
     const updateData: Record<string, unknown> = {};
@@ -150,20 +123,32 @@ export class TasksService {
       }
     }
     if (data.isTemplate !== undefined) updateData.isTemplate = data.isTemplate;
-    if (data.listingId !== undefined) updateData.listingId = data.listingId;
     if (data.dueDate !== undefined) {
       updateData.dueDate = data.dueDate ? new Date(data.dueDate) : null;
     }
 
-    // Handle assignee changes
-    if (data.assigneeTeamMemberId !== undefined) {
+    // Handle assignment changes (listing + member live on the assignment)
+    if (data.assigneeTeamMemberId !== undefined || data.listingId !== undefined) {
+      // Get current assignment to merge values
+      const currentAssignment = await prisma.taskAssignment.findFirst({
+        where: { taskId },
+      });
+
+      const newMemberId = data.assigneeTeamMemberId !== undefined
+        ? data.assigneeTeamMemberId
+        : currentAssignment?.teamMemberId ?? null;
+
+      const newListingId = data.listingId !== undefined
+        ? data.listingId
+        : currentAssignment?.listingId ?? null;
+
       // Remove existing assignments
       await prisma.taskAssignment.deleteMany({ where: { taskId } });
 
-      // Create new assignment if provided
-      if (data.assigneeTeamMemberId) {
+      // Create new assignment if both member and listing are provided
+      if (newMemberId && newListingId) {
         await prisma.taskAssignment.create({
-          data: { taskId, teamMemberId: data.assigneeTeamMemberId },
+          data: { taskId, teamMemberId: newMemberId, listingId: newListingId },
         });
       }
     }
@@ -172,20 +157,7 @@ export class TasksService {
       where: { id: taskId },
       data: updateData,
       include: {
-        listing: {
-          select: { id: true, nickname: true },
-        },
-        assignments: {
-          include: {
-            teamMember: {
-              include: {
-                user: {
-                  select: { id: true, firstName: true, lastName: true, email: true },
-                },
-              },
-            },
-          },
-        },
+        assignments: ASSIGNMENT_INCLUDE,
       },
     });
   }

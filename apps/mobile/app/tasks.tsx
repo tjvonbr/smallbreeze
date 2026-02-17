@@ -38,11 +38,6 @@ interface Task {
   status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
   isTemplate: boolean;
   dueDate: string | null;
-  listingId: string | null;
-  listing: {
-    id: string;
-    nickname: string;
-  } | null;
   assignments: {
     id: string;
     teamMember: {
@@ -52,6 +47,10 @@ interface Task {
         lastName: string;
         email: string;
       };
+    };
+    listing: {
+      id: string;
+      nickname: string;
     };
   }[];
   createdAt: string;
@@ -318,7 +317,7 @@ export default function TasksScreen() {
                   <>
                     <Home size={12} color={colors.icon} />
                     <Text style={[styles.taskListing, { color: colors.icon }]}>
-                      {item.listing?.nickname ?? 'No listing'}
+                      {item.assignments[0]?.listing?.nickname ?? 'Unassigned'}
                     </Text>
                   </>
                 )}
