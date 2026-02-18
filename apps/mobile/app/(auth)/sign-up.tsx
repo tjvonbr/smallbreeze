@@ -107,12 +107,15 @@ export default function SignUpScreen() {
         : `${webBaseUrl}/api/bootstrap-team?teamName=${encodeURIComponent(teamNameForCallback)}`;
     }
 
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     const { data, error: signUpError } = await authClient.signUp.email({
       email: email.toLowerCase().trim(),
       password,
       name: `${firstName.trim()} ${lastName.trim()}`,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
+      timezone,
       ...(callbackURL && { callbackURL }),
     } as any);
 

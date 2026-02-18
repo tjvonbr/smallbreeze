@@ -93,6 +93,10 @@ export const auth = betterAuth({
         type: 'string',
         required: true,
       },
+      timezone: {
+        type: 'string',
+        required: true,
+      },
     },
   },
   session: {
