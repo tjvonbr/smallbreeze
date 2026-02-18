@@ -31,6 +31,7 @@ model User {
   lastName      String
   email         String    @unique
   emailVerified Boolean   @default(false)
+  timezone      String
   teamMembers   TeamMember[]
   accounts      Account[]
   sessions      Session[]
