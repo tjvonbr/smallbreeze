@@ -126,8 +126,10 @@ model Listing {
   longitude      Float?
   wifiNetwork    String?
   wifiPassword   String?
-  accessNotes    String?
-  teamId         String
+  accessNotes         String?
+  defaultCheckInTime  String         @default("16:00")
+  defaultCheckOutTime String         @default("10:00")
+  teamId              String
   team           Team           @relation(fields: [teamId], references: [id])
   calendarLinks  CalendarLink[]
   photos         ListingPhoto[]
@@ -215,6 +217,7 @@ model Task {
   name          String
   description   String?
   status        TaskStatus       @default(PENDING)
+  isTemplate    Boolean          @default(false)
   dueDate       DateTime?
   completedAt   DateTime?
   deletedAt     DateTime?

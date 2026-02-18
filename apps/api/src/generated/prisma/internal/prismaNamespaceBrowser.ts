@@ -174,6 +174,8 @@ export const ListingScalarFieldEnum = {
   wifiNetwork: 'wifiNetwork',
   wifiPassword: 'wifiPassword',
   accessNotes: 'accessNotes',
+  defaultCheckInTime: 'defaultCheckInTime',
+  defaultCheckOutTime: 'defaultCheckOutTime',
   teamId: 'teamId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -273,7 +275,8 @@ export const TaskAssignmentScalarFieldEnum = {
   teamMemberId: 'teamMemberId',
   listingId: 'listingId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
 } as const
 
 export type TaskAssignmentScalarFieldEnum = (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum]
