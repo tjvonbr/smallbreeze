@@ -29,10 +29,11 @@ export type TaskMinAggregateOutputType = {
   name: string | null
   description: string | null
   status: $Enums.TaskStatus | null
+  isTemplate: boolean | null
   dueDate: Date | null
   completedAt: Date | null
   deletedAt: Date | null
-  listingId: string | null
+  teamId: string | null
   reservationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -43,10 +44,11 @@ export type TaskMaxAggregateOutputType = {
   name: string | null
   description: string | null
   status: $Enums.TaskStatus | null
+  isTemplate: boolean | null
   dueDate: Date | null
   completedAt: Date | null
   deletedAt: Date | null
-  listingId: string | null
+  teamId: string | null
   reservationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,10 +59,11 @@ export type TaskCountAggregateOutputType = {
   name: number
   description: number
   status: number
+  isTemplate: number
   dueDate: number
   completedAt: number
   deletedAt: number
-  listingId: number
+  teamId: number
   reservationId: number
   createdAt: number
   updatedAt: number
@@ -73,10 +76,11 @@ export type TaskMinAggregateInputType = {
   name?: true
   description?: true
   status?: true
+  isTemplate?: true
   dueDate?: true
   completedAt?: true
   deletedAt?: true
-  listingId?: true
+  teamId?: true
   reservationId?: true
   createdAt?: true
   updatedAt?: true
@@ -87,10 +91,11 @@ export type TaskMaxAggregateInputType = {
   name?: true
   description?: true
   status?: true
+  isTemplate?: true
   dueDate?: true
   completedAt?: true
   deletedAt?: true
-  listingId?: true
+  teamId?: true
   reservationId?: true
   createdAt?: true
   updatedAt?: true
@@ -101,10 +106,11 @@ export type TaskCountAggregateInputType = {
   name?: true
   description?: true
   status?: true
+  isTemplate?: true
   dueDate?: true
   completedAt?: true
   deletedAt?: true
-  listingId?: true
+  teamId?: true
   reservationId?: true
   createdAt?: true
   updatedAt?: true
@@ -188,10 +194,11 @@ export type TaskGroupByOutputType = {
   name: string
   description: string | null
   status: $Enums.TaskStatus
+  isTemplate: boolean
   dueDate: Date | null
   completedAt: Date | null
   deletedAt: Date | null
-  listingId: string
+  teamId: string
   reservationId: string | null
   createdAt: Date
   updatedAt: Date
@@ -223,14 +230,15 @@ export type TaskWhereInput = {
   name?: Prisma.StringFilter<"Task"> | string
   description?: Prisma.StringNullableFilter<"Task"> | string | null
   status?: Prisma.EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFilter<"Task"> | boolean
   dueDate?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
-  listingId?: Prisma.StringFilter<"Task"> | string
+  teamId?: Prisma.StringFilter<"Task"> | string
   reservationId?: Prisma.StringNullableFilter<"Task"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-  listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
+  team?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   reservation?: Prisma.XOR<Prisma.ReservationNullableScalarRelationFilter, Prisma.ReservationWhereInput> | null
   assignments?: Prisma.TaskAssignmentListRelationFilter
 }
@@ -240,14 +248,15 @@ export type TaskOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  isTemplate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  listingId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   reservationId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  listing?: Prisma.ListingOrderByWithRelationInput
+  team?: Prisma.TeamOrderByWithRelationInput
   reservation?: Prisma.ReservationOrderByWithRelationInput
   assignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput
 }
@@ -260,14 +269,15 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Task"> | string
   description?: Prisma.StringNullableFilter<"Task"> | string | null
   status?: Prisma.EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFilter<"Task"> | boolean
   dueDate?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
-  listingId?: Prisma.StringFilter<"Task"> | string
+  teamId?: Prisma.StringFilter<"Task"> | string
   reservationId?: Prisma.StringNullableFilter<"Task"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
-  listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
+  team?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   reservation?: Prisma.XOR<Prisma.ReservationNullableScalarRelationFilter, Prisma.ReservationWhereInput> | null
   assignments?: Prisma.TaskAssignmentListRelationFilter
 }, "id">
@@ -277,10 +287,11 @@ export type TaskOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  isTemplate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  listingId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   reservationId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -297,10 +308,11 @@ export type TaskScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Task"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Task"> | string | null
   status?: Prisma.EnumTaskStatusWithAggregatesFilter<"Task"> | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolWithAggregatesFilter<"Task"> | boolean
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
-  listingId?: Prisma.StringWithAggregatesFilter<"Task"> | string
+  teamId?: Prisma.StringWithAggregatesFilter<"Task"> | string
   reservationId?: Prisma.StringNullableWithAggregatesFilter<"Task"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Task"> | Date | string
@@ -311,12 +323,13 @@ export type TaskCreateInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  listing: Prisma.ListingCreateNestedOneWithoutTasksInput
+  team: Prisma.TeamCreateNestedOneWithoutTasksInput
   reservation?: Prisma.ReservationCreateNestedOneWithoutTasksInput
   assignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTaskInput
 }
@@ -326,10 +339,11 @@ export type TaskUncheckedCreateInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
-  listingId: string
+  teamId: string
   reservationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -341,12 +355,13 @@ export type TaskUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  listing?: Prisma.ListingUpdateOneRequiredWithoutTasksNestedInput
+  team?: Prisma.TeamUpdateOneRequiredWithoutTasksNestedInput
   reservation?: Prisma.ReservationUpdateOneWithoutTasksNestedInput
   assignments?: Prisma.TaskAssignmentUpdateManyWithoutTaskNestedInput
 }
@@ -356,10 +371,11 @@ export type TaskUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  listingId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.StringFieldUpdateOperationsInput | string
   reservationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -371,10 +387,11 @@ export type TaskCreateManyInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
-  listingId: string
+  teamId: string
   reservationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -385,6 +402,7 @@ export type TaskUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -397,10 +415,11 @@ export type TaskUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  listingId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.StringFieldUpdateOperationsInput | string
   reservationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -421,10 +440,11 @@ export type TaskCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isTemplate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
-  listingId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   reservationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -435,10 +455,11 @@ export type TaskMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isTemplate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
-  listingId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   reservationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -449,10 +470,11 @@ export type TaskMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isTemplate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
-  listingId?: Prisma.SortOrder
+  teamId?: Prisma.SortOrder
   reservationId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -463,45 +485,45 @@ export type TaskScalarRelationFilter = {
   isNot?: Prisma.TaskWhereInput
 }
 
-export type TaskCreateNestedManyWithoutListingInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutListingInput, Prisma.TaskUncheckedCreateWithoutListingInput> | Prisma.TaskCreateWithoutListingInput[] | Prisma.TaskUncheckedCreateWithoutListingInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutListingInput | Prisma.TaskCreateOrConnectWithoutListingInput[]
-  createMany?: Prisma.TaskCreateManyListingInputEnvelope
+export type TaskCreateNestedManyWithoutTeamInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTeamInput, Prisma.TaskUncheckedCreateWithoutTeamInput> | Prisma.TaskCreateWithoutTeamInput[] | Prisma.TaskUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTeamInput | Prisma.TaskCreateOrConnectWithoutTeamInput[]
+  createMany?: Prisma.TaskCreateManyTeamInputEnvelope
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
 }
 
-export type TaskUncheckedCreateNestedManyWithoutListingInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutListingInput, Prisma.TaskUncheckedCreateWithoutListingInput> | Prisma.TaskCreateWithoutListingInput[] | Prisma.TaskUncheckedCreateWithoutListingInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutListingInput | Prisma.TaskCreateOrConnectWithoutListingInput[]
-  createMany?: Prisma.TaskCreateManyListingInputEnvelope
+export type TaskUncheckedCreateNestedManyWithoutTeamInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTeamInput, Prisma.TaskUncheckedCreateWithoutTeamInput> | Prisma.TaskCreateWithoutTeamInput[] | Prisma.TaskUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTeamInput | Prisma.TaskCreateOrConnectWithoutTeamInput[]
+  createMany?: Prisma.TaskCreateManyTeamInputEnvelope
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
 }
 
-export type TaskUpdateManyWithoutListingNestedInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutListingInput, Prisma.TaskUncheckedCreateWithoutListingInput> | Prisma.TaskCreateWithoutListingInput[] | Prisma.TaskUncheckedCreateWithoutListingInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutListingInput | Prisma.TaskCreateOrConnectWithoutListingInput[]
-  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutListingInput | Prisma.TaskUpsertWithWhereUniqueWithoutListingInput[]
-  createMany?: Prisma.TaskCreateManyListingInputEnvelope
+export type TaskUpdateManyWithoutTeamNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTeamInput, Prisma.TaskUncheckedCreateWithoutTeamInput> | Prisma.TaskCreateWithoutTeamInput[] | Prisma.TaskUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTeamInput | Prisma.TaskCreateOrConnectWithoutTeamInput[]
+  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutTeamInput | Prisma.TaskUpsertWithWhereUniqueWithoutTeamInput[]
+  createMany?: Prisma.TaskCreateManyTeamInputEnvelope
   set?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   disconnect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   delete?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
-  update?: Prisma.TaskUpdateWithWhereUniqueWithoutListingInput | Prisma.TaskUpdateWithWhereUniqueWithoutListingInput[]
-  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutListingInput | Prisma.TaskUpdateManyWithWhereWithoutListingInput[]
+  update?: Prisma.TaskUpdateWithWhereUniqueWithoutTeamInput | Prisma.TaskUpdateWithWhereUniqueWithoutTeamInput[]
+  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutTeamInput | Prisma.TaskUpdateManyWithWhereWithoutTeamInput[]
   deleteMany?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
 }
 
-export type TaskUncheckedUpdateManyWithoutListingNestedInput = {
-  create?: Prisma.XOR<Prisma.TaskCreateWithoutListingInput, Prisma.TaskUncheckedCreateWithoutListingInput> | Prisma.TaskCreateWithoutListingInput[] | Prisma.TaskUncheckedCreateWithoutListingInput[]
-  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutListingInput | Prisma.TaskCreateOrConnectWithoutListingInput[]
-  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutListingInput | Prisma.TaskUpsertWithWhereUniqueWithoutListingInput[]
-  createMany?: Prisma.TaskCreateManyListingInputEnvelope
+export type TaskUncheckedUpdateManyWithoutTeamNestedInput = {
+  create?: Prisma.XOR<Prisma.TaskCreateWithoutTeamInput, Prisma.TaskUncheckedCreateWithoutTeamInput> | Prisma.TaskCreateWithoutTeamInput[] | Prisma.TaskUncheckedCreateWithoutTeamInput[]
+  connectOrCreate?: Prisma.TaskCreateOrConnectWithoutTeamInput | Prisma.TaskCreateOrConnectWithoutTeamInput[]
+  upsert?: Prisma.TaskUpsertWithWhereUniqueWithoutTeamInput | Prisma.TaskUpsertWithWhereUniqueWithoutTeamInput[]
+  createMany?: Prisma.TaskCreateManyTeamInputEnvelope
   set?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   disconnect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   delete?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
   connect?: Prisma.TaskWhereUniqueInput | Prisma.TaskWhereUniqueInput[]
-  update?: Prisma.TaskUpdateWithWhereUniqueWithoutListingInput | Prisma.TaskUpdateWithWhereUniqueWithoutListingInput[]
-  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutListingInput | Prisma.TaskUpdateManyWithWhereWithoutListingInput[]
+  update?: Prisma.TaskUpdateWithWhereUniqueWithoutTeamInput | Prisma.TaskUpdateWithWhereUniqueWithoutTeamInput[]
+  updateMany?: Prisma.TaskUpdateManyWithWhereWithoutTeamInput | Prisma.TaskUpdateManyWithWhereWithoutTeamInput[]
   deleteMany?: Prisma.TaskScalarWhereInput | Prisma.TaskScalarWhereInput[]
 }
 
@@ -565,11 +587,12 @@ export type TaskUpdateOneRequiredWithoutAssignmentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TaskUpdateToOneWithWhereWithoutAssignmentsInput, Prisma.TaskUpdateWithoutAssignmentsInput>, Prisma.TaskUncheckedUpdateWithoutAssignmentsInput>
 }
 
-export type TaskCreateWithoutListingInput = {
+export type TaskCreateWithoutTeamInput = {
   id?: string
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -579,11 +602,12 @@ export type TaskCreateWithoutListingInput = {
   assignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTaskInput
 }
 
-export type TaskUncheckedCreateWithoutListingInput = {
+export type TaskUncheckedCreateWithoutTeamInput = {
   id?: string
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -593,30 +617,30 @@ export type TaskUncheckedCreateWithoutListingInput = {
   assignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTaskInput
 }
 
-export type TaskCreateOrConnectWithoutListingInput = {
+export type TaskCreateOrConnectWithoutTeamInput = {
   where: Prisma.TaskWhereUniqueInput
-  create: Prisma.XOR<Prisma.TaskCreateWithoutListingInput, Prisma.TaskUncheckedCreateWithoutListingInput>
+  create: Prisma.XOR<Prisma.TaskCreateWithoutTeamInput, Prisma.TaskUncheckedCreateWithoutTeamInput>
 }
 
-export type TaskCreateManyListingInputEnvelope = {
-  data: Prisma.TaskCreateManyListingInput | Prisma.TaskCreateManyListingInput[]
+export type TaskCreateManyTeamInputEnvelope = {
+  data: Prisma.TaskCreateManyTeamInput | Prisma.TaskCreateManyTeamInput[]
   skipDuplicates?: boolean
 }
 
-export type TaskUpsertWithWhereUniqueWithoutListingInput = {
+export type TaskUpsertWithWhereUniqueWithoutTeamInput = {
   where: Prisma.TaskWhereUniqueInput
-  update: Prisma.XOR<Prisma.TaskUpdateWithoutListingInput, Prisma.TaskUncheckedUpdateWithoutListingInput>
-  create: Prisma.XOR<Prisma.TaskCreateWithoutListingInput, Prisma.TaskUncheckedCreateWithoutListingInput>
+  update: Prisma.XOR<Prisma.TaskUpdateWithoutTeamInput, Prisma.TaskUncheckedUpdateWithoutTeamInput>
+  create: Prisma.XOR<Prisma.TaskCreateWithoutTeamInput, Prisma.TaskUncheckedCreateWithoutTeamInput>
 }
 
-export type TaskUpdateWithWhereUniqueWithoutListingInput = {
+export type TaskUpdateWithWhereUniqueWithoutTeamInput = {
   where: Prisma.TaskWhereUniqueInput
-  data: Prisma.XOR<Prisma.TaskUpdateWithoutListingInput, Prisma.TaskUncheckedUpdateWithoutListingInput>
+  data: Prisma.XOR<Prisma.TaskUpdateWithoutTeamInput, Prisma.TaskUncheckedUpdateWithoutTeamInput>
 }
 
-export type TaskUpdateManyWithWhereWithoutListingInput = {
+export type TaskUpdateManyWithWhereWithoutTeamInput = {
   where: Prisma.TaskScalarWhereInput
-  data: Prisma.XOR<Prisma.TaskUpdateManyMutationInput, Prisma.TaskUncheckedUpdateManyWithoutListingInput>
+  data: Prisma.XOR<Prisma.TaskUpdateManyMutationInput, Prisma.TaskUncheckedUpdateManyWithoutTeamInput>
 }
 
 export type TaskScalarWhereInput = {
@@ -627,10 +651,11 @@ export type TaskScalarWhereInput = {
   name?: Prisma.StringFilter<"Task"> | string
   description?: Prisma.StringNullableFilter<"Task"> | string | null
   status?: Prisma.EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFilter<"Task"> | boolean
   dueDate?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
   deletedAt?: Prisma.DateTimeNullableFilter<"Task"> | Date | string | null
-  listingId?: Prisma.StringFilter<"Task"> | string
+  teamId?: Prisma.StringFilter<"Task"> | string
   reservationId?: Prisma.StringNullableFilter<"Task"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Task"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Task"> | Date | string
@@ -641,12 +666,13 @@ export type TaskCreateWithoutReservationInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  listing: Prisma.ListingCreateNestedOneWithoutTasksInput
+  team: Prisma.TeamCreateNestedOneWithoutTasksInput
   assignments?: Prisma.TaskAssignmentCreateNestedManyWithoutTaskInput
 }
 
@@ -655,10 +681,11 @@ export type TaskUncheckedCreateWithoutReservationInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
-  listingId: string
+  teamId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   assignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutTaskInput
@@ -695,12 +722,13 @@ export type TaskCreateWithoutAssignmentsInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  listing: Prisma.ListingCreateNestedOneWithoutTasksInput
+  team: Prisma.TeamCreateNestedOneWithoutTasksInput
   reservation?: Prisma.ReservationCreateNestedOneWithoutTasksInput
 }
 
@@ -709,10 +737,11 @@ export type TaskUncheckedCreateWithoutAssignmentsInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
-  listingId: string
+  teamId: string
   reservationId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -739,12 +768,13 @@ export type TaskUpdateWithoutAssignmentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  listing?: Prisma.ListingUpdateOneRequiredWithoutTasksNestedInput
+  team?: Prisma.TeamUpdateOneRequiredWithoutTasksNestedInput
   reservation?: Prisma.ReservationUpdateOneWithoutTasksNestedInput
 }
 
@@ -753,20 +783,22 @@ export type TaskUncheckedUpdateWithoutAssignmentsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  listingId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.StringFieldUpdateOperationsInput | string
   reservationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type TaskCreateManyListingInput = {
+export type TaskCreateManyTeamInput = {
   id?: string
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
@@ -775,11 +807,12 @@ export type TaskCreateManyListingInput = {
   updatedAt?: Date | string
 }
 
-export type TaskUpdateWithoutListingInput = {
+export type TaskUpdateWithoutTeamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -789,11 +822,12 @@ export type TaskUpdateWithoutListingInput = {
   assignments?: Prisma.TaskAssignmentUpdateManyWithoutTaskNestedInput
 }
 
-export type TaskUncheckedUpdateWithoutListingInput = {
+export type TaskUncheckedUpdateWithoutTeamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -803,11 +837,12 @@ export type TaskUncheckedUpdateWithoutListingInput = {
   assignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTaskNestedInput
 }
 
-export type TaskUncheckedUpdateManyWithoutListingInput = {
+export type TaskUncheckedUpdateManyWithoutTeamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -821,10 +856,11 @@ export type TaskCreateManyReservationInput = {
   name: string
   description?: string | null
   status?: $Enums.TaskStatus
+  isTemplate?: boolean
   dueDate?: Date | string | null
   completedAt?: Date | string | null
   deletedAt?: Date | string | null
-  listingId: string
+  teamId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -834,12 +870,13 @@ export type TaskUpdateWithoutReservationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  listing?: Prisma.ListingUpdateOneRequiredWithoutTasksNestedInput
+  team?: Prisma.TeamUpdateOneRequiredWithoutTasksNestedInput
   assignments?: Prisma.TaskAssignmentUpdateManyWithoutTaskNestedInput
 }
 
@@ -848,10 +885,11 @@ export type TaskUncheckedUpdateWithoutReservationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  listingId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   assignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutTaskNestedInput
@@ -862,10 +900,11 @@ export type TaskUncheckedUpdateManyWithoutReservationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+  isTemplate?: Prisma.BoolFieldUpdateOperationsInput | boolean
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  listingId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -906,14 +945,15 @@ export type TaskSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   name?: boolean
   description?: boolean
   status?: boolean
+  isTemplate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   deletedAt?: boolean
-  listingId?: boolean
+  teamId?: boolean
   reservationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   reservation?: boolean | Prisma.Task$reservationArgs<ExtArgs>
   assignments?: boolean | Prisma.Task$assignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskCountOutputTypeDefaultArgs<ExtArgs>
@@ -924,14 +964,15 @@ export type TaskSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   description?: boolean
   status?: boolean
+  isTemplate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   deletedAt?: boolean
-  listingId?: boolean
+  teamId?: boolean
   reservationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   reservation?: boolean | Prisma.Task$reservationArgs<ExtArgs>
 }, ExtArgs["result"]["task"]>
 
@@ -940,14 +981,15 @@ export type TaskSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   name?: boolean
   description?: boolean
   status?: boolean
+  isTemplate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   deletedAt?: boolean
-  listingId?: boolean
+  teamId?: boolean
   reservationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   reservation?: boolean | Prisma.Task$reservationArgs<ExtArgs>
 }, ExtArgs["result"]["task"]>
 
@@ -956,35 +998,36 @@ export type TaskSelectScalar = {
   name?: boolean
   description?: boolean
   status?: boolean
+  isTemplate?: boolean
   dueDate?: boolean
   completedAt?: boolean
   deletedAt?: boolean
-  listingId?: boolean
+  teamId?: boolean
   reservationId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "status" | "dueDate" | "completedAt" | "deletedAt" | "listingId" | "reservationId" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+export type TaskOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "status" | "isTemplate" | "dueDate" | "completedAt" | "deletedAt" | "teamId" | "reservationId" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
 export type TaskInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   reservation?: boolean | Prisma.Task$reservationArgs<ExtArgs>
   assignments?: boolean | Prisma.Task$assignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.TaskCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TaskIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   reservation?: boolean | Prisma.Task$reservationArgs<ExtArgs>
 }
 export type TaskIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
+  team?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   reservation?: boolean | Prisma.Task$reservationArgs<ExtArgs>
 }
 
 export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Task"
   objects: {
-    listing: Prisma.$ListingPayload<ExtArgs>
+    team: Prisma.$TeamPayload<ExtArgs>
     reservation: Prisma.$ReservationPayload<ExtArgs> | null
     assignments: Prisma.$TaskAssignmentPayload<ExtArgs>[]
   }
@@ -993,10 +1036,11 @@ export type $TaskPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string
     description: string | null
     status: $Enums.TaskStatus
+    isTemplate: boolean
     dueDate: Date | null
     completedAt: Date | null
     deletedAt: Date | null
-    listingId: string
+    teamId: string
     reservationId: string | null
     createdAt: Date
     updatedAt: Date
@@ -1394,7 +1438,7 @@ readonly fields: TaskFieldRefs;
  */
 export interface Prisma__TaskClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  listing<T extends Prisma.ListingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ListingDefaultArgs<ExtArgs>>): Prisma.Prisma__ListingClient<runtime.Types.Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  team<T extends Prisma.TeamDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeamDefaultArgs<ExtArgs>>): Prisma.Prisma__TeamClient<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   reservation<T extends Prisma.Task$reservationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Task$reservationArgs<ExtArgs>>): Prisma.Prisma__ReservationClient<runtime.Types.Result.GetResult<Prisma.$ReservationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assignments<T extends Prisma.Task$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Task$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1430,10 +1474,11 @@ export interface TaskFieldRefs {
   readonly name: Prisma.FieldRef<"Task", 'String'>
   readonly description: Prisma.FieldRef<"Task", 'String'>
   readonly status: Prisma.FieldRef<"Task", 'TaskStatus'>
+  readonly isTemplate: Prisma.FieldRef<"Task", 'Boolean'>
   readonly dueDate: Prisma.FieldRef<"Task", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"Task", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Task", 'DateTime'>
-  readonly listingId: Prisma.FieldRef<"Task", 'String'>
+  readonly teamId: Prisma.FieldRef<"Task", 'String'>
   readonly reservationId: Prisma.FieldRef<"Task", 'String'>
   readonly createdAt: Prisma.FieldRef<"Task", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Task", 'DateTime'>
