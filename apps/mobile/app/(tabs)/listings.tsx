@@ -58,9 +58,9 @@ function formatDate(dateString: string): string {
   });
 }
 
-function formatCheckInDate(dateString: string | null): string {
+function formatCheckInDate(dateString: string | null, hasCalendarLinks: boolean): string {
   if (!dateString) {
-    return 'No upcoming check-ins';
+    return hasCalendarLinks ? 'No upcoming check-ins' : 'No iCal links added yet';
   }
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
@@ -181,7 +181,7 @@ export default function ListingsScreen() {
               {formatAddress(item)}
             </Text>
             <Text style={styles.listingDescription} numberOfLines={1}>
-              Next check-in: {formatCheckInDate(item.nextCheckIn)}
+              Next check-in: {formatCheckInDate(item.nextCheckIn, item.calendarLinks.length > 0)}
             </Text>
           </View>
           <View style={styles.indicator} />
