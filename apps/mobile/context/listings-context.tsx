@@ -25,6 +25,8 @@ export interface Listing {
   wifiNetwork: string | null;
   wifiPassword: string | null;
   accessNotes: string | null;
+  defaultCheckInTime: string;
+  defaultCheckOutTime: string;
   teamId: string;
   calendarLinks: CalendarLink[];
   nextCheckIn: string | null;

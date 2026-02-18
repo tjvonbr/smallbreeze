@@ -1,3 +1,4 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -29,6 +30,24 @@ import { authClient } from '@/lib/auth-client';
 import { Colors, Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Reservation, parseICalText } from '@/lib/ical-parser';
+
+function formatTime(time: string): string {
+  const [h, m] = time.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hour12}:${m.toString().padStart(2, '0')} ${period}`;
+}
+
+function timeStringToDate(time: string): Date {
+  const [h, m] = time.split(':').map(Number);
+  const date = new Date();
+  date.setHours(h, m, 0, 0);
+  return date;
+}
+
+function dateToTimeString(date: Date): string {
+  return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+}
 
 interface AddressForm {
   streetAddress: string;
@@ -405,13 +424,14 @@ interface InfoTabProps {
   onEditAddress: () => void;
   onEditWiFi: () => void;
   onEditAccessNotes: () => void;
+  onEditCheckTimes: () => void;
   onPhotosPress: () => void;
   onAddCalendarLink: () => void;
   onDeleteCalendarLink: (linkId: string) => void;
   deletingLinkId: string | null;
 }
 
-function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes, onPhotosPress, onAddCalendarLink, onDeleteCalendarLink, deletingLinkId }: InfoTabProps) {
+function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes, onEditCheckTimes, onPhotosPress, onAddCalendarLink, onDeleteCalendarLink, deletingLinkId }: InfoTabProps) {
   const formatAddress = (listing: Listing) => {
     const lines = [listing.streetAddress];
     if (listing.streetAddress2) {
@@ -491,6 +511,27 @@ function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditA
               No access notes added
             </Text>
           )}
+        </View>
+      </Pressable>
+
+      <Pressable style={styles.section} onPress={onEditCheckTimes}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Check-in / Check-out</Text>
+        <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
+          <View style={styles.checkTimesRow}>
+            <View style={styles.checkTimeItem}>
+              <Text style={[styles.checkTimeLabel, { color: colors.icon }]}>Check-in</Text>
+              <Text style={[styles.checkTimeValue, { color: colors.text }]}>
+                {formatTime(listing.defaultCheckInTime)}
+              </Text>
+            </View>
+            <View style={[styles.checkTimeDivider, { backgroundColor: colorScheme === 'dark' ? '#444' : '#DDD' }]} />
+            <View style={styles.checkTimeItem}>
+              <Text style={[styles.checkTimeLabel, { color: colors.icon }]}>Check-out</Text>
+              <Text style={[styles.checkTimeValue, { color: colors.text }]}>
+                {formatTime(listing.defaultCheckOutTime)}
+              </Text>
+            </View>
+          </View>
         </View>
       </Pressable>
 
@@ -865,6 +906,7 @@ export default function ListingScreen() {
   const [addressModalVisible, setAddressModalVisible] = useState(false);
   const [wifiModalVisible, setWifiModalVisible] = useState(false);
   const [accessNotesModalVisible, setAccessNotesModalVisible] = useState(false);
+  const [checkTimesModalVisible, setCheckTimesModalVisible] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Form states
@@ -882,6 +924,8 @@ export default function ListingScreen() {
     wifiPassword: '',
   });
   const [accessNotesForm, setAccessNotesForm] = useState('');
+  const [checkInTimeForm, setCheckInTimeForm] = useState(() => timeStringToDate('16:00'));
+  const [checkOutTimeForm, setCheckOutTimeForm] = useState(() => timeStringToDate('10:00'));
 
   const openNicknameModal = () => {
     if (listing) {
@@ -918,6 +962,14 @@ export default function ListingScreen() {
     if (listing) {
       setAccessNotesForm(listing.accessNotes || '');
       setAccessNotesModalVisible(true);
+    }
+  };
+
+  const openCheckTimesModal = () => {
+    if (listing) {
+      setCheckInTimeForm(timeStringToDate(listing.defaultCheckInTime));
+      setCheckOutTimeForm(timeStringToDate(listing.defaultCheckOutTime));
+      setCheckTimesModalVisible(true);
     }
   };
 
@@ -1024,6 +1076,33 @@ export default function ListingScreen() {
       setAccessNotesModalVisible(false);
     } catch (err) {
       console.error('Failed to update access notes:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveCheckTimes = async () => {
+    if (!listing) return;
+
+    setSaving(true);
+    try {
+      const response = await authClient.$fetch<{ listing: Listing }>(
+        `${apiUrl}/api/listings/${listing.id}`,
+        {
+          method: 'PATCH',
+          body: {
+            defaultCheckInTime: dateToTimeString(checkInTimeForm),
+            defaultCheckOutTime: dateToTimeString(checkOutTimeForm),
+          },
+        }
+      );
+
+      if (response.data?.listing) {
+        updateListing(response.data.listing);
+      }
+      setCheckTimesModalVisible(false);
+    } catch (err) {
+      console.error('Failed to update check times:', err);
     } finally {
       setSaving(false);
     }
@@ -1140,6 +1219,7 @@ export default function ListingScreen() {
           onEditAddress={openAddressModal}
           onEditWiFi={openWiFiModal}
           onEditAccessNotes={openAccessNotesModal}
+          onEditCheckTimes={openCheckTimesModal}
           onPhotosPress={handlePhotosPress}
           onAddCalendarLink={openCalendarLinkModal}
           onDeleteCalendarLink={deleteCalendarLink}
@@ -1311,6 +1391,40 @@ export default function ListingScreen() {
         <Text style={[styles.fieldHint, { color: colors.icon }]}>
           Document how to access the property, where supplies are located, and any other important information.
         </Text>
+      </EditModal>
+
+      {/* Check-in / Check-out Times Modal */}
+      <EditModal
+        visible={checkTimesModalVisible}
+        title="Check-in / Check-out Times"
+        onClose={() => setCheckTimesModalVisible(false)}
+        onSave={saveCheckTimes}
+        saving={saving}
+        colors={colors}
+        colorScheme={colorScheme}
+      >
+        <View style={styles.timePickerField}>
+          <Text style={[styles.timePickerLabel, { color: colors.text }]}>Check-in Time</Text>
+          <DateTimePicker
+            value={checkInTimeForm}
+            mode="time"
+            display="spinner"
+            minuteInterval={15}
+            onChange={(_, date) => date && setCheckInTimeForm(date)}
+            themeVariant={colorScheme}
+          />
+        </View>
+        <View style={styles.timePickerField}>
+          <Text style={[styles.timePickerLabel, { color: colors.text }]}>Check-out Time</Text>
+          <DateTimePicker
+            value={checkOutTimeForm}
+            mode="time"
+            display="spinner"
+            minuteInterval={15}
+            onChange={(_, date) => date && setCheckOutTimeForm(date)}
+            themeVariant={colorScheme}
+          />
+        </View>
       </EditModal>
 
       {/* Add iCal Link Modal */}
@@ -1640,6 +1754,37 @@ const styles = StyleSheet.create({
   },
   checkInText: {
     fontSize: 16,
+  },
+  checkTimesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  checkTimeItem: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+  },
+  checkTimeLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  checkTimeValue: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  checkTimeDivider: {
+    width: 1,
+    height: 36,
+  },
+  timePickerField: {
+    marginBottom: 16,
+  },
+  timePickerLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   wifiRow: {
     flexDirection: 'row',

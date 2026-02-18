@@ -66,6 +66,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     "expo-notifications",
+    "@react-native-community/datetimepicker",
   ],
   experiments: {
     typedRoutes: true,

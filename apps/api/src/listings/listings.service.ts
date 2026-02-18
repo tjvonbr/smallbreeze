@@ -30,6 +30,8 @@ interface UpdateListingData {
   wifiNetwork?: string | null;
   wifiPassword?: string | null;
   accessNotes?: string | null;
+  defaultCheckInTime?: string;
+  defaultCheckOutTime?: string;
 }
 
 const ADDRESS_FIELDS = ['streetAddress', 'city', 'state', 'zip', 'country'] as const;
