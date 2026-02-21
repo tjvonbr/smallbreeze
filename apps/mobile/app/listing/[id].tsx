@@ -213,6 +213,13 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
           const response = await fetch(calendarLink.url);
           const icalText = await response.text();
           const events = parseICalText(icalText);
+          const url = calendarLink.url.toLowerCase();
+          const source = url.includes('airbnb') ? 'Airbnb'
+            : (url.includes('vrbo') || url.includes('homeaway')) ? 'VRBO'
+            : undefined;
+          for (const event of events) {
+            event.source = source;
+          }
           allEvents.push(...events);
         } catch (err) {
           console.error('Failed to fetch calendar:', calendarLink.url, err);
@@ -295,6 +302,47 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
       weeks.push(currentWeek);
     }
 
+    // Compute source labels that span across multiple day cells per week
+    const getWeekLabels = (week: (number | null)[]) => {
+      const labels: { startCol: number; endCol: number; source: string }[] = [];
+      for (const res of reservations) {
+        if (!res.source) continue;
+        const start = new Date(res.start);
+        const end = new Date(res.end);
+        // Find column index of check-in day in this week
+        let startCol = -1;
+        for (let col = 0; col < 7; col++) {
+          if (week[col] !== null) {
+            const cellDate = new Date(year, month, week[col]!);
+            if (isSameDay(cellDate, start)) {
+              startCol = col;
+              break;
+            }
+          }
+        }
+        if (startCol === -1) continue;
+        // Skip label if the check-in bar is hidden by a middle bar from another reservation
+        const checkInDate = new Date(year, month, week[startCol]!);
+        if (getDateStatus(checkInDate).hasMiddle) continue;
+        // Find last column the reservation spans in this week
+        let endCol = startCol;
+        for (let col = startCol + 1; col < 7; col++) {
+          if (week[col] === null) break;
+          const cellDate = new Date(year, month, week[col]!);
+          // Reservation spans through days between start (exclusive) and end (exclusive in iCal)
+          const cellStr = `${cellDate.getFullYear()}-${String(cellDate.getMonth() + 1).padStart(2, '0')}-${String(cellDate.getDate()).padStart(2, '0')}`;
+          const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+          if (cellStr < endStr) {
+            endCol = col;
+          } else {
+            break;
+          }
+        }
+        labels.push({ startCol, endCol, source: res.source });
+      }
+      return labels;
+    };
+
     return (
       <View style={styles.monthContainer}>
         <Text style={[styles.monthTitle, { color: colors.text }]}>
@@ -371,7 +419,7 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
                         style={[
                           styles.barFillRight,
                           styles.barEndLeft,
-                          { backgroundColor: pillColor }
+                          { backgroundColor: pillColor },
                         ]}
                       />
                     </View>
@@ -379,11 +427,27 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
                 </View>
               );
             })}
+            {/* Source labels overlay spanning multiple cells */}
+            {getWeekLabels(week).map((label, labelIndex) => (
+              <Text
+                key={labelIndex}
+                style={[
+                  styles.barSourceLabel,
+                  {
+                    left: `${((label.startCol + 0.55) / 7) * 100}%`,
+                    width: `${((label.endCol - label.startCol + 0.45) / 7) * 100}%`,
+                  },
+                ]}
+                numberOfLines={1}
+              >
+                {label.source}
+              </Text>
+            ))}
           </View>
         ))}
       </View>
     );
-  }, [colors, colorScheme, getDateStatus]);
+  }, [colors, colorScheme, getDateStatus, reservations]);
 
   if (loading) {
     return (
@@ -1715,6 +1779,7 @@ const styles = StyleSheet.create({
   },
   weekRow: {
     flexDirection: 'row',
+    position: 'relative',
   },
   dayCell: {
     flex: 1,
@@ -1784,6 +1849,16 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 16,
     borderRightWidth: 2,
     borderRightColor: '#fff',
+  },
+  barSourceLabel: {
+    position: 'absolute',
+    bottom: 8,
+    height: 32,
+    lineHeight: 32,
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+    paddingLeft: 4,
   },
   section: {
     marginBottom: 24,
