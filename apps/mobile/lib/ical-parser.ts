@@ -6,6 +6,7 @@ export interface Reservation {
   end: string;
   location?: string;
   allDay: boolean;
+  source?: string;
 }
 
 export function parseICalDate(value: string): string {
