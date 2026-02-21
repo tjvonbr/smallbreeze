@@ -219,9 +219,8 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
         }
       }
 
-      const reserved = allEvents.filter((e) => e.summary?.toLowerCase() === 'reserved');
-      reserved.sort((a, b) => a.start.localeCompare(b.start));
-      setReservations(reserved);
+      allEvents.sort((a, b) => a.start.localeCompare(b.start));
+      setReservations(allEvents);
     } catch (err) {
       console.error('Failed to fetch reservations:', err);
     } finally {
@@ -324,11 +323,12 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
               const date = new Date(year, month, day);
               const isToday = isSameDay(date, today);
               const { hasCheckIn, hasCheckOut, hasMiddle } = getDateStatus(date);
-              const hasAnyReservation = hasCheckIn || hasCheckOut || hasMiddle;
               const pillColor = colorScheme === 'dark' ? '#444' : '#222';
 
               // Determine what type of bar to render
-              const isMiddleOnly = hasMiddle && !hasCheckIn && !hasCheckOut;
+              // If hasMiddle is true, the day is in the middle of at least one booking,
+              // so always show the full bar (overlapping check-ins/check-outs from other
+              // events shouldn't create rounded edges on a fully-booked day).
               const isTurnover = hasCheckIn && hasCheckOut;
 
               return (
@@ -344,14 +344,14 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
                   >
                     {day}
                   </Text>
-                  {/* Middle-only: single full-width bar */}
-                  {isMiddleOnly && (
+                  {/* Full-width bar for middle days */}
+                  {hasMiddle && (
                     <View style={styles.barLayerFull}>
                       <View style={[styles.barFillFull, { backgroundColor: pillColor }]} />
                     </View>
                   )}
-                  {/* Checkout bar (not middle-only) */}
-                  {hasCheckOut && !isMiddleOnly && (
+                  {/* Checkout bar (only when not a middle day) */}
+                  {hasCheckOut && !hasMiddle && (
                     <View style={styles.barLayerLeft}>
                       <View
                         style={[
@@ -363,8 +363,8 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
                       <View style={styles.barSpacerSmall} />
                     </View>
                   )}
-                  {/* Checkin bar (not middle-only) */}
-                  {hasCheckIn && !isMiddleOnly && (
+                  {/* Checkin bar (only when not a middle day) */}
+                  {hasCheckIn && !hasMiddle && (
                     <View style={styles.barLayerRight}>
                       <View style={styles.barSpacerSmall} />
                       <View
@@ -427,11 +427,9 @@ interface InfoTabProps {
   onEditCheckTimes: () => void;
   onPhotosPress: () => void;
   onAddCalendarLink: () => void;
-  onDeleteCalendarLink: (linkId: string) => void;
-  deletingLinkId: string | null;
 }
 
-function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes, onEditCheckTimes, onPhotosPress, onAddCalendarLink, onDeleteCalendarLink, deletingLinkId }: InfoTabProps) {
+function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditAddress, onEditWiFi, onEditAccessNotes, onEditCheckTimes, onPhotosPress, onAddCalendarLink }: InfoTabProps) {
   const formatAddress = (listing: Listing) => {
     const lines = [listing.streetAddress];
     if (listing.streetAddress2) {
@@ -550,14 +548,15 @@ function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditA
             iCal Links{listing.calendarLinks.length > 0 ? ` (${listing.calendarLinks.length})` : ''}
           </Text>
         </View>
+        <Pressable onPress={onAddCalendarLink}>
         <View style={[styles.card, { backgroundColor: colorScheme === 'dark' ? '#1C1C1E' : '#F5F5F5' }]}>
           {listing.calendarLinks.length === 0 ? (
-            <Pressable onPress={onAddCalendarLink} style={styles.calendarLinkEmpty}>
+            <View style={styles.calendarLinkEmpty}>
               <Icons.link size={18} color={colors.icon} />
               <Text style={[styles.calendarLinkEmptyText, { color: colors.icon }]}>
                 Add an iCal link to sync reservations
               </Text>
-            </Pressable>
+            </View>
           ) : (
             listing.calendarLinks.map((link, index) => (
               <View
@@ -574,21 +573,11 @@ function InfoTab({ listing, photos, colors, colorScheme, onEditNickname, onEditA
                 >
                   {link.url}
                 </Text>
-                <Pressable
-                  onPress={() => onDeleteCalendarLink(link.id)}
-                  disabled={deletingLinkId === link.id}
-                  hitSlop={8}
-                >
-                  {deletingLinkId === link.id ? (
-                    <ActivityIndicator size="small" color={colors.icon} />
-                  ) : (
-                    <Icons.trash size={16} color={colors.icon} />
-                  )}
-                </Pressable>
               </View>
             ))
           )}
         </View>
+        </Pressable>
       </View>
     </ScrollView>
   );
@@ -1135,7 +1124,6 @@ export default function ListingScreen() {
       if (response.data?.listing) {
         updateListing(response.data.listing);
       }
-      setCalendarLinkModalVisible(false);
       setCalendarLinkUrl('');
     } catch (err) {
       console.error('Failed to add calendar link:', err);
@@ -1222,8 +1210,6 @@ export default function ListingScreen() {
           onEditCheckTimes={openCheckTimesModal}
           onPhotosPress={handlePhotosPress}
           onAddCalendarLink={openCalendarLinkModal}
-          onDeleteCalendarLink={deleteCalendarLink}
-          deletingLinkId={deletingLinkId}
         />
       )}
 
@@ -1427,29 +1413,98 @@ export default function ListingScreen() {
         </View>
       </EditModal>
 
-      {/* Add iCal Link Modal */}
-      <EditModal
+      {/* iCal Links Modal */}
+      <Modal
         visible={calendarLinkModalVisible}
-        title="Add iCal Link"
-        onClose={() => setCalendarLinkModalVisible(false)}
-        onSave={addCalendarLink}
-        saving={savingLink}
-        colors={colors}
-        colorScheme={colorScheme}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setCalendarLinkModalVisible(false)}
       >
-        <FormField
-          label="iCal URL"
-          value={calendarLinkUrl}
-          onChangeText={setCalendarLinkUrl}
-          placeholder="https://..."
-          colors={colors}
-          colorScheme={colorScheme}
-          autoCapitalize="none"
-        />
-        <Text style={[styles.fieldHint, { color: colors.icon }]}>
-          Paste an iCal link from Airbnb, VRBO, or any other booking platform to sync reservations.
-        </Text>
-      </EditModal>
+        <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
+          <View style={[styles.modalHeader, { borderBottomColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>iCal Links</Text>
+            <Pressable onPress={() => setCalendarLinkModalVisible(false)} style={styles.modalCloseButton}>
+              <View style={[styles.modalCloseCircle, { backgroundColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}>
+                <Text style={[styles.modalCloseX, { color: colors.text }]}>×</Text>
+              </View>
+            </Pressable>
+          </View>
+
+          <ScrollView
+            style={styles.modalContent}
+            keyboardShouldPersistTaps="always"
+            contentContainerStyle={styles.modalContentContainer}
+          >
+            {listing && listing.calendarLinks.length > 0 && (
+              <View style={{ marginBottom: 24 }}>
+                {listing.calendarLinks.map((link, index) => (
+                  <View
+                    key={link.id}
+                    style={[
+                      styles.calendarLinkItem,
+                      index < listing.calendarLinks.length - 1 && styles.calendarLinkBorder,
+                    ]}
+                  >
+                    <Icons.calendar size={16} color={colors.icon} />
+                    <Text
+                      style={[styles.calendarLinkUrl, { color: colors.text }]}
+                      numberOfLines={1}
+                    >
+                      {link.url}
+                    </Text>
+                    <Pressable
+                      onPress={() => deleteCalendarLink(link.id)}
+                      disabled={deletingLinkId === link.id}
+                      hitSlop={8}
+                    >
+                      {deletingLinkId === link.id ? (
+                        <ActivityIndicator size="small" color={colors.icon} />
+                      ) : (
+                        <Icons.trash size={16} color={colors.icon} />
+                      )}
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <FormField
+              label="New iCal URL"
+              value={calendarLinkUrl}
+              onChangeText={setCalendarLinkUrl}
+              placeholder="https://..."
+              colors={colors}
+              colorScheme={colorScheme}
+              autoCapitalize="none"
+            />
+            <Text style={[styles.fieldHint, { color: colors.icon }]}>
+              Paste an iCal link from Airbnb, VRBO, or any other booking platform to sync reservations.
+            </Text>
+          </ScrollView>
+
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            keyboardVerticalOffset={0}
+          >
+            <View style={[styles.modalFooter, { borderTopColor: colorScheme === 'dark' ? '#333' : '#E5E5E5' }]}>
+              <Pressable onPress={() => setCalendarLinkModalVisible(false)} style={styles.cancelButton}>
+                <Text style={[styles.cancelButtonText, { color: colors.text }]}>Done</Text>
+              </Pressable>
+              <Pressable
+                onPress={addCalendarLink}
+                style={[styles.saveButton, { backgroundColor: colors.tint }]}
+                disabled={savingLink || !calendarLinkUrl.trim()}
+              >
+                {savingLink ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text style={styles.saveButtonText}>Add</Text>
+                )}
+              </Pressable>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
 
       {/* Photo Management Modal */}
       <Modal
