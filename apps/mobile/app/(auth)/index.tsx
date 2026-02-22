@@ -3,15 +3,19 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { authClient } from '@/lib/auth-client';
 import { Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
-import { useRouter } from 'expo-router';
+import { Link } from 'expo-router';
+import { Eye, EyeOff } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,23 +24,29 @@ WebBrowser.maybeCompleteAuthSession();
 
 type SocialProvider = 'google' | 'apple' | 'facebook';
 
-export default function AuthLandingScreen() {
-  const router = useRouter();
+export default function SignInScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<SocialProvider | null>(null);
 
   const handleSocialSignIn = async (provider: SocialProvider) => {
     setLoadingProvider(provider);
+    setError(null);
 
     try {
-      const { data, error } = await authClient.signIn.social({
+      const { data, error: socialError } = await authClient.signIn.social({
         provider,
         callbackURL: '/(tabs)',
       });
 
-      if (error) {
-        Alert.alert('Sign In Failed', error.message || `Failed to sign in with ${provider}`);
+      if (socialError) {
+        Alert.alert('Sign In Failed', socialError.message || `Failed to sign in with ${provider}`);
         return;
       }
 
@@ -58,108 +68,195 @@ export default function AuthLandingScreen() {
     }
   };
 
-  const handleClose = () => {
-    router.back();
+  const validateForm = () => {
+    if (!email.trim()) {
+      setError('Email is required');
+      return false;
+    }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    if (!emailOk) {
+      setError('Enter a valid email');
+      return false;
+    }
+    if (!password) {
+      setError('Password is required');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSignIn = async () => {
+    setError(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data, error: signInError } = await authClient.signIn.email({
+        email: email.toLowerCase().trim(),
+        password,
+      });
+
+      if (signInError) {
+        setError(signInError.message ?? 'Failed to sign in');
+        return;
+      }
+
+      if (data) {
+        // Root layout handles navigation via Redirect when session updates
+      }
+    } catch (err) {
+      console.error('Sign in error:', err);
+      setError('Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Pressable onPress={handleClose} style={styles.closeButton}>
-          <Ionicons name="close" size={24} color={colors.text} />
-        </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Log in or sign up</Text>
-        <View style={styles.closeButton} />
-      </View>
-
-      <View style={styles.content}>
-        {/* Welcome text */}
-        <Text style={[styles.welcomeText, { color: colors.text }]}>
-          Welcome to smallbreeze
-        </Text>
-
-        {/* Divider */}
-        <View style={styles.dividerContainer}>
-          <View style={[styles.dividerLine, { backgroundColor: '#E0E0E0' }]} />
-          <Text style={[styles.dividerText, { color: '#999' }]}>continue with</Text>
-          <View style={[styles.dividerLine, { backgroundColor: '#E0E0E0' }]} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Sign in</Text>
         </View>
 
-        {/* Social Buttons */}
-        <View style={styles.socialButtons}>
-          {/* Email */}
-          <Pressable
-            style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
-            onPress={() => router.push('/(auth)/sign-in')}
-          >
-            <Ionicons name="mail-outline" size={22} color={colors.text} />
-            <Text style={[styles.socialButtonText, { color: colors.text }]}>
-              Continue with email
-            </Text>
-          </Pressable>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <Text style={[styles.title, { color: colors.text }]}>
+            Welcome back
+          </Text>
 
-          {/* Apple - only show on iOS */}
-          {Platform.OS === 'ios' && (
+          <View style={styles.form}>
+            {/* Email */}
+            <View style={styles.inputContainer}>
+              <Text style={[styles.floatingLabel, { backgroundColor: colors.background }]}>Email</Text>
+              <TextInput
+                style={[styles.inputWithLabel, { borderColor: '#E0E0E0', color: colors.text }]}
+                value={email}
+                onChangeText={setEmail}
+                placeholder=""
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+            </View>
+
+            {/* Password */}
+            <View style={styles.inputContainer}>
+              <Text style={[styles.floatingLabel, { backgroundColor: colors.background }]}>Password</Text>
+              <TextInput
+                style={[styles.inputWithLabel, styles.inputWithIcon, { borderColor: '#E0E0E0', color: colors.text }]}
+                value={password}
+                onChangeText={setPassword}
+                placeholder=""
+                secureTextEntry={!showPassword}
+                autoComplete="current-password"
+              />
+              <Pressable
+                style={styles.eyeIcon}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff size={20} color="#999" />
+                ) : (
+                  <Eye size={20} color="#999" />
+                )}
+              </Pressable>
+            </View>
+
+            {error && <Text style={styles.errorText}>{error}</Text>}
+
+            {/* Sign In Button */}
+            <Pressable
+              style={[styles.primaryButton, { opacity: loading ? 0.7 : 1 }]}
+              onPress={handleSignIn}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.primaryButtonText}>Sign in</Text>
+              )}
+            </Pressable>
+
+            {/* Sign up Link */}
+            <Pressable style={styles.secondaryButton}>
+              <Link href="/(auth)/sign-up" asChild>
+                <Text style={[styles.secondaryButtonText, { color: '#666' }]}>
+                  Don&apos;t have an account? Sign up
+                </Text>
+              </Link>
+            </Pressable>
+
+            {/* Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={[styles.dividerLine, { backgroundColor: '#E0E0E0' }]} />
+              <Text style={[styles.dividerText, { color: '#999' }]}>or</Text>
+              <View style={[styles.dividerLine, { backgroundColor: '#E0E0E0' }]} />
+            </View>
+
+            {/* Social Login Buttons */}
+            {Platform.OS === 'ios' && (
+              <Pressable
+                style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
+                onPress={() => handleSocialSignIn('apple')}
+                disabled={loadingProvider !== null || loading}
+              >
+                {loadingProvider === 'apple' ? (
+                  <ActivityIndicator size="small" color={colors.text} />
+                ) : (
+                  <Ionicons name="logo-apple" size={20} color={colors.text} />
+                )}
+                <Text style={[styles.socialButtonText, { color: colors.text }]}>
+                  Continue with Apple
+                </Text>
+              </Pressable>
+            )}
+
             <Pressable
               style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
-              onPress={() => handleSocialSignIn('apple')}
-              disabled={loadingProvider !== null}
+              onPress={() => handleSocialSignIn('google')}
+              disabled={loadingProvider !== null || loading}
             >
-              {loadingProvider === 'apple' ? (
+              {loadingProvider === 'google' ? (
                 <ActivityIndicator size="small" color={colors.text} />
               ) : (
-                <Ionicons name="logo-apple" size={22} color={colors.text} />
+                <View style={styles.googleIcon}>
+                  <Text style={styles.googleIconText}>G</Text>
+                </View>
               )}
               <Text style={[styles.socialButtonText, { color: colors.text }]}>
-                Continue with Apple
+                Continue with Google
               </Text>
             </Pressable>
-          )}
 
-          {/* Google */}
-          <Pressable
-            style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
-            onPress={() => handleSocialSignIn('google')}
-            disabled={loadingProvider !== null}
-          >
-            {loadingProvider === 'google' ? (
-              <ActivityIndicator size="small" color={colors.text} />
-            ) : (
-              <GoogleIcon />
-            )}
-            <Text style={[styles.socialButtonText, { color: colors.text }]}>
-              Continue with Google
-            </Text>
-          </Pressable>
+            <Pressable
+              style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
+              onPress={() => handleSocialSignIn('facebook')}
+              disabled={loadingProvider !== null || loading}
+            >
+              {loadingProvider === 'facebook' ? (
+                <ActivityIndicator size="small" color={colors.text} />
+              ) : (
+                <Ionicons name="logo-facebook" size={20} color="#1877F2" />
+              )}
+              <Text style={[styles.socialButtonText, { color: colors.text }]}>
+                Continue with Facebook
+              </Text>
+            </Pressable>
 
-          {/* Facebook */}
-          <Pressable
-            style={[styles.socialButton, { borderColor: '#E0E0E0' }]}
-            onPress={() => handleSocialSignIn('facebook')}
-            disabled={loadingProvider !== null}
-          >
-            {loadingProvider === 'facebook' ? (
-              <ActivityIndicator size="small" color={colors.text} />
-            ) : (
-              <Ionicons name="logo-facebook" size={22} color="#1877F2" />
-            )}
-            <Text style={[styles.socialButtonText, { color: colors.text }]}>
-              Continue with Facebook
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+            {/* Bottom spacing */}
+            <View style={{ height: 40 }} />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-}
-
-// Google icon component (multi-colored G)
-function GoogleIcon() {
-  return (
-    <View style={styles.googleIcon}>
-      <Text style={styles.googleIconText}>G</Text>
-    </View>
   );
 }
 
@@ -167,39 +264,98 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  keyboardView: {
+    flex: 1,
+  },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
   },
-  closeButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   headerTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
   },
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 24,
   },
-  welcomeText: {
-    fontSize: 22,
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginTop: 32,
+    marginBottom: 32,
+  },
+  form: {
+    gap: 16,
+  },
+  inputContainer: {
+    position: 'relative',
+  },
+  floatingLabel: {
+    position: 'absolute',
+    left: 16,
+    top: 8,
+    fontSize: 12,
+    color: '#999',
+    paddingHorizontal: 4,
+    zIndex: 1,
+  },
+  inputWithLabel: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 12,
+    fontSize: 16,
+  },
+  inputWithIcon: {
+    paddingRight: 48, // Make room for the eye icon
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: 16,
+    top: '50%',
+    transform: [{ translateY: -10 }], // Center vertically
+    zIndex: 2,
+  },
+  errorText: {
+    color: '#FF6B6B',
+    fontSize: 14,
+    marginTop: -8,
+  },
+  primaryButton: {
+    backgroundColor: '#000000',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '600',
-    marginBottom: 24,
+  },
+  secondaryButton: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+  },
+  secondaryButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginVertical: 24,
   },
   dividerLine: {
     flex: 1,
@@ -207,30 +363,28 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     paddingHorizontal: 16,
-    fontSize: 12,
-  },
-  socialButtons: {
-    gap: 12,
+    fontSize: 14,
   },
   socialButton: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
+    marginBottom: 12,
   },
   socialButtonText: {
     flex: 1,
     textAlign: 'center',
     fontSize: 15,
     fontWeight: '500',
-    marginRight: 22, // Offset for the icon width to center text
+    marginRight: 20,
   },
   googleIcon: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -238,7 +392,7 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0',
   },
   googleIconText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
     color: '#4285F4',
   },
