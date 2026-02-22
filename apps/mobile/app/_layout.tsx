@@ -1,11 +1,13 @@
 import '@/lib/geofencing';
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ActivityIndicator, View, Text } from 'react-native';
 
+import { Colors, Fonts } from '@/constants/theme';
 import { ListingsProvider, useListings } from '@/context/listings-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useProximityNotifications } from '@/hooks/use-proximity-notifications';
@@ -27,21 +29,17 @@ export default function RootLayout() {
   const isAuthenticated = !!session;
 
   if (isPending) {
-    return null;
-  }
-
-  if (!isAuthenticated) {
+    const bg = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
+    const tint = colorScheme === 'dark' ? Colors.dark.tint : Colors.light.tint;
+    const text = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <ListingsProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" />
-            </Stack>
-            <StatusBar style="auto" />
-          </ListingsProvider>
-        </ThemeProvider>
-      </GestureHandlerRootView>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: bg }}>
+        <Text style={{ fontSize: 28, fontWeight: '700', color: text, fontFamily: Fonts.rounded, marginBottom: 24 }}>
+          smallbreeze
+        </Text>
+        <ActivityIndicator size="small" color={tint} />
+        <StatusBar style="auto" />
+      </View>
     );
   }
 
@@ -49,9 +47,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <ListingsProvider>
-          <GeofenceManager />
+          {isAuthenticated && <GeofenceManager />}
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(auth)" />
             <Stack.Screen name="listing/[id]" />
             <Stack.Screen name="day/[date]" />
             <Stack.Screen name="invites" />
@@ -59,6 +58,7 @@ export default function RootLayout() {
             <Stack.Screen name="year" />
             <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           </Stack>
+          {isAuthenticated ? <Redirect href="/(tabs)" /> : <Redirect href="/(auth)" />}
           <StatusBar style="auto" />
         </ListingsProvider>
       </ThemeProvider>

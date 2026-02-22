@@ -144,9 +144,13 @@ export default function SignUpScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </Pressable>
+          {step === 2 ? (
+            <Pressable onPress={handleBack} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color={colors.text} />
+            </Pressable>
+          ) : (
+            <View style={styles.backButton} />
+          )}
           <Text style={[styles.headerTitle, { color: colors.text }]}>Sign up</Text>
           <View style={styles.backButton} />
         </View>
@@ -257,7 +261,7 @@ export default function SignUpScreen() {
 
                 {/* Sign in Link */}
                 <Pressable style={styles.secondaryButton}>
-                  <Link href="/(auth)/sign-in" asChild>
+                  <Link href="/(auth)" asChild>
                     <Text style={[styles.secondaryButtonText, { color: '#666' }]}>
                       Already have an account? Sign in
                     </Text>
