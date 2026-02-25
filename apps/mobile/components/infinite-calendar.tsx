@@ -1,5 +1,6 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, ViewToken } from 'react-native';
+import { FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, StyleSheet, ViewToken } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import MonthView from './month-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -30,6 +31,7 @@ function InfiniteCalendarImpl(
 ) {
   const listRef = useRef<FlatList<number>>(null);
   const lastYearRef = useRef<number | null>(null);
+  const lastMonthIndexRef = useRef<number | null>(null);
 
   const data = useMemo(() => {
     return Array.from({ length: TOTAL_MONTHS }, (_, i) => i);
@@ -76,17 +78,28 @@ function InfiniteCalendarImpl(
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (!onVisibleYearChange || viewableItems.length === 0) return;
+      if (viewableItems.length === 0) return;
       const candidates = viewableItems.filter((v) => v.index != null);
       if (candidates.length === 0) return;
       candidates.sort((a, b) => (a.index! - b.index!));
       const middle = candidates[Math.floor(candidates.length / 2)];
       const idx = middle.index!;
-      const monthDate = addMonths(new Date(), idx - START_INDEX);
-      const year = monthDate.getFullYear();
-      if (lastYearRef.current !== year) {
-        lastYearRef.current = year;
-        onVisibleYearChange(year);
+
+      // Haptic feedback when a new month scrolls into view
+      if (lastMonthIndexRef.current !== null && lastMonthIndexRef.current !== idx) {
+        if (Platform.OS === 'ios') {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        }
+      }
+      lastMonthIndexRef.current = idx;
+
+      if (onVisibleYearChange) {
+        const monthDate = addMonths(new Date(), idx - START_INDEX);
+        const year = monthDate.getFullYear();
+        if (lastYearRef.current !== year) {
+          lastYearRef.current = year;
+          onVisibleYearChange(year);
+        }
       }
     }
   ).current;
