@@ -1,4 +1,5 @@
 import { Icons } from '@/components/icons';
+import { FontFamily } from '@/constants/theme';
 import { useListings } from '@/context/listings-context';
 import { parseICalText } from '@/lib/ical-parser';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: '#11181C',
   },
   subtitle: {
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: '#11181C',
   },
   cardSubtitle: {

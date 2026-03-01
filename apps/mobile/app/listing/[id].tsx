@@ -27,7 +27,7 @@ import { PhotoCollage, Photo } from '@/components/photo-collage';
 import { useListings, Listing } from '@/context/listings-context';
 import { apiUrl } from '@/lib/api-url';
 import { authClient } from '@/lib/auth-client';
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Reservation, parseICalText } from '@/lib/ical-parser';
 
@@ -1233,7 +1233,7 @@ export default function ListingScreen() {
           <Pressable onPress={() => router.back()} style={styles.backButton}>
             <Icons.chevronLeft size={24} color={colors.text} />
           </Pressable>
-          <Text style={[styles.headerTitle, { color: colors.text, fontFamily: Fonts.rounded }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
             Listing
           </Text>
           <View style={styles.headerSpacer} />
@@ -1253,7 +1253,7 @@ export default function ListingScreen() {
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Icons.chevronLeft size={24} color={colors.text} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text, fontFamily: Fonts.rounded }]}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
           {listing.nickname}
         </Text>
         <View style={styles.headerSpacer} />
@@ -1708,7 +1708,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     textAlign: 'center',
   },
   headerSpacer: {
@@ -1739,7 +1739,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   // Tab Content styles
   tabContent: {
@@ -1762,7 +1762,7 @@ const styles = StyleSheet.create({
   },
   monthTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginBottom: 16,
   },
   weekDaysHeader: {
@@ -1775,7 +1775,7 @@ const styles = StyleSheet.create({
   },
   dayHeaderText: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   weekRow: {
     flexDirection: 'row',
@@ -1790,10 +1790,10 @@ const styles = StyleSheet.create({
   },
   dayText: {
     fontSize: 16,
-    fontWeight: '400',
+    fontFamily: FontFamily.regular,
   },
   todayText: {
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
   },
   barLayerFull: {
     position: 'absolute',
@@ -1857,7 +1857,7 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     color: '#fff',
     fontSize: 11,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     paddingLeft: 4,
   },
   section: {
@@ -1865,7 +1865,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -1896,13 +1896,13 @@ const styles = StyleSheet.create({
   },
   checkTimeLabel: {
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   checkTimeValue: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   checkTimeDivider: {
     width: 1,
@@ -1913,7 +1913,7 @@ const styles = StyleSheet.create({
   },
   timePickerLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginBottom: 4,
   },
   wifiRow: {
@@ -1923,7 +1923,7 @@ const styles = StyleSheet.create({
   },
   wifiText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   wifiPassword: {
     fontSize: 14,
@@ -2003,7 +2003,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   modalCloseButton: {
     position: 'absolute',
@@ -2018,7 +2018,7 @@ const styles = StyleSheet.create({
   },
   modalCloseX: {
     fontSize: 20,
-    fontWeight: '400',
+    fontFamily: FontFamily.regular,
     marginTop: -2,
   },
   modalContent: {
@@ -2052,7 +2052,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: 'white',
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   // Form styles
   formField: {
@@ -2126,7 +2126,7 @@ const styles = StyleSheet.create({
   },
   photoEmptyTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginTop: 8,
   },
   photoEmptySubtitle: {
@@ -2180,6 +2180,6 @@ const styles = StyleSheet.create({
   stagedBadgeText: {
     color: 'white',
     fontSize: 10,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
 });

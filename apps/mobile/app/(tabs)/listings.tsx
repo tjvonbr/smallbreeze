@@ -14,7 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import CreateListingWizard from '@/components/create-listing-wizard';
 import { Icons } from '@/components/icons';
 import { useListings, Listing } from '@/context/listings-context';
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 function isToday(date: Date): boolean {
@@ -149,7 +149,7 @@ export default function ListingsScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text, fontFamily: Fonts.rounded }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
             Listings
           </Text>
         </View>
@@ -164,7 +164,7 @@ export default function ListingsScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text, fontFamily: Fonts.rounded }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
             Listings
           </Text>
         </View>
@@ -184,7 +184,7 @@ export default function ListingsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text, fontFamily: Fonts.rounded }]}>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
           Listings
         </Text>
         <Pressable
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontFamily: FontFamily.bold,
   },
   headerAddButton: {
     width: 36,
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   listContent: {
     paddingHorizontal: 20,
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   },
   categoryLabel: {
     fontSize: 13,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
     color: '#666',
   },
   dateText: {
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   },
   listingTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginBottom: 4,
   },
   listingDescription: {
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginTop: 16,
     marginBottom: 8,
   },
@@ -356,6 +356,6 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
 });

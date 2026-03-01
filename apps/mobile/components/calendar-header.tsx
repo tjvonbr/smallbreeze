@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text } from "react-native";
+import { FontFamily } from '@/constants/theme';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Icons } from "./icons";
 
@@ -64,6 +65,6 @@ const styles = StyleSheet.create({
   floatingYearText: {
     color: 'black',
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
   },
 });

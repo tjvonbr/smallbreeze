@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { apiUrl } from '@/lib/api-url';
 import { authClient } from '@/lib/auth-client';
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   sendButton: {
     paddingHorizontal: 16,
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
   sendButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   loadingContainer: {
     flex: 1,
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
   },
   inviteEmail: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
     marginBottom: 2,
   },
   inviteDate: {
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   swipeAction: {
     marginBottom: 12,
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
   rescindButtonText: {
     color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   resendButton: {
     backgroundColor: '#007AFF',
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
   resendButtonText: {
     color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   emptyContainer: {
     flex: 1,
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginTop: 16,
     marginBottom: 8,
   },
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   modalCancelButton: {
     width: 60,
@@ -561,6 +561,6 @@ const styles = StyleSheet.create({
   inviteButtonText: {
     color: '#FFFFFF',
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
 });

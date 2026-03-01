@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { authClient } from '@/lib/auth-client';
 import { Ionicons } from '@expo/vector-icons';
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
   },
   headerRight: {
     flexDirection: 'row',
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   avatarInitial: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: '#666',
   },
   content: {
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontSize: 36,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
   },
   createListingCard: {
     flexDirection: 'row',
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   },
   createListingTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: '#222',
     marginBottom: 4,
   },
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
   menuItemLabel: {
     fontSize: 17,
-    fontWeight: '400',
+    fontFamily: FontFamily.regular,
   },
   divider: {
     height: 1,
@@ -358,6 +358,6 @@ const styles = StyleSheet.create({
   floatingButtonText: {
     color: '#fff',
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
 });

@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Colors } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 
 export interface Photo {
   id: string;
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   },
   placeholderText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     textAlign: 'center',
   },
   placeholderSubtext: {
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   countText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: '#333',
   },
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { FontFamily } from '@/constants/theme';
 
 type DayCellProps = {
   dayNumber: number;
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: IOS_RED,
     color: 'white',
     fontSize: 11,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     width: 20,
     height: 20,
     borderRadius: 10,
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
   },
   labelToday: {
     color: IOS_RED,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
 });
 
