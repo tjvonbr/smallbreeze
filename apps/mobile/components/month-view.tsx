@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FontFamily } from '@/constants/theme';
 import { DayCell } from './day-cell';
 
 type MonthViewProps = {
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
   },
   monthTitle: {
     fontSize: 34,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     paddingBottom: 6,
   },
   weekHeader: {
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#8E8E93',
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   grid: {
     flexDirection: 'row',

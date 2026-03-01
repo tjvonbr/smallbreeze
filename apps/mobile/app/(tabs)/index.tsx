@@ -2,6 +2,7 @@ import CalendarHeader from '@/components/calendar-header';
 import InfiniteCalendar, { InfiniteCalendarHandle } from '@/components/infinite-calendar';
 import { useListings } from '@/context/listings-context';
 import { parseICalText } from '@/lib/ical-parser';
+import { FontFamily } from '@/constants/theme';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   },
   todayButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: '#11181C',
   },
 });

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FontFamily } from '@/constants/theme';
 
 type YearViewProps = {
   yearDate: Date; // any date within the target year
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
   },
   yearHeader: {
     fontSize: 44,
-    fontWeight: '800',
+    fontFamily: FontFamily.extraBold,
     color: '#FF3B30',
     marginTop: 8,
     marginBottom: 8,
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
   },
   miniMonthTitle: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     lineHeight: 18,
     marginBottom: 4,
   },
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
   },
   miniLabelToday: {
     color: 'white',
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   tinyCircle: {
     position: 'absolute',

@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useListings, Listing } from '@/context/listings-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { apiUrl } from '@/lib/api-url';
@@ -632,7 +632,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   headerAddButton: {
     width: 36,
@@ -671,7 +671,7 @@ const styles = StyleSheet.create({
   },
   taskListing: {
     fontSize: 12,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   templateBadge: {
     paddingHorizontal: 8,
@@ -680,7 +680,7 @@ const styles = StyleSheet.create({
   },
   templateBadgeText: {
     fontSize: 11,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   statusBadge: {
     paddingHorizontal: 10,
@@ -689,11 +689,11 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   taskName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginBottom: 4,
   },
   taskDescription: {
@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#FFFFFF',
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   emptyContainer: {
     flex: 1,
@@ -745,7 +745,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginTop: 16,
     marginBottom: 8,
   },
@@ -769,7 +769,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   modalCancelButton: {
     width: 60,
@@ -797,7 +797,7 @@ const styles = StyleSheet.create({
   },
   segmentedOptionText: {
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   inputContainer: {
     marginBottom: 24,
@@ -831,7 +831,7 @@ const styles = StyleSheet.create({
   },
   listingOptionText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   memberEmail: {
     fontSize: 13,
@@ -847,6 +847,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: '#FFFFFF',
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
 });

@@ -1,4 +1,5 @@
 import InfiniteYearCalendar, { InfiniteYearCalendarHandle } from '@/components/infinite-year-calendar';
+import { FontFamily } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
   },
   todayButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     color: '#11181C',
   },
 });

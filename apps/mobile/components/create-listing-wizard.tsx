@@ -23,7 +23,7 @@ import { Icons } from '@/components/icons';
 import { useListings, Listing } from '@/context/listings-context';
 import { apiUrl } from '@/lib/api-url';
 import { authClient } from '@/lib/auth-client';
-import { Colors } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const TOTAL_STEPS = 5;
@@ -828,7 +828,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   modalCloseButton: {
     position: 'absolute',
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
   },
   modalCloseX: {
     fontSize: 20,
-    fontWeight: '400',
+    fontFamily: FontFamily.regular,
     marginTop: -2,
   },
   stepIndicator: {
@@ -892,7 +892,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: 'white',
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   // Form styles
   formField: {
@@ -937,7 +937,7 @@ const styles = StyleSheet.create({
   },
   timePickerLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginBottom: 4,
   },
   // Text area
@@ -965,7 +965,7 @@ const styles = StyleSheet.create({
   },
   photoEmptyTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     marginTop: 8,
   },
   photoEmptySubtitle: {
@@ -983,7 +983,7 @@ const styles = StyleSheet.create({
   pickPhotosButtonText: {
     color: 'white',
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   photoGridHeader: {
     flexDirection: 'row',
@@ -993,7 +993,7 @@ const styles = StyleSheet.create({
   },
   photoGridTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   photoAddMore: {
     width: 30,

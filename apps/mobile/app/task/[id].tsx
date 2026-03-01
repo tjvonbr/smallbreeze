@@ -21,7 +21,7 @@ import {
   User,
 } from 'lucide-react-native';
 
-import { Colors } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useListings, Listing } from '@/context/listings-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { apiUrl } from '@/lib/api-url';
@@ -704,7 +704,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     textAlign: 'center',
   },
   headerSpacer: {
@@ -733,7 +733,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 8,
@@ -767,7 +767,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   templateBadgeLarge: {
     paddingHorizontal: 12,
@@ -777,7 +777,7 @@ const styles = StyleSheet.create({
   },
   templateBadgeTextLarge: {
     fontSize: 13,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   // Modal styles
   modalContainer: {
@@ -794,7 +794,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   modalCloseButton: {
     position: 'absolute',
@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
   },
   modalCloseX: {
     fontSize: 20,
-    fontWeight: '400',
+    fontFamily: FontFamily.regular,
     marginTop: -2,
   },
   modalContent: {
@@ -843,7 +843,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: 'white',
     fontSize: 17,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   // Form styles
   formField: {
@@ -887,7 +887,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   memberEmail: {
     fontSize: 13,

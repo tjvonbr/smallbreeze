@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors, FontFamily } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { authClient } from '@/lib/auth-client';
 import { Ionicons } from '@expo/vector-icons';
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   content: {
     flex: 1,
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     marginTop: 32,
     marginBottom: 32,
   },
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: FontFamily.semiBold,
   },
   secondaryButton: {
     backgroundColor: '#F5F5F5',
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontSize: 15,
-    fontWeight: '500',
+    fontFamily: FontFamily.medium,
     marginRight: 20,
   },
   googleIcon: {
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   },
   googleIconText: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: FontFamily.bold,
     color: '#4285F4',
   },
 });
