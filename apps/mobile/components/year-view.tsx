@@ -54,27 +54,35 @@ const MiniMonth = React.memo(function MiniMonth({ monthDate, onDayPress, onMonth
         {grid.map((day, idx) => (
           <View key={idx} style={styles.miniCell}>
             {day.inCurrentMonth ? (
-              <Pressable
-                accessibilityRole="button"
-                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                onPress={
-                  onDayPress
-                    ? () => onDayPress(new Date(monthDate.getFullYear(), monthDate.getMonth(), day.dayNumber))
-                    : undefined
-                }
-              >
+              onDayPress ? (
+                <Pressable
+                  accessibilityRole="button"
+                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                  onPress={() => onDayPress(new Date(monthDate.getFullYear(), monthDate.getMonth(), day.dayNumber))}
+                >
+                  <View style={styles.dayWrap}>
+                    <View style={[styles.tinyCircle, todayInfo.isToday && todayInfo.day === day.dayNumber && styles.tinyCircleToday]} />
+                    <Text
+                      style={[
+                        styles.miniLabel,
+                        todayInfo.isToday && todayInfo.day === day.dayNumber && styles.miniLabelToday,
+                      ]}>
+                      {day.dayNumber}
+                    </Text>
+                  </View>
+                </Pressable>
+              ) : (
                 <View style={styles.dayWrap}>
                   <View style={[styles.tinyCircle, todayInfo.isToday && todayInfo.day === day.dayNumber && styles.tinyCircleToday]} />
                   <Text
                     style={[
                       styles.miniLabel,
-                      !day.inCurrentMonth && styles.miniLabelOutside,
                       todayInfo.isToday && todayInfo.day === day.dayNumber && styles.miniLabelToday,
                     ]}>
                     {day.dayNumber}
                   </Text>
                 </View>
-              </Pressable>
+              )
             ) : (
               <View style={styles.miniEmptyCell} />
             )}
