@@ -457,6 +457,16 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
     );
   }
 
+  if (listing.calendarLinks.length === 0) {
+    return (
+      <View style={styles.calendarEmpty}>
+        <Text style={[styles.calendarEmptyText, { color: colors.icon }]}>
+          No iCal links have been added for this listing yet.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.calendarWrapper}>
       <FlatList
@@ -767,7 +777,11 @@ export default function ListingScreen() {
   const listing = getListing(id);
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<TabType>(tab === 'info' ? 'info' : 'calendar');
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    if (tab === 'info' || tab === 'calendar') return tab;
+    if (listing && listing.calendarLinks.length === 0) return 'info';
+    return 'calendar';
+  });
 
   // Photos state
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -1977,6 +1991,16 @@ const styles = StyleSheet.create({
   calendarLinkUrl: {
     flex: 1,
     fontSize: 14,
+  },
+  calendarEmpty: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  calendarEmptyText: {
+    fontSize: 15,
+    textAlign: 'center',
   },
   calendarLinkEmpty: {
     flexDirection: 'row',
