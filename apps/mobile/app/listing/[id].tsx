@@ -168,11 +168,11 @@ interface CalendarTabProps {
   listing: Listing;
   colors: typeof Colors.light;
   colorScheme: 'light' | 'dark';
+  reservations: Reservation[];
+  loading: boolean;
 }
 
-function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [loading, setLoading] = useState(true);
+function CalendarTab({ listing, colors, colorScheme, reservations, loading }: CalendarTabProps) {
   const flatListRef = useRef<FlatList>(null);
 
   // Generate months (12 months back, current, 24 months forward)
@@ -199,41 +199,6 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
   }, []);
 
   const initialScrollIndex = 12; // Current month
-
-  useEffect(() => {
-    fetchReservations();
-  }, [listing.calendarLinks]);
-
-  const fetchReservations = async () => {
-    try {
-      const allEvents: Reservation[] = [];
-
-      for (const calendarLink of listing.calendarLinks) {
-        try {
-          const response = await fetch(calendarLink.url);
-          const icalText = await response.text();
-          const events = parseICalText(icalText);
-          const url = calendarLink.url.toLowerCase();
-          const source = url.includes('airbnb') ? 'Airbnb'
-            : (url.includes('vrbo') || url.includes('homeaway')) ? 'VRBO'
-            : undefined;
-          for (const event of events) {
-            event.source = source;
-          }
-          allEvents.push(...events);
-        } catch (err) {
-          console.error('Failed to fetch calendar:', calendarLink.url, err);
-        }
-      }
-
-      allEvents.sort((a, b) => a.start.localeCompare(b.start));
-      setReservations(allEvents);
-    } catch (err) {
-      console.error('Failed to fetch reservations:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Check what's happening on a given date
   const getDateStatus = useCallback((date: Date) => {
@@ -787,6 +752,45 @@ export default function ListingScreen() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [photosLoading, setPhotosLoading] = useState(true);
 
+  // Reservations state (lifted so switching tabs doesn't re-fetch)
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [reservationsLoading, setReservationsLoading] = useState(true);
+
+  const calendarLinks = listing?.calendarLinks;
+  useEffect(() => {
+    if (!calendarLinks) return;
+    let cancelled = false;
+    setReservationsLoading(true);
+    (async () => {
+      const allEvents: Reservation[] = [];
+      for (const calendarLink of calendarLinks) {
+        try {
+          const response = await fetch(calendarLink.url);
+          const icalText = await response.text();
+          const events = parseICalText(icalText);
+          const url = calendarLink.url.toLowerCase();
+          const source = url.includes('airbnb') ? 'Airbnb'
+            : (url.includes('vrbo') || url.includes('homeaway')) ? 'VRBO'
+            : undefined;
+          for (const event of events) {
+            event.source = source;
+          }
+          allEvents.push(...events);
+        } catch (err) {
+          console.error('Failed to fetch calendar:', calendarLink.url, err);
+        }
+      }
+      allEvents.sort((a, b) => a.start.localeCompare(b.start));
+      if (!cancelled) {
+        setReservations(allEvents);
+        setReservationsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [calendarLinks]);
+
   // Fetch photos when listing changes
   useEffect(() => {
     if (listing?.id) {
@@ -1274,7 +1278,13 @@ export default function ListingScreen() {
       </View>
 
       {activeTab === 'calendar' ? (
-        <CalendarTab listing={listing} colors={colors} colorScheme={colorScheme} />
+        <CalendarTab
+          listing={listing}
+          colors={colors}
+          colorScheme={colorScheme}
+          reservations={reservations}
+          loading={reservationsLoading}
+        />
       ) : (
         <InfoTab
           listing={listing}
