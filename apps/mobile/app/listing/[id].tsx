@@ -127,6 +127,33 @@ interface MonthData {
   year: number;
   month: number;
   key: string;
+  weekCount: number;
+  height: number;
+  offset: number;
+}
+
+// Layout constants — kept in sync with styles below so getItemLayout is exact.
+const MONTH_PADDING_VERTICAL = 16;
+const MONTH_TITLE_LINE_HEIGHT = 22;
+const MONTH_TITLE_MARGIN_BOTTOM = 16;
+const WEEK_DAYS_HEADER_LINE_HEIGHT = 16;
+const WEEK_DAYS_HEADER_MARGIN_BOTTOM = 8;
+const WEEK_ROW_HEIGHT = 70;
+const MONTH_FIXED_HEIGHT =
+  MONTH_PADDING_VERTICAL * 2 +
+  MONTH_TITLE_LINE_HEIGHT +
+  MONTH_TITLE_MARGIN_BOTTOM +
+  WEEK_DAYS_HEADER_LINE_HEIGHT +
+  WEEK_DAYS_HEADER_MARGIN_BOTTOM;
+
+function getWeekCount(year: number, month: number): number {
+  const firstDay = getFirstDayOfMonth(year, month);
+  const daysInMonth = getDaysInMonth(year, month);
+  return Math.ceil((firstDay + daysInMonth) / 7);
+}
+
+function getMonthHeight(year: number, month: number): number {
+  return MONTH_FIXED_HEIGHT + getWeekCount(year, month) * WEEK_ROW_HEIGHT;
 }
 
 const DAYS_OF_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -168,11 +195,11 @@ interface CalendarTabProps {
   listing: Listing;
   colors: typeof Colors.light;
   colorScheme: 'light' | 'dark';
+  reservations: Reservation[];
+  loading: boolean;
 }
 
-function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [loading, setLoading] = useState(true);
+function CalendarTab({ listing, colors, colorScheme, reservations, loading }: CalendarTabProps) {
   const flatListRef = useRef<FlatList>(null);
 
   // Generate months (12 months back, current, 24 months forward)
@@ -182,6 +209,7 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
 
+    let runningOffset = 0;
     for (let i = -12; i <= 24; i++) {
       let month = currentMonth + i;
       let year = currentYear;
@@ -193,47 +221,15 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
         month -= 12;
         year += 1;
       }
-      result.push({ year, month, key: `${year}-${month}` });
+      const weekCount = getWeekCount(year, month);
+      const height = MONTH_FIXED_HEIGHT + weekCount * WEEK_ROW_HEIGHT;
+      result.push({ year, month, key: `${year}-${month}`, weekCount, height, offset: runningOffset });
+      runningOffset += height;
     }
     return result;
   }, []);
 
   const initialScrollIndex = 12; // Current month
-
-  useEffect(() => {
-    fetchReservations();
-  }, [listing.calendarLinks]);
-
-  const fetchReservations = async () => {
-    try {
-      const allEvents: Reservation[] = [];
-
-      for (const calendarLink of listing.calendarLinks) {
-        try {
-          const response = await fetch(calendarLink.url);
-          const icalText = await response.text();
-          const events = parseICalText(icalText);
-          const url = calendarLink.url.toLowerCase();
-          const source = url.includes('airbnb') ? 'Airbnb'
-            : (url.includes('vrbo') || url.includes('homeaway')) ? 'VRBO'
-            : undefined;
-          for (const event of events) {
-            event.source = source;
-          }
-          allEvents.push(...events);
-        } catch (err) {
-          console.error('Failed to fetch calendar:', calendarLink.url, err);
-        }
-      }
-
-      allEvents.sort((a, b) => a.start.localeCompare(b.start));
-      setReservations(allEvents);
-    } catch (err) {
-      console.error('Failed to fetch reservations:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Check what's happening on a given date
   const getDateStatus = useCallback((date: Date) => {
@@ -475,11 +471,10 @@ function CalendarTab({ listing, colors, colorScheme }: CalendarTabProps) {
         renderItem={renderMonth}
         keyExtractor={(item) => item.key}
         initialScrollIndex={initialScrollIndex}
-        getItemLayout={(data, index) => ({
-          length: 500,
-          offset: 500 * index,
-          index,
-        })}
+        getItemLayout={(data, index) => {
+          const item = months[index];
+          return { length: item.height, offset: item.offset, index };
+        }}
         extraData={reservations}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.calendarListContent}
@@ -786,6 +781,45 @@ export default function ListingScreen() {
   // Photos state
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [photosLoading, setPhotosLoading] = useState(true);
+
+  // Reservations state (lifted so switching tabs doesn't re-fetch)
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [reservationsLoading, setReservationsLoading] = useState(true);
+
+  const calendarLinks = listing?.calendarLinks;
+  useEffect(() => {
+    if (!calendarLinks) return;
+    let cancelled = false;
+    setReservationsLoading(true);
+    (async () => {
+      const allEvents: Reservation[] = [];
+      for (const calendarLink of calendarLinks) {
+        try {
+          const response = await fetch(calendarLink.url);
+          const icalText = await response.text();
+          const events = parseICalText(icalText);
+          const url = calendarLink.url.toLowerCase();
+          const source = url.includes('airbnb') ? 'Airbnb'
+            : (url.includes('vrbo') || url.includes('homeaway')) ? 'VRBO'
+            : undefined;
+          for (const event of events) {
+            event.source = source;
+          }
+          allEvents.push(...events);
+        } catch (err) {
+          console.error('Failed to fetch calendar:', calendarLink.url, err);
+        }
+      }
+      allEvents.sort((a, b) => a.start.localeCompare(b.start));
+      if (!cancelled) {
+        setReservations(allEvents);
+        setReservationsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [calendarLinks]);
 
   // Fetch photos when listing changes
   useEffect(() => {
@@ -1274,7 +1308,13 @@ export default function ListingScreen() {
       </View>
 
       {activeTab === 'calendar' ? (
-        <CalendarTab listing={listing} colors={colors} colorScheme={colorScheme} />
+        <CalendarTab
+          listing={listing}
+          colors={colors}
+          colorScheme={colorScheme}
+          reservations={reservations}
+          loading={reservationsLoading}
+        />
       ) : (
         <InfoTab
           listing={listing}
@@ -1776,6 +1816,7 @@ const styles = StyleSheet.create({
   },
   monthTitle: {
     fontSize: 18,
+    lineHeight: 22,
     fontFamily: FontFamily.semiBold,
     marginBottom: 16,
   },
@@ -1789,6 +1830,7 @@ const styles = StyleSheet.create({
   },
   dayHeaderText: {
     fontSize: 13,
+    lineHeight: 16,
     fontFamily: FontFamily.medium,
   },
   weekRow: {
