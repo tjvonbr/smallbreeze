@@ -1,12 +1,13 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewToken } from 'react-native';
-import YearView from './year-view';
+import YearView, { YEAR_ITEM_HEIGHT } from './year-view';
 
 type InfiniteYearCalendarProps = {
   onVisibleYearChange?: (year: number) => void;
   topPadding?: number;
   onMonthPress?: (year: number, monthIndex: number) => void;
   onDayPress?: (date: Date) => void;
+  initialYear?: number;
 };
 
 const TOTAL_YEARS = 400; // generous range
@@ -25,11 +26,16 @@ export type InfiniteYearCalendarHandle = {
 };
 
 function InfiniteYearCalendarImpl(
-  { onVisibleYearChange, topPadding = 0, onMonthPress, onDayPress }: InfiniteYearCalendarProps,
+  { onVisibleYearChange, topPadding = 0, onMonthPress, onDayPress, initialYear }: InfiniteYearCalendarProps,
   ref: ForwardedRef<InfiniteYearCalendarHandle | null>
 ) {
   const listRef = useRef<FlatList<number>>(null);
   const lastYearRef = useRef<number | null>(null);
+  const initialScrollIndex = useMemo(() => {
+    if (typeof initialYear !== 'number') return START_INDEX;
+    const todayYear = new Date().getFullYear();
+    return START_INDEX + (initialYear - todayYear);
+  }, [initialYear]);
 
   const data = useMemo(() => {
     return Array.from({ length: TOTAL_YEARS }, (_, i) => i);
@@ -41,8 +47,6 @@ function InfiniteYearCalendarImpl(
   }, [onDayPress, onMonthPress]);
 
   const getItemLayout = useCallback((_: unknown, index: number) => {
-    // Fixed height because each mini-month is forced to 6 rows
-    const YEAR_ITEM_HEIGHT = 640;
     return { length: YEAR_ITEM_HEIGHT, offset: YEAR_ITEM_HEIGHT * index, index };
   }, []);
 
@@ -96,7 +100,7 @@ function InfiniteYearCalendarImpl(
         data={data}
         renderItem={renderItem as any}
         keyExtractor={(i) => String(i)}
-        initialScrollIndex={START_INDEX}
+        initialScrollIndex={initialScrollIndex}
         getItemLayout={getItemLayout}
         onScroll={onScroll}
         onViewableItemsChanged={onViewableItemsChanged}
