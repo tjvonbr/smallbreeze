@@ -17,7 +17,7 @@ export default function CalendarHeader({ year }: CalendarHeaderProps) {
           accessibilityRole="button"
           accessibilityLabel="Visible year"
           style={styles.floatingYearButton}
-          onPress={() => router.push('/year')}
+          onPress={() => router.push({ pathname: '/year', params: { initialYear: String(year) } })}
         >
           <Icons.chevronLeft />
           <Text style={styles.floatingYearText}>{year}</Text>

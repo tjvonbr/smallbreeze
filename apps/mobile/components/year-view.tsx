@@ -154,10 +154,17 @@ const COL_GAP = 12;
 const MINI_WIDTH = (width - SIDE * 2 - COL_GAP * 2) / 3;
 const CELL_WIDTH = MINI_WIDTH / 7;
 
+// Explicit item height so FlatList getItemLayout matches rendered height exactly,
+// regardless of font metrics or margin rounding. Pressable + overflow:'hidden'
+// clips any minor content overflow without visual impact.
+export const YEAR_ITEM_HEIGHT = 700;
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: SIDE,
     paddingTop: 8,
+    height: YEAR_ITEM_HEIGHT,
+    overflow: 'hidden',
   },
   yearHeader: {
     fontSize: 44,

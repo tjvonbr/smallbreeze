@@ -1,6 +1,6 @@
 import InfiniteYearCalendar, { InfiniteYearCalendarHandle } from '@/components/infinite-year-calendar';
 import { FontFamily } from '@/constants/theme';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,11 +8,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function YearScreen() {
   const listRef = React.useRef<InfiniteYearCalendarHandle | null>(null);
   const router = useRouter();
+  const params = useLocalSearchParams<{ initialYear?: string }>();
+  const parsedInitialYear = params.initialYear ? parseInt(String(params.initialYear), 10) : undefined;
+  const initialYear = typeof parsedInitialYear === 'number' && !Number.isNaN(parsedInitialYear)
+    ? parsedInitialYear
+    : undefined;
 
   return (
     <SafeAreaView style={styles.container}>
       <InfiniteYearCalendar
         ref={listRef}
+        initialYear={initialYear}
         onMonthPress={(year, monthIndex) => {
           router.replace({ pathname: '/(tabs)', params: { targetYear: String(year), targetMonth: String(monthIndex) } } as never);
         }}
