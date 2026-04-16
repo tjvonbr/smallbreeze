@@ -14,7 +14,7 @@ export default function YearScreen() {
       <InfiniteYearCalendar
         ref={listRef}
         onMonthPress={(year, monthIndex) => {
-          router.replace({ pathname: '/', params: { targetYear: String(year), targetMonth: String(monthIndex) } } as never);
+          router.replace({ pathname: '/(tabs)', params: { targetYear: String(year), targetMonth: String(monthIndex) } } as never);
         }}
       />
       <Pressable accessibilityRole="button" onPress={() => listRef.current?.scrollToYear()} style={styles.todayButton}>
