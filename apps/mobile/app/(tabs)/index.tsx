@@ -6,9 +6,12 @@ import { FontFamily } from '@/constants/theme';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+  // Calendar header = safe-area top + paddingTop 4 + pill height 32 + paddingBottom 4
+  const headerHeight = insets.top + 4 + 32 + 4;
   const [visibleYear, setVisibleYear] = React.useState<number>(new Date().getFullYear());
   const listRef = React.useRef<InfiniteCalendarHandle | null>(null);
   const params = useLocalSearchParams<{ targetYear?: string; targetMonth?: string }>();
@@ -80,7 +83,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <CalendarHeader year={visibleYear} />
-      <InfiniteCalendar ref={listRef} onVisibleYearChange={setVisibleYear} checkoutCounts={checkoutCounts} topPadding={110} />
+      <InfiniteCalendar ref={listRef} onVisibleYearChange={setVisibleYear} checkoutCounts={checkoutCounts} topPadding={headerHeight} />
       <Pressable accessibilityRole="button" onPress={() => listRef.current?.scrollToToday()} style={styles.todayButton}>
         <Text style={styles.todayButtonText}>Today</Text>
       </Pressable>

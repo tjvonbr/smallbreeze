@@ -1,7 +1,7 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, StyleSheet, ViewToken } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import MonthView from './month-view';
+import MonthView, { getMonthHeight } from './month-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type InfiniteCalendarProps = {
@@ -37,6 +37,22 @@ function InfiniteCalendarImpl(
     return Array.from({ length: TOTAL_MONTHS }, (_, i) => i);
   }, []);
 
+  // Precompute exact height + offset for each month so getItemLayout is accurate.
+  const layout = useMemo(() => {
+    const heights = new Array<number>(TOTAL_MONTHS);
+    const offsets = new Array<number>(TOTAL_MONTHS);
+    const today = new Date();
+    let runningOffset = 0;
+    for (let i = 0; i < TOTAL_MONTHS; i++) {
+      const monthDate = addMonths(today, i - START_INDEX);
+      const h = getMonthHeight(monthDate);
+      heights[i] = h;
+      offsets[i] = runningOffset;
+      runningOffset += h;
+    }
+    return { heights, offsets };
+  }, []);
+
   const renderItem = useCallback(({ index }: { index: number }) => {
     const monthDate = addMonths(new Date(), index - START_INDEX);
     monthDate.setDate(1);
@@ -44,11 +60,8 @@ function InfiniteCalendarImpl(
   }, [checkoutCounts]);
 
   const getItemLayout = useCallback((_: unknown, index: number) => {
-    // Approximate month heights. This enables initialScrollIndex snapping without measuring.
-    // 6-row months are taller, but a generous estimate avoids "out of range" errors.
-    const length = 528;
-    return { length, offset: length * index, index };
-  }, []);
+    return { length: layout.heights[index], offset: layout.offsets[index], index };
+  }, [layout]);
 
   const onScroll = (_e: NativeSyntheticEvent<NativeScrollEvent>) => {
     // Reserved for future: could update sticky year or "Today" button visibility.

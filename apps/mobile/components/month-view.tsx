@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
   },
   monthTitle: {
     fontSize: 34,
+    lineHeight: 40,
     fontFamily: FontFamily.bold,
     paddingBottom: 6,
   },
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#8E8E93',
     fontSize: 12,
+    lineHeight: 14,
     fontFamily: FontFamily.semiBold,
   },
   grid: {
@@ -181,5 +183,20 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
 });
+
+// Layout constants — keep in sync with styles so FlatList getItemLayout is exact.
+// container paddingTop 16 + monthTitle lineHeight 40 + paddingBottom 6 +
+// weekHeaderLabel lineHeight 14 + weekHeader paddingBottom 4 + trailing spacer 12
+export const MONTH_FIXED_HEIGHT = 16 + 40 + 6 + 14 + 4 + 12;
+export const MONTH_ROW_HEIGHT = 72;
+
+export function getMonthHeight(monthDate: Date): number {
+  const year = monthDate.getFullYear();
+  const monthIndex = monthDate.getMonth();
+  const firstWeekday = new Date(year, monthIndex, 1).getDay();
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const rows = Math.ceil((firstWeekday + daysInMonth) / 7);
+  return MONTH_FIXED_HEIGHT + rows * MONTH_ROW_HEIGHT;
+}
 
 export default React.memo(MonthView);
