@@ -805,10 +805,9 @@ export default function ListingScreen() {
           for (const event of events) {
             event.source = source;
           }
-          console.log(`All events from ${source ?? 'unknown'}:`, JSON.stringify(events.map(e => ({ summary: e.summary, start: e.start, end: e.end })), null, 2));
           const reserved = events.filter((e) => {
             const s = e.summary.toLowerCase();
-            return s.includes('reserved') || s.includes('booked');
+            return !s.includes('not available');
           });
           allEvents.push(...reserved);
         } catch (err) {
@@ -817,7 +816,6 @@ export default function ListingScreen() {
       }
       allEvents.sort((a, b) => a.start.localeCompare(b.start));
       if (!cancelled) {
-        console.log('Reservations:', JSON.stringify(allEvents, null, 2));
         setReservations(allEvents);
         setReservationsLoading(false);
       }
