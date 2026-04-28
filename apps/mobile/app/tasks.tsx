@@ -317,7 +317,7 @@ export default function TasksScreen() {
                   <>
                     <Home size={12} color={colors.icon} />
                     <Text style={[styles.taskListing, { color: colors.icon }]}>
-                      {item.assignments[0]?.listing?.nickname ?? 'Unassigned'}
+                      {item.assignments[0]?.listing?.nickname ?? 'No one assigned to clean'}
                     </Text>
                   </>
                 )}

@@ -467,7 +467,7 @@ export default function TaskDetailScreen() {
                   </View>
                 </View>
               ) : (
-                <Text style={[styles.placeholderText, { color: colors.icon }]}>Unassigned</Text>
+                <Text style={[styles.placeholderText, { color: colors.icon }]}>No one assigned to clean</Text>
               )}
             </View>
           </Pressable>
@@ -628,7 +628,7 @@ export default function TaskDetailScreen() {
             onPress={() => setSelectedMemberId(null)}
           >
             <Text style={[styles.optionText, { color: selectedMemberId === null ? colors.tint : colors.icon }]}>
-              Unassigned
+              No one assigned to clean
             </Text>
           </Pressable>
           {teamMembers.map((member) => {

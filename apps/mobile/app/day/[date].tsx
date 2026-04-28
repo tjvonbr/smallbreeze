@@ -1,16 +1,31 @@
 import { Icons } from '@/components/icons';
 import { FontFamily } from '@/constants/theme';
 import { useListings } from '@/context/listings-context';
+import { apiUrl } from '@/lib/api-url';
+import { authClient } from '@/lib/auth-client';
 import { parseICalText } from '@/lib/ical-parser';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+interface Task {
+  id: string;
+  dueDate: string | null;
+  assignments: {
+    listing: { id: string };
+    teamMember: {
+      user: { firstName: string; lastName: string };
+    };
+  }[];
+}
+
 interface Checkout {
   id: string;
+  listingId: string;
   listingNickname: string;
-  summary: string;
+  checkOutTime: string;
+  assigneeName: string | null;
 }
 
 export default function DayViewScreen() {
@@ -33,29 +48,50 @@ export default function DayViewScreen() {
       setLoading(true);
       const results: Checkout[] = [];
 
-      await Promise.all(
-        listings.map(async (listing) => {
-          for (const link of listing.calendarLinks) {
-            try {
-              const response = await fetch(link.url);
-              const icalText = await response.text();
-              const events = parseICalText(icalText);
-              for (const event of events) {
-                const endDate = event.end.substring(0, 10);
-                if (endDate === date) {
-                  results.push({
-                    id: event.id,
-                    listingNickname: listing.nickname,
-                    summary: event.summary,
-                  });
+      const [, tasksResponse] = await Promise.all([
+        Promise.all(
+          listings.map(async (listing) => {
+            for (const link of listing.calendarLinks) {
+              try {
+                const response = await fetch(link.url);
+                const icalText = await response.text();
+                const events = parseICalText(icalText);
+                for (const event of events) {
+                  if (event.summary?.toLowerCase().includes('not available')) continue;
+                  const endDate = event.end.substring(0, 10);
+                  if (endDate === date) {
+                    results.push({
+                      id: event.id,
+                      listingId: listing.id,
+                      listingNickname: listing.nickname,
+                      checkOutTime: listing.defaultCheckOutTime,
+                      assigneeName: null,
+                    });
+                  }
                 }
+              } catch (err) {
+                console.error('Failed to fetch calendar:', link.url, err);
               }
-            } catch (err) {
-              console.error('Failed to fetch calendar:', link.url, err);
             }
+          })
+        ),
+        authClient.$fetch<{ tasks: Task[] }>(`${apiUrl}/api/tasks`).catch(() => null),
+      ]);
+
+      const tasks = tasksResponse?.data?.tasks ?? [];
+      for (const checkout of results) {
+        const match = tasks.find((t) =>
+          t.dueDate?.substring(0, 10) === date &&
+          t.assignments.some((a) => a.listing.id === checkout.listingId)
+        );
+        if (match) {
+          const assignment = match.assignments.find((a) => a.listing.id === checkout.listingId);
+          if (assignment) {
+            const u = assignment.teamMember.user;
+            checkout.assigneeName = `${u.firstName} ${u.lastName}`;
           }
-        })
-      );
+        }
+      }
 
       if (!cancelled) {
         setCheckouts(results);
@@ -93,8 +129,13 @@ export default function DayViewScreen() {
         <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
           {checkouts.map((checkout) => (
             <View key={checkout.id} style={styles.card}>
-              <Text style={styles.cardTitle}>{checkout.listingNickname}</Text>
-              <Text style={styles.cardSubtitle}>{checkout.summary}</Text>
+              <View>
+                <Text style={styles.cardTitle}>{checkout.listingNickname}</Text>
+                <Text style={styles.cardAssignee}>
+                  {checkout.assigneeName ?? 'No one assigned to clean'}
+                </Text>
+              </View>
+              <Text style={styles.cardSubtitle}>Check-out at {checkout.checkOutTime}</Text>
             </View>
           ))}
         </ScrollView>
@@ -149,16 +190,23 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#E5E5EA',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   cardTitle: {
     fontSize: 16,
     fontFamily: FontFamily.semiBold,
     color: '#11181C',
   },
+  cardAssignee: {
+    fontSize: 13,
+    color: '#8E8E93',
+    marginTop: 2,
+  },
   cardSubtitle: {
     fontSize: 14,
     color: '#8E8E93',
-    marginTop: 4,
   },
   centered: {
     flex: 1,
