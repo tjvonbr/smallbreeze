@@ -8,9 +8,10 @@ interface DayCellProps {
   selectDate: (date: Date) => void
   showOnlyCheckoutDays?: boolean
   isOutsideMonth?: boolean
+  listingId?: string
 }
 
-export default function DayCell({ day, events, selectDate, showOnlyCheckoutDays = false, isOutsideMonth = false }: DayCellProps) {
+export default function DayCell({ day, events, selectDate, showOnlyCheckoutDays = false, isOutsideMonth = false, listingId }: DayCellProps) {
   const date = new Date(day)
 
   const startOfDay = new Date(date)
@@ -53,6 +54,7 @@ export default function DayCell({ day, events, selectDate, showOnlyCheckoutDays 
             currentDate={date}
             isCheckoutOnly={showOnlyCheckoutDays}
             hasTurnoverToday={hasTurnoverToday}
+            href={listingId ? `/properties/${listingId}/reservations/${encodeURIComponent(event.id)}` : undefined}
           />
         ))}
       </div>

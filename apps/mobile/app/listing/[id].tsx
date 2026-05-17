@@ -266,6 +266,27 @@ function CalendarTab({ listing, colors, colorScheme, reservations, loading }: Ca
     return { hasCheckIn, hasCheckOut, hasMiddle };
   }, [reservations]);
 
+  const getReservationForDate = useCallback((date: Date): Reservation | undefined => {
+    // Priority: check-in > middle > checkout
+    for (const res of reservations) {
+      if (isSameDay(date, new Date(res.start))) return res;
+    }
+    for (const res of reservations) {
+      const start = new Date(res.start);
+      const end = new Date(res.end);
+      const d = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+      const s = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+      const e = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+      if (d > s && d < e) return res;
+    }
+    for (const res of reservations) {
+      if (isSameDay(date, new Date(res.end))) return res;
+    }
+    return undefined;
+  }, [reservations]);
+
+  const router = useRouter();
+
   const renderMonth = useCallback(({ item }: { item: MonthData }) => {
     const { year, month } = item;
     const daysInMonth = getDaysInMonth(year, month);
@@ -374,9 +395,29 @@ function CalendarTab({ listing, colors, colorScheme, reservations, loading }: Ca
               // so always show the full bar (overlapping check-ins/check-outs from other
               // events shouldn't create rounded edges on a fully-booked day).
               const isTurnover = hasCheckIn && hasCheckOut;
+              const hasReservation = hasCheckIn || hasCheckOut || hasMiddle;
 
               return (
-                <View key={dayIndex} style={[styles.dayCell, { borderColor: cellBorderColor }]}>
+                <Pressable
+                  key={dayIndex}
+                  style={[styles.dayCell, { borderColor: cellBorderColor }]}
+                  onPress={hasReservation ? () => {
+                    const res = getReservationForDate(date);
+                    if (!res) return;
+                    router.push({
+                      pathname: '/reservation/[id]',
+                      params: {
+                        id: encodeURIComponent(res.id),
+                        summary: res.summary,
+                        start: res.start,
+                        end: res.end,
+                        source: res.source ?? '',
+                        description: res.description ?? '',
+                        listingNickname: listing.nickname,
+                      },
+                    });
+                  } : undefined}
+                >
                   {/* Day number at top */}
                   <Text
                     style={[
@@ -390,13 +431,13 @@ function CalendarTab({ listing, colors, colorScheme, reservations, loading }: Ca
                   </Text>
                   {/* Full-width bar for middle days */}
                   {hasMiddle && (
-                    <View style={styles.barLayerFull}>
+                    <View style={styles.barLayerFull} pointerEvents="none">
                       <View style={[styles.barFillFull, { backgroundColor: pillColor }]} />
                     </View>
                   )}
                   {/* Checkout bar (only when not a middle day) */}
                   {hasCheckOut && !hasMiddle && (
-                    <View style={styles.barLayerLeft}>
+                    <View style={styles.barLayerLeft} pointerEvents="none">
                       <View
                         style={[
                           styles.barFillLeft,
@@ -409,7 +450,7 @@ function CalendarTab({ listing, colors, colorScheme, reservations, loading }: Ca
                   )}
                   {/* Checkin bar (only when not a middle day) */}
                   {hasCheckIn && !hasMiddle && (
-                    <View style={styles.barLayerRight}>
+                    <View style={styles.barLayerRight} pointerEvents="none">
                       <View style={styles.barSpacerSmall} />
                       <View
                         style={[
@@ -420,7 +461,7 @@ function CalendarTab({ listing, colors, colorScheme, reservations, loading }: Ca
                       />
                     </View>
                   )}
-                </View>
+                </Pressable>
               );
             })}
             {/* Source labels overlay spanning multiple cells */}
@@ -443,7 +484,7 @@ function CalendarTab({ listing, colors, colorScheme, reservations, loading }: Ca
         ))}
       </View>
     );
-  }, [colors, colorScheme, getDateStatus, reservations]);
+  }, [colors, colorScheme, getDateStatus, getReservationForDate, listing, reservations, router]);
 
   if (loading) {
     return (

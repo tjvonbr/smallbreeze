@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CalendarEvent } from "@/lib/ics-parser";
 import { isSameDay } from "@/lib/utils";
 
@@ -6,9 +7,10 @@ interface BookingBarProps {
   currentDate: Date;
   isCheckoutOnly?: boolean;
   hasTurnoverToday?: boolean;
+  href?: string;
 }
 
-export default function BookingBar({ event, currentDate, isCheckoutOnly = false, hasTurnoverToday = false }: BookingBarProps) {
+export default function BookingBar({ event, currentDate, isCheckoutOnly = false, hasTurnoverToday = false, href }: BookingBarProps) {
   const isStartDate = isSameDay(event.start, currentDate);
   const isEndDate = isSameDay(event.end, currentDate);
 
@@ -45,25 +47,38 @@ export default function BookingBar({ event, currentDate, isCheckoutOnly = false,
     return `M 0 0 L 100 0 L 100 100 L 0 100 Z`;
   };
 
+  const title = `${event.summary} - ${event.start.toLocaleDateString()} to ${event.end.toLocaleDateString()}`;
+
   if (isCheckoutOnly) {
-    return (
+    const bar = (
       <div
-        className={`pointer-events-none absolute top-1/2 -translate-y-1/2 flex justify-center items-center bg-primary dark:bg-white ${getBarStyles()}`}
-        title={`${event.summary} - ${event.start.toLocaleDateString()} to ${event.end.toLocaleDateString()}`}
+        className={`absolute top-1/2 -translate-y-1/2 flex justify-center items-center bg-primary dark:bg-white ${getBarStyles()} ${href ? "cursor-pointer" : "pointer-events-none"}`}
+        title={title}
       >
         <p className="text-xs text-white">{event.listing.nickname}</p>
       </div>
     );
+    return href ? (
+      <Link href={href} className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+        {bar}
+      </Link>
+    ) : bar;
   }
 
-  return (
+  const bar = (
     <div
-      className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${getBarStyles()} text-primary dark:text-white`}
-      title={`${event.summary} - ${event.start.toLocaleDateString()} to ${event.end.toLocaleDateString()}`}
+      className={`absolute top-1/2 -translate-y-1/2 ${getBarStyles()} text-primary dark:text-white ${href ? "cursor-pointer" : "pointer-events-none"}`}
+      title={title}
     >
       <svg className="w-full h-full block" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
         <path d={getSvgPath()} fill="currentColor" />
       </svg>
     </div>
   );
+
+  return href ? (
+    <Link href={href} className="pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+      {bar}
+    </Link>
+  ) : bar;
 }

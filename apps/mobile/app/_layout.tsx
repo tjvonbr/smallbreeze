@@ -82,6 +82,7 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="listing/[id]" />
+            <Stack.Screen name="reservation/[id]" />
             <Stack.Screen name="day/[date]" />
             <Stack.Screen name="invites" />
             <Stack.Screen name="tasks" />
