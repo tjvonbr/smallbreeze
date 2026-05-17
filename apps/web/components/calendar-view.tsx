@@ -9,9 +9,10 @@ import DayCell from './day-cell';
 interface CalendarViewProps {
   events: CalendarEvent[]
   showOnlyCheckoutDays?: boolean
+  listingId?: string
 }
 
-export default function CalendarView({ events, showOnlyCheckoutDays = false }: CalendarViewProps ) {  
+export default function CalendarView({ events, showOnlyCheckoutDays = false, listingId }: CalendarViewProps ) {  
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   return (
@@ -29,6 +30,7 @@ export default function CalendarView({ events, showOnlyCheckoutDays = false }: C
               selectDate={setSelectedDate}
               showOnlyCheckoutDays={showOnlyCheckoutDays}
               isOutsideMonth={props.modifiers?.outside ?? false}
+              listingId={listingId}
             />
           )
         }}

@@ -17,7 +17,7 @@ export default function ListingCalendarPageOps({ listing, events }: ListingCalen
       <DashboardHeader heading={listing.nickname} text="View your upcoming bookings" />
       <PropertiesSubnav />
       <div className="mt-6 grid grid-cols-1 gap-6">
-        <CalendarView events={events} />
+        <CalendarView events={events} listingId={listing.id} />
       </div>
     </DashboardShell>
   )
