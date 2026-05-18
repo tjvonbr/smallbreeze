@@ -45,7 +45,7 @@ interface Task {
         lastName: string;
         email: string;
       };
-    };
+    } | null;
     listing: {
       id: string;
       nickname: string;

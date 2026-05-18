@@ -162,7 +162,7 @@ export type TaskAssignmentGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type TaskAssignmentGroupByOutputType = {
   id: string
   taskId: string
-  teamMemberId: string
+  teamMemberId: string | null
   listingId: string
   createdAt: Date
   updatedAt: Date
@@ -193,20 +193,20 @@ export type TaskAssignmentWhereInput = {
   NOT?: Prisma.TaskAssignmentWhereInput | Prisma.TaskAssignmentWhereInput[]
   id?: Prisma.StringFilter<"TaskAssignment"> | string
   taskId?: Prisma.StringFilter<"TaskAssignment"> | string
-  teamMemberId?: Prisma.StringFilter<"TaskAssignment"> | string
+  teamMemberId?: Prisma.StringNullableFilter<"TaskAssignment"> | string | null
   listingId?: Prisma.StringFilter<"TaskAssignment"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
-  teamMember?: Prisma.XOR<Prisma.TeamMemberScalarRelationFilter, Prisma.TeamMemberWhereInput>
+  teamMember?: Prisma.XOR<Prisma.TeamMemberNullableScalarRelationFilter, Prisma.TeamMemberWhereInput> | null
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
 }
 
 export type TaskAssignmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
-  teamMemberId?: Prisma.SortOrder
+  teamMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
   listingId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -218,25 +218,25 @@ export type TaskAssignmentOrderByWithRelationInput = {
 
 export type TaskAssignmentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  taskId_teamMemberId_listingId?: Prisma.TaskAssignmentTaskIdTeamMemberIdListingIdCompoundUniqueInput
+  taskId_listingId?: Prisma.TaskAssignmentTaskIdListingIdCompoundUniqueInput
   AND?: Prisma.TaskAssignmentWhereInput | Prisma.TaskAssignmentWhereInput[]
   OR?: Prisma.TaskAssignmentWhereInput[]
   NOT?: Prisma.TaskAssignmentWhereInput | Prisma.TaskAssignmentWhereInput[]
   taskId?: Prisma.StringFilter<"TaskAssignment"> | string
-  teamMemberId?: Prisma.StringFilter<"TaskAssignment"> | string
+  teamMemberId?: Prisma.StringNullableFilter<"TaskAssignment"> | string | null
   listingId?: Prisma.StringFilter<"TaskAssignment"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"TaskAssignment"> | Date | string | null
   task?: Prisma.XOR<Prisma.TaskScalarRelationFilter, Prisma.TaskWhereInput>
-  teamMember?: Prisma.XOR<Prisma.TeamMemberScalarRelationFilter, Prisma.TeamMemberWhereInput>
+  teamMember?: Prisma.XOR<Prisma.TeamMemberNullableScalarRelationFilter, Prisma.TeamMemberWhereInput> | null
   listing?: Prisma.XOR<Prisma.ListingScalarRelationFilter, Prisma.ListingWhereInput>
-}, "id" | "taskId_teamMemberId_listingId">
+}, "id" | "taskId_listingId">
 
 export type TaskAssignmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
-  teamMemberId?: Prisma.SortOrder
+  teamMemberId?: Prisma.SortOrderInput | Prisma.SortOrder
   listingId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -252,7 +252,7 @@ export type TaskAssignmentScalarWhereWithAggregatesInput = {
   NOT?: Prisma.TaskAssignmentScalarWhereWithAggregatesInput | Prisma.TaskAssignmentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"TaskAssignment"> | string
   taskId?: Prisma.StringWithAggregatesFilter<"TaskAssignment"> | string
-  teamMemberId?: Prisma.StringWithAggregatesFilter<"TaskAssignment"> | string
+  teamMemberId?: Prisma.StringNullableWithAggregatesFilter<"TaskAssignment"> | string | null
   listingId?: Prisma.StringWithAggregatesFilter<"TaskAssignment"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"TaskAssignment"> | Date | string
@@ -265,14 +265,14 @@ export type TaskAssignmentCreateInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   task: Prisma.TaskCreateNestedOneWithoutAssignmentsInput
-  teamMember: Prisma.TeamMemberCreateNestedOneWithoutTaskAssignmentsInput
+  teamMember?: Prisma.TeamMemberCreateNestedOneWithoutTaskAssignmentsInput
   listing: Prisma.ListingCreateNestedOneWithoutTaskAssignmentsInput
 }
 
 export type TaskAssignmentUncheckedCreateInput = {
   id?: string
   taskId: string
-  teamMemberId: string
+  teamMemberId?: string | null
   listingId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -285,14 +285,14 @@ export type TaskAssignmentUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   task?: Prisma.TaskUpdateOneRequiredWithoutAssignmentsNestedInput
-  teamMember?: Prisma.TeamMemberUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teamMember?: Prisma.TeamMemberUpdateOneWithoutTaskAssignmentsNestedInput
   listing?: Prisma.ListingUpdateOneRequiredWithoutTaskAssignmentsNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
-  teamMemberId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   listingId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -302,7 +302,7 @@ export type TaskAssignmentUncheckedUpdateInput = {
 export type TaskAssignmentCreateManyInput = {
   id?: string
   taskId: string
-  teamMemberId: string
+  teamMemberId?: string | null
   listingId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -319,7 +319,7 @@ export type TaskAssignmentUpdateManyMutationInput = {
 export type TaskAssignmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
-  teamMemberId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   listingId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -336,9 +336,8 @@ export type TaskAssignmentOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type TaskAssignmentTaskIdTeamMemberIdListingIdCompoundUniqueInput = {
+export type TaskAssignmentTaskIdListingIdCompoundUniqueInput = {
   taskId: string
-  teamMemberId: string
   listingId: string
 }
 
@@ -548,7 +547,7 @@ export type TaskAssignmentScalarWhereInput = {
   NOT?: Prisma.TaskAssignmentScalarWhereInput | Prisma.TaskAssignmentScalarWhereInput[]
   id?: Prisma.StringFilter<"TaskAssignment"> | string
   taskId?: Prisma.StringFilter<"TaskAssignment"> | string
-  teamMemberId?: Prisma.StringFilter<"TaskAssignment"> | string
+  teamMemberId?: Prisma.StringNullableFilter<"TaskAssignment"> | string | null
   listingId?: Prisma.StringFilter<"TaskAssignment"> | string
   createdAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"TaskAssignment"> | Date | string
@@ -561,13 +560,13 @@ export type TaskAssignmentCreateWithoutListingInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   task: Prisma.TaskCreateNestedOneWithoutAssignmentsInput
-  teamMember: Prisma.TeamMemberCreateNestedOneWithoutTaskAssignmentsInput
+  teamMember?: Prisma.TeamMemberCreateNestedOneWithoutTaskAssignmentsInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutListingInput = {
   id?: string
   taskId: string
-  teamMemberId: string
+  teamMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -604,13 +603,13 @@ export type TaskAssignmentCreateWithoutTaskInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
-  teamMember: Prisma.TeamMemberCreateNestedOneWithoutTaskAssignmentsInput
+  teamMember?: Prisma.TeamMemberCreateNestedOneWithoutTaskAssignmentsInput
   listing: Prisma.ListingCreateNestedOneWithoutTaskAssignmentsInput
 }
 
 export type TaskAssignmentUncheckedCreateWithoutTaskInput = {
   id?: string
-  teamMemberId: string
+  teamMemberId?: string | null
   listingId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -682,7 +681,7 @@ export type TaskAssignmentUncheckedUpdateManyWithoutTeamMemberInput = {
 export type TaskAssignmentCreateManyListingInput = {
   id?: string
   taskId: string
-  teamMemberId: string
+  teamMemberId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -694,13 +693,13 @@ export type TaskAssignmentUpdateWithoutListingInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   task?: Prisma.TaskUpdateOneRequiredWithoutAssignmentsNestedInput
-  teamMember?: Prisma.TeamMemberUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teamMember?: Prisma.TeamMemberUpdateOneWithoutTaskAssignmentsNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutListingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
-  teamMemberId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -709,7 +708,7 @@ export type TaskAssignmentUncheckedUpdateWithoutListingInput = {
 export type TaskAssignmentUncheckedUpdateManyWithoutListingInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   taskId?: Prisma.StringFieldUpdateOperationsInput | string
-  teamMemberId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -717,7 +716,7 @@ export type TaskAssignmentUncheckedUpdateManyWithoutListingInput = {
 
 export type TaskAssignmentCreateManyTaskInput = {
   id?: string
-  teamMemberId: string
+  teamMemberId?: string | null
   listingId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -729,13 +728,13 @@ export type TaskAssignmentUpdateWithoutTaskInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  teamMember?: Prisma.TeamMemberUpdateOneRequiredWithoutTaskAssignmentsNestedInput
+  teamMember?: Prisma.TeamMemberUpdateOneWithoutTaskAssignmentsNestedInput
   listing?: Prisma.ListingUpdateOneRequiredWithoutTaskAssignmentsNestedInput
 }
 
 export type TaskAssignmentUncheckedUpdateWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamMemberId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   listingId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -744,7 +743,7 @@ export type TaskAssignmentUncheckedUpdateWithoutTaskInput = {
 
 export type TaskAssignmentUncheckedUpdateManyWithoutTaskInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  teamMemberId?: Prisma.StringFieldUpdateOperationsInput | string
+  teamMemberId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   listingId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -762,7 +761,7 @@ export type TaskAssignmentSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   deletedAt?: boolean
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
-  teamMember?: boolean | Prisma.TeamMemberDefaultArgs<ExtArgs>
+  teamMember?: boolean | Prisma.TaskAssignment$teamMemberArgs<ExtArgs>
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignment"]>
 
@@ -775,7 +774,7 @@ export type TaskAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   deletedAt?: boolean
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
-  teamMember?: boolean | Prisma.TeamMemberDefaultArgs<ExtArgs>
+  teamMember?: boolean | Prisma.TaskAssignment$teamMemberArgs<ExtArgs>
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignment"]>
 
@@ -788,7 +787,7 @@ export type TaskAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   updatedAt?: boolean
   deletedAt?: boolean
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
-  teamMember?: boolean | Prisma.TeamMemberDefaultArgs<ExtArgs>
+  teamMember?: boolean | Prisma.TaskAssignment$teamMemberArgs<ExtArgs>
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["taskAssignment"]>
 
@@ -805,17 +804,17 @@ export type TaskAssignmentSelectScalar = {
 export type TaskAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "taskId" | "teamMemberId" | "listingId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["taskAssignment"]>
 export type TaskAssignmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
-  teamMember?: boolean | Prisma.TeamMemberDefaultArgs<ExtArgs>
+  teamMember?: boolean | Prisma.TaskAssignment$teamMemberArgs<ExtArgs>
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
 }
 export type TaskAssignmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
-  teamMember?: boolean | Prisma.TeamMemberDefaultArgs<ExtArgs>
+  teamMember?: boolean | Prisma.TaskAssignment$teamMemberArgs<ExtArgs>
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
 }
 export type TaskAssignmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   task?: boolean | Prisma.TaskDefaultArgs<ExtArgs>
-  teamMember?: boolean | Prisma.TeamMemberDefaultArgs<ExtArgs>
+  teamMember?: boolean | Prisma.TaskAssignment$teamMemberArgs<ExtArgs>
   listing?: boolean | Prisma.ListingDefaultArgs<ExtArgs>
 }
 
@@ -823,13 +822,13 @@ export type $TaskAssignmentPayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "TaskAssignment"
   objects: {
     task: Prisma.$TaskPayload<ExtArgs>
-    teamMember: Prisma.$TeamMemberPayload<ExtArgs>
+    teamMember: Prisma.$TeamMemberPayload<ExtArgs> | null
     listing: Prisma.$ListingPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     taskId: string
-    teamMemberId: string
+    teamMemberId: string | null
     listingId: string
     createdAt: Date
     updatedAt: Date
@@ -1229,7 +1228,7 @@ readonly fields: TaskAssignmentFieldRefs;
 export interface Prisma__TaskAssignmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   task<T extends Prisma.TaskDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskDefaultArgs<ExtArgs>>): Prisma.Prisma__TaskClient<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  teamMember<T extends Prisma.TeamMemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeamMemberDefaultArgs<ExtArgs>>): Prisma.Prisma__TeamMemberClient<runtime.Types.Result.GetResult<Prisma.$TeamMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  teamMember<T extends Prisma.TaskAssignment$teamMemberArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TaskAssignment$teamMemberArgs<ExtArgs>>): Prisma.Prisma__TeamMemberClient<runtime.Types.Result.GetResult<Prisma.$TeamMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   listing<T extends Prisma.ListingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ListingDefaultArgs<ExtArgs>>): Prisma.Prisma__ListingClient<runtime.Types.Result.GetResult<Prisma.$ListingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1660,6 +1659,25 @@ export type TaskAssignmentDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many TaskAssignments to delete.
    */
   limit?: number
+}
+
+/**
+ * TaskAssignment.teamMember
+ */
+export type TaskAssignment$teamMemberArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TeamMember
+   */
+  select?: Prisma.TeamMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TeamMember
+   */
+  omit?: Prisma.TeamMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TeamMemberInclude<ExtArgs> | null
+  where?: Prisma.TeamMemberWhereInput
 }
 
 /**

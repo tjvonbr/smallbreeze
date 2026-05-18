@@ -413,6 +413,7 @@ function CalendarTab({ listing, colors, colorScheme, reservations, loading }: Ca
                         end: res.end,
                         source: res.source ?? '',
                         description: res.description ?? '',
+                        listingId: listing.id,
                         listingNickname: listing.nickname,
                       },
                     });
