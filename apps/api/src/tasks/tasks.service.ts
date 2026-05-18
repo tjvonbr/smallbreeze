@@ -68,11 +68,11 @@ export class TasksService {
         dueDate: data.dueDate ? new Date(data.dueDate) : null,
         isTemplate: data.isTemplate,
         teamId: data.teamId,
-        ...(data.assigneeTeamMemberId && data.listingId
+        ...(data.listingId
           ? {
               assignments: {
                 create: {
-                  teamMemberId: data.assigneeTeamMemberId,
+                  teamMemberId: data.assigneeTeamMemberId ?? null,
                   listingId: data.listingId,
                 },
               },
@@ -145,10 +145,10 @@ export class TasksService {
       // Remove existing assignments
       await prisma.taskAssignment.deleteMany({ where: { taskId } });
 
-      // Create new assignment if both member and listing are provided
-      if (newMemberId && newListingId) {
+      // Create new assignment if a listing is provided (team member is optional)
+      if (newListingId) {
         await prisma.taskAssignment.create({
-          data: { taskId, teamMemberId: newMemberId, listingId: newListingId },
+          data: { taskId, teamMemberId: newMemberId ?? null, listingId: newListingId },
         });
       }
     }
