@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ViewToken } from 'react-native';
+import { FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View, ListViewToken } from 'react-native';
 import YearView, { YEAR_ITEM_HEIGHT } from './year-view';
 
 type InfiniteYearCalendarProps = {
@@ -67,7 +67,7 @@ function InfiniteYearCalendarImpl(
   }).current;
 
   const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    ({ viewableItems }: { viewableItems: ListViewToken[] }) => {
       if (!onVisibleYearChange || viewableItems.length === 0) return;
       const candidates = viewableItems.filter((v) => v.index != null);
       if (candidates.length === 0) return;

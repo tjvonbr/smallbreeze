@@ -826,7 +826,7 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
           <Text style={[styles.ownerToggleTitle, { color: colors.text }]}>Keep the owner in the loop</Text>
           <Text style={[styles.fieldHint, { color: colors.icon }]}>
             Send the owner updates when the cleaner is on the way, when the clean is finished, and photos
-            once they're uploaded. They choose how they're notified.
+            once they&apos;re uploaded. They choose how they&apos;re notified.
           </Text>
         </View>
         <Switch value={inviteOwner} onValueChange={setInviteOwner} trackColor={{ true: colors.tint }} />
@@ -857,7 +857,7 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
             autoComplete: 'tel',
           })}
           <Text style={[styles.fieldHint, { color: colors.icon }]}>
-            We'll email them an invite to confirm their details and choose email or text updates. Nothing
+            We&apos;ll email them an invite to confirm their details and choose email or text updates. Nothing
             is sent by text until they opt in.
           </Text>
         </>

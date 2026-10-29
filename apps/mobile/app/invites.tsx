@@ -8,7 +8,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Animated,
   FlatList,
   Modal,
   Pressable,
@@ -18,8 +17,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+import ReanimatedSwipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { SharedValue } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SwipeAction } from '@/components/swipe-action';
 
 
 interface Invite {
@@ -80,7 +81,7 @@ export default function InvitesScreen() {
     fetchInvites();
   };
 
-  const swipeableRefs = useRef<Map<string, Swipeable>>(new Map());
+  const swipeableRefs = useRef<Map<string, SwipeableMethods>>(new Map());
 
   const handleResendInvite = async (invite: Invite) => {
     try {
@@ -188,18 +189,9 @@ export default function InvitesScreen() {
     }
   };
 
-  const renderLeftActions = (
-    progress: Animated.AnimatedInterpolation<number>,
-    _dragX: Animated.AnimatedInterpolation<number>,
-    invite: Invite
-  ) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [-80, 0],
-    });
-
+  const renderLeftActions = (progress: SharedValue<number>, invite: Invite) => {
     return (
-      <Animated.View style={[styles.swipeAction, { transform: [{ translateX: trans }] }]}>
+      <SwipeAction progress={progress} from={-80} style={styles.swipeAction}>
         <Pressable
           style={styles.resendButton}
           onPress={() => handleResendInvite(invite)}
@@ -207,22 +199,13 @@ export default function InvitesScreen() {
           <RotateCw size={20} color="#FFFFFF" />
           <Text style={styles.resendButtonText}>Resend</Text>
         </Pressable>
-      </Animated.View>
+      </SwipeAction>
     );
   };
 
-  const renderRightActions = (
-    progress: Animated.AnimatedInterpolation<number>,
-    _dragX: Animated.AnimatedInterpolation<number>,
-    invite: Invite
-  ) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [80, 0],
-    });
-
+  const renderRightActions = (progress: SharedValue<number>, invite: Invite) => {
     return (
-      <Animated.View style={[styles.swipeAction, { transform: [{ translateX: trans }] }]}>
+      <SwipeAction progress={progress} from={80} style={styles.swipeAction}>
         <Pressable
           style={styles.rescindButton}
           onPress={() => handleRescindInvite(invite)}
@@ -230,13 +213,13 @@ export default function InvitesScreen() {
           <Trash2 size={20} color="#FFFFFF" />
           <Text style={styles.rescindButtonText}>Rescind</Text>
         </Pressable>
-      </Animated.View>
+      </SwipeAction>
     );
   };
 
   const renderInvite = ({ item }: { item: Invite }) => {
     return (
-      <Swipeable
+      <ReanimatedSwipeable
         ref={(ref) => {
           if (ref) {
             swipeableRefs.current.set(item.id, ref);
@@ -244,8 +227,8 @@ export default function InvitesScreen() {
             swipeableRefs.current.delete(item.id);
           }
         }}
-        renderLeftActions={(progress, dragX) => renderLeftActions(progress, dragX, item)}
-        renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item)}
+        renderLeftActions={(progress) => renderLeftActions(progress, item)}
+        renderRightActions={(progress) => renderRightActions(progress, item)}
         overshootLeft={false}
         overshootRight={false}
         friction={2}
@@ -268,7 +251,7 @@ export default function InvitesScreen() {
             </Text>
           </View>
         </View>
-      </Swipeable>
+      </ReanimatedSwipeable>
     );
   };
 

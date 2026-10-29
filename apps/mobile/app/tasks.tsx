@@ -17,7 +17,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Animated,
   FlatList,
   Modal,
   Pressable,
@@ -28,7 +27,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+import ReanimatedSwipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { SharedValue } from 'react-native-reanimated';
+import { SwipeAction } from '@/components/swipe-action';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Task {
@@ -159,7 +160,7 @@ export default function TasksScreen() {
     fetchTasks();
   };
 
-  const swipeableRefs = useRef<Map<string, Swipeable>>(new Map());
+  const swipeableRefs = useRef<Map<string, SwipeableMethods>>(new Map());
 
   const handleDeleteTask = (task: Task) => {
     Alert.alert(
@@ -258,18 +259,9 @@ export default function TasksScreen() {
     }
   };
 
-  const renderRightActions = (
-    progress: Animated.AnimatedInterpolation<number>,
-    _dragX: Animated.AnimatedInterpolation<number>,
-    task: Task
-  ) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [80, 0],
-    });
-
+  const renderRightActions = (progress: SharedValue<number>, task: Task) => {
     return (
-      <Animated.View style={[styles.swipeAction, { transform: [{ translateX: trans }] }]}>
+      <SwipeAction progress={progress} from={80} style={styles.swipeAction}>
         <Pressable
           style={styles.deleteButton}
           onPress={() => handleDeleteTask(task)}
@@ -277,7 +269,7 @@ export default function TasksScreen() {
           <Trash2 size={20} color="#FFFFFF" />
           <Text style={styles.deleteButtonText}>Delete</Text>
         </Pressable>
-      </Animated.View>
+      </SwipeAction>
     );
   };
 
@@ -288,7 +280,7 @@ export default function TasksScreen() {
       : colors.icon;
 
     return (
-      <Swipeable
+      <ReanimatedSwipeable
         ref={(ref) => {
           if (ref) {
             swipeableRefs.current.set(item.id, ref);
@@ -296,7 +288,7 @@ export default function TasksScreen() {
             swipeableRefs.current.delete(item.id);
           }
         }}
-        renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item)}
+        renderRightActions={(progress) => renderRightActions(progress, item)}
         overshootRight={false}
         friction={2}
       >
@@ -352,7 +344,7 @@ export default function TasksScreen() {
             </View>
           </View>
         </Pressable>
-      </Swipeable>
+      </ReanimatedSwipeable>
     );
   };
 
