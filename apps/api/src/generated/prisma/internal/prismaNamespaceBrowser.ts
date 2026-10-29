@@ -56,6 +56,8 @@ export const ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Listing: 'Listing',
+  Owner: 'Owner',
+  OwnerInvite: 'OwnerInvite',
   ListingPhoto: 'ListingPhoto',
   CalendarLink: 'CalendarLink',
   Reservation: 'Reservation',
@@ -177,11 +179,42 @@ export const ListingScalarFieldEnum = {
   defaultCheckInTime: 'defaultCheckInTime',
   defaultCheckOutTime: 'defaultCheckOutTime',
   teamId: 'teamId',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ListingScalarFieldEnum = (typeof ListingScalarFieldEnum)[keyof typeof ListingScalarFieldEnum]
+
+
+export const OwnerScalarFieldEnum = {
+  id: 'id',
+  teamId: 'teamId',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phone: 'phone',
+  notifyByEmail: 'notifyByEmail',
+  notifyBySms: 'notifyBySms',
+  smsConsentAt: 'smsConsentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OwnerScalarFieldEnum = (typeof OwnerScalarFieldEnum)[keyof typeof OwnerScalarFieldEnum]
+
+
+export const OwnerInviteScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OwnerInviteScalarFieldEnum = (typeof OwnerInviteScalarFieldEnum)[keyof typeof OwnerInviteScalarFieldEnum]
 
 
 export const ListingPhotoScalarFieldEnum = {

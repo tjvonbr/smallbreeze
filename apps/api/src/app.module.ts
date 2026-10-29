@@ -6,6 +6,7 @@ import { auth } from './lib/auth.js';
 import { UsersModule } from './users/users.module.js';
 import { ListingsModule } from './listings/listings.module.js';
 import { InvitesModule } from './invites/invites.module.js';
+import { OwnersModule } from './owners/owners.module.js';
 import { PhotosModule } from './photos/photos.module.js';
 import { TasksModule } from './tasks/tasks.module.js';
 import { AppService } from './app.service.js';
@@ -21,6 +22,7 @@ import { AppController } from './app.controller.js';
     UsersModule,
     ListingsModule,
     InvitesModule,
+    OwnersModule,
     PhotosModule,
     TasksModule,
   ],

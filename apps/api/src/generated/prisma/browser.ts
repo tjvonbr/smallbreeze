@@ -53,6 +53,16 @@ export type VerificationToken = Prisma.VerificationTokenModel
  */
 export type Listing = Prisma.ListingModel
 /**
+ * Model Owner
+ * 
+ */
+export type Owner = Prisma.OwnerModel
+/**
+ * Model OwnerInvite
+ * 
+ */
+export type OwnerInvite = Prisma.OwnerInviteModel
+/**
  * Model ListingPhoto
  * 
  */
