@@ -49,6 +49,7 @@ model Team {
   memberships   TeamMember[]
   listings      Listing[]
   invites       Invite[]
+  owners        Owner[]
   tasks         Task[]
 
   @@map("teams")
@@ -135,10 +136,45 @@ model Listing {
   photos         ListingPhoto[]
   reservations   Reservation[]
   taskAssignments TaskAssignment[]
+  ownerId        String?
+  owner          Owner?         @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
   @@map("listings")
+}
+
+model Owner {
+  id             String        @id @default(uuid())
+  teamId         String
+  team           Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  firstName      String
+  lastName       String
+  email          String
+  phone          String?
+  notifyByEmail  Boolean       @default(true)
+  notifyBySms    Boolean       @default(false)
+  smsConsentAt   DateTime?
+  listings       Listing[]
+  invites        OwnerInvite[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([teamId, email])
+  @@map("owners")
+}
+
+model OwnerInvite {
+  id         String    @id @default(uuid())
+  ownerId    String
+  owner      Owner     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@map("owner_invites")
 }
 
 model ListingPhoto {

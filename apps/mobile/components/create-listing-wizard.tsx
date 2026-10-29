@@ -13,6 +13,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -26,7 +27,7 @@ import { authClient } from '@/lib/auth-client';
 import { Colors, FontFamily } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 interface CreateListingWizardProps {
   visible: boolean;
@@ -95,6 +96,13 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
   const [calendarLinks, setCalendarLinks] = useState<string[]>([]);
   const [currentLink, setCurrentLink] = useState('');
 
+  // Step 6: Owner (optional)
+  const [inviteOwner, setInviteOwner] = useState(false);
+  const [ownerFirstName, setOwnerFirstName] = useState('');
+  const [ownerLastName, setOwnerLastName] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState('');
+  const [ownerPhone, setOwnerPhone] = useState('');
+
   const resetWizard = () => {
     setStep(1);
     setCreatedListing(null);
@@ -109,6 +117,11 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
     setUploading(false);
     setCalendarLinks([]);
     setCurrentLink('');
+    setInviteOwner(false);
+    setOwnerFirstName('');
+    setOwnerLastName('');
+    setOwnerEmail('');
+    setOwnerPhone('');
     setSaving(false);
   };
 
@@ -340,7 +353,7 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
 
   const handleSaveCalendarLinks = async () => {
     if (!createdListing || calendarLinks.length === 0) {
-      handleClose();
+      goNext();
       return;
     }
 
@@ -363,9 +376,40 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
 
       setCreatedListing(latestListing);
       updateListing(latestListing);
-      handleClose();
+      goNext();
     } catch {
       Alert.alert('Error', 'Failed to save calendar links. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Step 6: Invite owner (only when the operator opts in)
+  const handleInviteOwner = async () => {
+    if (!createdListing || !inviteOwner) {
+      handleClose();
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await authClient.$fetch(`${apiUrl}/api/listings/${createdListing.id}/owner`, {
+        method: 'POST',
+        body: {
+          firstName: ownerFirstName.trim(),
+          lastName: ownerLastName.trim(),
+          email: ownerEmail.trim(),
+          phone: ownerPhone.trim() || null,
+        },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      handleClose();
+    } catch {
+      Alert.alert('Error', 'Failed to invite the owner. Please check their details and try again.');
     } finally {
       setSaving(false);
     }
@@ -378,10 +422,14 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
       case 3: return handleSaveAccessInfo();
       case 4: return handleSavePhotos();
       case 5: return handleSaveCalendarLinks();
+      case 6: return handleInviteOwner();
     }
   };
 
   const isStep1Valid = form.nickname && form.streetAddress && form.city && form.state && form.zip;
+  const isStep6Valid =
+    !inviteOwner ||
+    (!!ownerFirstName.trim() && !!ownerLastName.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerEmail.trim()));
 
   const getStepTitle = () => {
     switch (step) {
@@ -390,6 +438,7 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
       case 3: return 'Access Information';
       case 4: return 'Staging Photos';
       case 5: return 'iCal Links';
+      case 6: return 'Property Owner';
     }
   };
 
@@ -746,6 +795,76 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
     </ScrollView>
   );
 
+  const renderOwnerField = (
+    label: string,
+    value: string,
+    onChange: (v: string) => void,
+    props: React.ComponentProps<typeof TextInput> = {},
+  ) => (
+    <View style={styles.formField}>
+      <View style={[styles.inputContainer, { borderColor }]}>
+        <Text style={[styles.inputLabel, { color: colors.icon }]}>{label}</Text>
+        <TextInput
+          style={[styles.input, { color: colors.text }]}
+          value={value}
+          onChangeText={onChange}
+          placeholderTextColor={colors.icon}
+          {...props}
+        />
+      </View>
+    </View>
+  );
+
+  const renderStep6 = () => (
+    <ScrollView
+      style={styles.modalContent}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.modalContentContainer}
+    >
+      <View style={styles.ownerToggleRow}>
+        <View style={styles.ownerToggleText}>
+          <Text style={[styles.ownerToggleTitle, { color: colors.text }]}>Keep the owner in the loop</Text>
+          <Text style={[styles.fieldHint, { color: colors.icon }]}>
+            Send the owner updates when the cleaner is on the way, when the clean is finished, and photos
+            once they're uploaded. They choose how they're notified.
+          </Text>
+        </View>
+        <Switch value={inviteOwner} onValueChange={setInviteOwner} trackColor={{ true: colors.tint }} />
+      </View>
+
+      {inviteOwner && (
+        <>
+          {renderOwnerField('First name', ownerFirstName, setOwnerFirstName, {
+            placeholder: 'First name',
+            autoCapitalize: 'words',
+            autoComplete: 'given-name',
+          })}
+          {renderOwnerField('Last name', ownerLastName, setOwnerLastName, {
+            placeholder: 'Last name',
+            autoCapitalize: 'words',
+            autoComplete: 'family-name',
+          })}
+          {renderOwnerField('Email', ownerEmail, setOwnerEmail, {
+            placeholder: 'owner@example.com',
+            autoCapitalize: 'none',
+            autoCorrect: false,
+            keyboardType: 'email-address',
+            autoComplete: 'email',
+          })}
+          {renderOwnerField('Phone (optional)', ownerPhone, setOwnerPhone, {
+            placeholder: '(555) 555-5555',
+            keyboardType: 'phone-pad',
+            autoComplete: 'tel',
+          })}
+          <Text style={[styles.fieldHint, { color: colors.icon }]}>
+            We'll email them an invite to confirm their details and choose email or text updates. Nothing
+            is sent by text until they opt in.
+          </Text>
+        </>
+      )}
+    </ScrollView>
+  );
+
   const renderCurrentStep = () => {
     switch (step) {
       case 1: return renderStep1();
@@ -753,6 +872,7 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
       case 3: return renderStep3();
       case 4: return renderStep4();
       case 5: return renderStep5();
+      case 6: return renderStep6();
     }
   };
 
@@ -796,9 +916,9 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
               style={[
                 styles.saveButton,
                 { backgroundColor: colors.tint },
-                step === 1 && !isStep1Valid && styles.saveButtonDisabled,
+                ((step === 1 && !isStep1Valid) || (step === 6 && !isStep6Valid)) && styles.saveButtonDisabled,
               ]}
-              disabled={saving || uploading || (step === 1 && !isStep1Valid)}
+              disabled={saving || uploading || (step === 1 && !isStep1Valid) || (step === 6 && !isStep6Valid)}
             >
               {saving || uploading ? (
                 <ActivityIndicator size="small" color="white" />
@@ -814,6 +934,20 @@ export default function CreateListingWizard({ visible, onClose, onComplete }: Cr
 }
 
 const styles = StyleSheet.create({
+  ownerToggleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginBottom: 16,
+  },
+  ownerToggleText: {
+    flex: 1,
+  },
+  ownerToggleTitle: {
+    fontSize: 16,
+    fontFamily: FontFamily.semiBold,
+    marginBottom: 4,
+  },
   modalContainer: {
     flex: 1,
     paddingTop: 12,

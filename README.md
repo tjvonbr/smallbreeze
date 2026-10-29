@@ -1,3 +1,64 @@
+# smallbreeze
+
+## Local development
+
+The API (`apps/api`) needs Postgres and Redis. The quickest way to get both is Docker.
+
+### 1. Start Postgres and Redis
+
+```sh
+docker run -d --name smallbreeze-db \
+  -e POSTGRES_USER=smallbreeze \
+  -e POSTGRES_PASSWORD=smallbreeze \
+  -e POSTGRES_DB=smallbreeze \
+  -p 5432:5432 \
+  -v smallbreeze-pgdata:/var/lib/postgresql/data \
+  postgres:16
+
+docker run -d --name smallbreeze-redis -p 6379:6379 redis:7
+```
+
+If port 5432 is already taken (e.g. a Homebrew Postgres), either stop that one or map a different host port, such as `-p 5433:5432`, and use that port in `DATABASE_URL`.
+
+Later: `docker stop smallbreeze-db smallbreeze-redis` / `docker start smallbreeze-db smallbreeze-redis`. To wipe the database, run `docker rm -f smallbreeze-db && docker volume rm smallbreeze-pgdata` and repeat step 1.
+
+### 2. Configure environment variables
+
+In `apps/api/.env` (and the same `DATABASE_URL` in `apps/web/.env`):
+
+```sh
+DATABASE_URL="postgresql://smallbreeze:smallbreeze@localhost:5432/smallbreeze"
+REDIS_URL="redis://localhost:6379"
+```
+
+The API also reads `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `NEXT_PUBLIC_APP_URL`, `MOBILE_APP_URL`, `PORT`, `RESEND_API_KEY`, `EMAIL_SENDER_NAME`, `EMAIL_SENDER_ADDRESS`, `MAPBOX_ACCESS_TOKEN`, and the AWS/S3 keys. Emails are only sent when `RESEND_API_KEY` is set.
+
+### 3. Create the tables
+
+There are no migration files yet, so push the schema directly. Run this from `apps/api` (that's where `prisma/schema.prisma` lives):
+
+```sh
+cd apps/api
+npm install
+npx prisma db push
+```
+
+Inspect the data with `npx prisma studio`.
+
+### 4. Run the apps
+
+```sh
+# API (http://localhost:3001)
+cd apps/api && npm run dev
+
+# Web (http://localhost:3000)
+cd apps/web && npm run dev
+```
+
+`npm run dev` in `apps/api` starts Redis through Homebrew if it isn't already running, so you can skip the Redis container if you use that.
+
+---
+
 # Turborepo starter
 
 This Turborepo starter is maintained by the Turborepo core team.

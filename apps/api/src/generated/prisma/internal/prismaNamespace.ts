@@ -397,6 +397,8 @@ export const ModelName = {
   Session: 'Session',
   VerificationToken: 'VerificationToken',
   Listing: 'Listing',
+  Owner: 'Owner',
+  OwnerInvite: 'OwnerInvite',
   ListingPhoto: 'ListingPhoto',
   CalendarLink: 'CalendarLink',
   Reservation: 'Reservation',
@@ -419,7 +421,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "team" | "teamMember" | "account" | "session" | "verificationToken" | "listing" | "listingPhoto" | "calendarLink" | "reservation" | "verification" | "invite" | "task" | "taskAssignment"
+    modelProps: "user" | "team" | "teamMember" | "account" | "session" | "verificationToken" | "listing" | "owner" | "ownerInvite" | "listingPhoto" | "calendarLink" | "reservation" | "verification" | "invite" | "task" | "taskAssignment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -938,6 +940,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ListingCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ListingCountAggregateOutputType> | number
+        }
+      }
+    }
+    Owner: {
+      payload: Prisma.$OwnerPayload<ExtArgs>
+      fields: Prisma.OwnerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OwnerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OwnerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>
+        }
+        findFirst: {
+          args: Prisma.OwnerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OwnerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>
+        }
+        findMany: {
+          args: Prisma.OwnerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>[]
+        }
+        create: {
+          args: Prisma.OwnerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>
+        }
+        createMany: {
+          args: Prisma.OwnerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OwnerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>[]
+        }
+        delete: {
+          args: Prisma.OwnerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>
+        }
+        update: {
+          args: Prisma.OwnerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>
+        }
+        deleteMany: {
+          args: Prisma.OwnerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OwnerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OwnerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>[]
+        }
+        upsert: {
+          args: Prisma.OwnerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerPayload>
+        }
+        aggregate: {
+          args: Prisma.OwnerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOwner>
+        }
+        groupBy: {
+          args: Prisma.OwnerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OwnerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OwnerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OwnerCountAggregateOutputType> | number
+        }
+      }
+    }
+    OwnerInvite: {
+      payload: Prisma.$OwnerInvitePayload<ExtArgs>
+      fields: Prisma.OwnerInviteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OwnerInviteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OwnerInviteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>
+        }
+        findFirst: {
+          args: Prisma.OwnerInviteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OwnerInviteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>
+        }
+        findMany: {
+          args: Prisma.OwnerInviteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>[]
+        }
+        create: {
+          args: Prisma.OwnerInviteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>
+        }
+        createMany: {
+          args: Prisma.OwnerInviteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OwnerInviteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>[]
+        }
+        delete: {
+          args: Prisma.OwnerInviteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>
+        }
+        update: {
+          args: Prisma.OwnerInviteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>
+        }
+        deleteMany: {
+          args: Prisma.OwnerInviteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OwnerInviteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OwnerInviteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>[]
+        }
+        upsert: {
+          args: Prisma.OwnerInviteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OwnerInvitePayload>
+        }
+        aggregate: {
+          args: Prisma.OwnerInviteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOwnerInvite>
+        }
+        groupBy: {
+          args: Prisma.OwnerInviteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OwnerInviteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OwnerInviteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OwnerInviteCountAggregateOutputType> | number
         }
       }
     }
@@ -1594,11 +1744,42 @@ export const ListingScalarFieldEnum = {
   defaultCheckInTime: 'defaultCheckInTime',
   defaultCheckOutTime: 'defaultCheckOutTime',
   teamId: 'teamId',
+  ownerId: 'ownerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type ListingScalarFieldEnum = (typeof ListingScalarFieldEnum)[keyof typeof ListingScalarFieldEnum]
+
+
+export const OwnerScalarFieldEnum = {
+  id: 'id',
+  teamId: 'teamId',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phone: 'phone',
+  notifyByEmail: 'notifyByEmail',
+  notifyBySms: 'notifyBySms',
+  smsConsentAt: 'smsConsentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OwnerScalarFieldEnum = (typeof OwnerScalarFieldEnum)[keyof typeof OwnerScalarFieldEnum]
+
+
+export const OwnerInviteScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  acceptedAt: 'acceptedAt',
+  revokedAt: 'revokedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OwnerInviteScalarFieldEnum = (typeof OwnerInviteScalarFieldEnum)[keyof typeof OwnerInviteScalarFieldEnum]
 
 
 export const ListingPhotoScalarFieldEnum = {
@@ -1913,6 +2094,8 @@ export type GlobalOmitConfig = {
   session?: Prisma.SessionOmit
   verificationToken?: Prisma.VerificationTokenOmit
   listing?: Prisma.ListingOmit
+  owner?: Prisma.OwnerOmit
+  ownerInvite?: Prisma.OwnerInviteOmit
   listingPhoto?: Prisma.ListingPhotoOmit
   calendarLink?: Prisma.CalendarLinkOmit
   reservation?: Prisma.ReservationOmit
