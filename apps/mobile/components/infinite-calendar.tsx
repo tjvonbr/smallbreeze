@@ -1,5 +1,5 @@
 import React, { ForwardedRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
-import { FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, StyleSheet, ViewToken } from 'react-native';
+import { FlatList, NativeScrollEvent, NativeSyntheticEvent, Platform, StyleSheet, ListViewToken } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import MonthView, { getMonthHeight } from './month-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -90,7 +90,7 @@ function InfiniteCalendarImpl(
   }).current;
 
   const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    ({ viewableItems }: { viewableItems: ListViewToken[] }) => {
       if (viewableItems.length === 0) return;
       const candidates = viewableItems.filter((v) => v.index != null);
       if (candidates.length === 0) return;

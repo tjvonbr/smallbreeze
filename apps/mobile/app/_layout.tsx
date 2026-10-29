@@ -1,6 +1,5 @@
 import '@/lib/geofencing';
 
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import {
   LeagueSpartan_400Regular,
   LeagueSpartan_500Medium,
@@ -9,7 +8,7 @@ import {
   LeagueSpartan_800ExtraBold,
 } from '@expo-google-fonts/league-spartan';
 import { useFonts } from 'expo-font';
-import { Redirect, Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, Redirect, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
